@@ -1802,11 +1802,11 @@ function renderVerbal(){
 function runVerbalSession(){
   const app = document.getElementById('app');
   let order = shuffle(VERBAL_BANK.map((_,i)=>i));
-  let idx=0, score=0, timeLeft=150, timer=null, choices={};
+  let idx=0, score=0, timeLeft=150, timer=null, choices={}, validated=false;
   function renderP(){
     const item = VERBAL_BANK[order[idx]];
     const stOrder = shuffle(item.statements.map((_,i)=>i));
-    choices={}; timeLeft=150;
+    choices={}; timeLeft=150; validated=false;
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">2:30</span></div>'
@@ -1845,6 +1845,7 @@ function runVerbalSession(){
     },1000);
   }
   function validate(){
+    if(validated) return; validated=true;
     clearInterval(timer);
     const item = VERBAL_BANK[order[idx]];
     document.querySelectorAll('.statement-row').forEach(row=>{
@@ -2003,7 +2004,7 @@ function renderDigital(){
 function renderEufte(){
   const app = document.getElementById('app');
   let promptIdx = Math.floor(Math.random()*EUFTE_PROMPTS.length);
-  let seconds = 40*60, timer=null, running=false, dossierMode=false;
+  let seconds = 40*60, timer=null, running=false, dossierMode=false, finished=false;
   async function loadDraft(){
     try{ const r = await window.storage.get('epso-eufte-draft'); return r&&r.value?r.value:''; }catch(e){ return ''; }
   }
@@ -2084,6 +2085,7 @@ function renderEufte(){
       clearInterval(timer); running=false; seconds=40*60; timerDisp.textContent='40:00';
     });
     document.getElementById('finishBtn').addEventListener('click',()=>{
+      if(finished) return; finished=true;
       clearInterval(timer);
       PROGRESS.eufte.sessions++; saveProgress();
       alert('Session enregistrée. '+PROGRESS.eufte.sessions+' session(s) EUFTE au total.');
