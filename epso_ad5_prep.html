@@ -1646,6 +1646,7 @@ function updateStreak(){
 function renderStreak(){ document.getElementById('streakN').textContent = PROGRESS.streak.count; }
 function acc(m){ const s=PROGRESS[m]; return s.att>0 ? Math.round(100*s.cor/s.att) : null; }
 function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function fmtTime(s){ if(s<0) s=0; const m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r; }
 
 /* ================= NAVIGATION ================= */
 let CURRENT = 'dashboard';
@@ -1725,18 +1726,43 @@ function renderDashboard(){
   app.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.goto)));
 }
 
-/* ================= MOTEUR QCM ================= */
-function runQCMSession(bank, statKey, timeLimit, title, ep, backTo){
-  const app = document.getElementById('app');
-  let order = shuffle(bank.map((_,i)=>i));
-  let idx=0, score=0, answered=false, timer=null, timeLeft=timeLimit;
+/* ================= MODALITÉS RÉELLES DU CONCOURS =================
+   Source : avis de concours EPSO/AD/427/26 (JO C/2026/711).
+   Une seule source de vérité pour le nombre de questions et le rythme,
+   afin que les chronos, les libellés et les tableaux restent concordants.
+   Chaque session utilise un chrono GLOBAL (comme au concours), pas un
+   chrono par question. Si la banque contient moins de questions que le
+   test réel, la session est réduite mais garde le rythme réel. */
+const VERB_COUNT=20, VERB_SEC=105;  // 20 textes / 35 min
+const NUM_COUNT=10,  NUM_SEC=120;   // 10 questions / 20 min
+const ABS_COUNT=10,  ABS_SEC=60;    // 10 questions / 10 min
+const EU_COUNT=30,   EU_SEC=80;     // 30 questions / 40 min, seuil 15/30
+const DIG_COUNT=40,  DIG_SEC=45;    // 40 questions / 30 min, seuil 20/40
 
+/* ================= MOTEUR QCM ================= */
+function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
+  const app = document.getElementById('app');
+  const count = Math.min(maxQ || bank.length, bank.length);
+  let order = shuffle(bank.map((_,i)=>i)).slice(0, count);
+  let idx=0, score=0, answered=false, timer=null, timeLeft=order.length*secPerQ, ended=false;
+
+  // ponytail: one countdown for the whole session, like the real exam. Paused while the
+  // correction is on screen (the real test has no correction to read, so reading it
+  // shouldn't eat the budget), resumed on "Suivant".
+  function startClock(){
+    clearInterval(timer);
+    timer = ACTIVE_TIMER = setInterval(()=>{
+      timeLeft--; const t=document.getElementById('tmr');
+      if(t){ t.textContent=fmtTime(timeLeft); if(timeLeft<=30) t.classList.add('low'); }
+      if(timeLeft<=0){ clearInterval(timer); endSession(true); }
+    },1000);
+  }
   function renderQ(){
-    answered=false; timeLeft=timeLimit;
+    answered=false;
     const item = bank[order[idx]];
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">'+ep+' · '+title+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">'+(idx+1)+' / '+order.length+'</span></div>'
-      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+timeLeft+'s</span><span class="session-score">Score session : '+score+'/'+idx+'</span></div>'
+      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">Score session : '+score+'/'+idx+'</span></div>'
       +'<div class="qcm-question">'+item.q+'</div>'
       +'<div id="opts">'+item.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
@@ -1744,13 +1770,10 @@ function runQCMSession(bank, statKey, timeLimit, title, ep, backTo){
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo(backTo));
     app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
-    document.getElementById('nextBtn').addEventListener('click',()=>{ idx++; if(idx<order.length){renderQ();}else{endSession();} });
-    clearInterval(timer);
-    timer = ACTIVE_TIMER = setInterval(()=>{
-      timeLeft--; const t=document.getElementById('tmr');
-      if(t){ t.textContent=timeLeft+'s'; if(timeLeft<=10) t.classList.add('low'); }
-      if(timeLeft<=0){ clearInterval(timer); if(!answered) submit(-1); }
-    },1000);
+    document.getElementById('nextBtn').addEventListener('click',()=>{
+      idx++;
+      if(idx<order.length){ renderQ(); startClock(); } else { endSession(false); }
+    });
   }
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
@@ -1764,18 +1787,25 @@ function runQCMSession(bank, statKey, timeLimit, title, ep, backTo){
       if(i===item.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
-    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':(choice===-1?'⏱ Temps écoulé. ':'✗ Incorrect. '))+(item.ex||'')+'</div>';
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+(item.ex||'')+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
-  function endSession(){
-    app.innerHTML = '<div class="card session-end"><span class="eyebrow">Session terminée</span><div class="n">'+score+'/'+order.length+'</div>'
+  function endSession(timedOut){
+    if(ended) return; ended=true;
+    clearInterval(timer);
+    app.innerHTML = '<div class="card session-end"><span class="eyebrow">'+(timedOut?'Temps écoulé':'Session terminée')+'</span><div class="n">'+score+'/'+order.length+'</div>'
+      +(timedOut?'<p style="color:var(--wine);">Le temps imparti est écoulé : '+(order.length-idx)+' question(s) non traitée(s).</p>':'')
       +'<p style="color:var(--ink-soft);">Statistiques cumulées mises à jour.</p>'
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
-    document.getElementById('againBtn').addEventListener('click',()=>{order=shuffle(bank.map((_,i)=>i));idx=0;score=0;renderQ();});
+    document.getElementById('againBtn').addEventListener('click',()=>{
+      order=shuffle(bank.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=order.length*secPerQ; ended=false;
+      renderQ(); startClock();
+    });
     document.getElementById('backBtn').addEventListener('click',()=>goTo(backTo));
   }
   renderQ();
+  startClock();
 }
 
 /* ================= VERBAL ================= */
@@ -1789,27 +1819,36 @@ function renderVerbal(){
       <tr><td>Format réel</td><td>20 questions · 35 minutes</td></tr>
       <tr><td>Seuil éliminatoire</td><td>10/20</td></tr>
       <tr><td>Poids</td><td>40 % préliminaire · 35 % final</td></tr>
-      <tr><td>Rythme réel du concours</td><td>~1 min 45 par question (35 min ÷ 20 q)</td></tr>
-      <tr><td>Chrono de cet outil</td><td>2 min 30 par texte de 3 affirmations (~50 s/affirmation)</td></tr>
+      <tr><td>Rythme moyen</td><td>1 min 45 par texte (35 min ÷ 20), à gérer toi-même</td></tr>
     </table>
     <p style="font-size:14px;">Un court texte, puis des affirmations à classer <b>Vrai</b> / <b>Faux</b> / <b>Ne peut pas dire</b>, uniquement sur la base du texte. Le texte est le seul univers qui existe : si une information n'y figure pas, elle n'existe pas, même si elle te semble évidente.</p>
     <div class="warn-box"><b>Le piège n°1 :</b> confondre Faux et Ne peut pas dire. FAUX = le texte contredit l'affirmation. NE PEUT PAS DIRE = le texte ne permet pas de trancher, même si l'affirmation est plausible. La majorité des points perdus viennent de là.</div>
     <div class="info-box"><b>Méthode :</b> lis d'abord les affirmations, puis scanne le texte pour la portion pertinente. Méfie-toi des quantificateurs (tous / certains / uniquement / jamais) et des chiffres légèrement modifiés.</div>
-    <button class="btn wide" id="startVerbal">Démarrer une session (${VERBAL_BANK.length} textes · 2 min 30 par texte)</button>
+    <div class="info-box"><b>Chrono global :</b> comme au concours, tu reçois un temps unique pour toute la session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes, ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)}). À toi de répartir : t'attarder sur un texte difficile, c'est autant de temps en moins pour les suivants. Le chrono se met en pause pendant que tu lis la correction.</div>
+    <button class="btn wide" id="startVerbal">Démarrer une session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes · ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)} au total)</button>
   </div>`;
   document.getElementById('startVerbal').addEventListener('click', runVerbalSession);
 }
 function runVerbalSession(){
   const app = document.getElementById('app');
-  let order = shuffle(VERBAL_BANK.map((_,i)=>i));
-  let idx=0, score=0, timeLeft=150, timer=null, choices={}, validated=false;
+  const count = Math.min(VERB_COUNT, VERBAL_BANK.length);
+  let order = shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0, count);
+  let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, choices={}, validated=false, ended=false;
+  function startClock(){
+    clearInterval(timer);
+    timer=ACTIVE_TIMER=setInterval(()=>{
+      timeLeft--; const t=document.getElementById('tmr');
+      if(t){t.textContent=fmtTime(timeLeft); if(timeLeft<=60) t.classList.add('low');}
+      if(timeLeft<=0){clearInterval(timer); endSession(true);}
+    },1000);
+  }
   function renderP(){
     const item = VERBAL_BANK[order[idx]];
     const stOrder = shuffle(item.statements.map((_,i)=>i));
-    choices={}; timeLeft=150; validated=false;
+    choices={}; validated=false;
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
-      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">2:30</span></div>'
+      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">temps global pour '+order.length+' textes</span></div>'
       +'<div class="passage-box">'+item.passage+'</div>'
       +'<div id="stmts">'
       + stOrder.map(si=>{
@@ -1835,14 +1874,10 @@ function runVerbalSession(){
       });
     });
     document.getElementById('validateBtn').addEventListener('click', validate);
-    document.getElementById('nextBtn').addEventListener('click',()=>{idx++; if(idx<order.length){renderP();}else{endSession();}});
-    clearInterval(timer);
-    timer=ACTIVE_TIMER=setInterval(()=>{
-      timeLeft--; const m=Math.floor(timeLeft/60), s=timeLeft%60;
-      const t=document.getElementById('tmr');
-      if(t){t.textContent=m+':'+(s<10?'0':'')+s; if(timeLeft<=20) t.classList.add('low');}
-      if(timeLeft<=0){clearInterval(timer); validate();}
-    },1000);
+    document.getElementById('nextBtn').addEventListener('click',()=>{
+      idx++;
+      if(idx<order.length){ renderP(); startClock(); } else { endSession(false); }
+    });
   }
   function validate(){
     if(validated) return; validated=true;
@@ -1867,16 +1902,24 @@ function runVerbalSession(){
     document.getElementById('validateBtn').classList.add('hidden');
     document.getElementById('nextBtn').classList.remove('hidden');
   }
-  function endSession(){
-    const total = order.length*3;
-    app.innerHTML = '<div class="card session-end"><span class="eyebrow">Session terminée</span><div class="n">'+score+'/'+total+'</div>'
-      +'<p style="color:var(--ink-soft);">Statistiques cumulées mises à jour.</p>'
+  function endSession(timedOut){
+    if(ended) return; ended=true;
+    clearInterval(timer);
+    const done = validated ? idx+1 : idx;           // textes réellement validés
+    const total = done*3;                            // 3 affirmations par texte validé
+    app.innerHTML = '<div class="card session-end"><span class="eyebrow">'+(timedOut?'Temps écoulé':'Session terminée')+'</span><div class="n">'+score+'/'+total+'</div>'
+      +'<p style="color:var(--ink-soft);">'+done+' texte(s) validé(s) sur '+order.length+'.</p>'
+      +(timedOut?'<p style="color:var(--wine);">Le temps global est écoulé. Au concours, les textes non traités ne rapportent aucun point.</p>':'')
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
-    document.getElementById('againBtn').addEventListener('click',()=>{order=shuffle(VERBAL_BANK.map((_,i)=>i));idx=0;score=0;renderP();});
+    document.getElementById('againBtn').addEventListener('click',()=>{
+      order=shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=count*VERB_SEC; ended=false;
+      renderP(); startClock();
+    });
     document.getElementById('backBtn').addEventListener('click',()=>goTo('verbal'));
   }
   renderP();
+  startClock();
 }
 
 /* ================= NUM + ABSTRAIT ================= */
@@ -1887,29 +1930,40 @@ function renderNumAbs(){
     <span class="eyebrow">Test 2 · Numérique + abstrait combinés · en Langue 1 (français)</span>
     <h2>Le filtre pass/fail</h2>
     <table class="spec-table">
-      <tr><td>Format réel</td><td>test COMBINÉ · 20 questions · 30 minutes</td></tr>
-      <tr><td>Seuil éliminatoire</td><td>10/20 (combiné)</td></tr>
-      <tr><td>Poids dans le classement</td><td>zéro — pass/fail uniquement</td></tr>
+      <tr><td>Numérique (réel)</td><td>10 questions · 20 minutes</td></tr>
+      <tr><td>Abstrait (réel)</td><td>10 questions · 10 minutes</td></tr>
+      <tr><td>Seuil éliminatoire</td><td>10/20 sur le total des deux</td></tr>
+      <tr><td>Poids dans le classement</td><td>zéro, pass/fail uniquement</td></tr>
       <tr><td>Calculatrice</td><td>basique, à l'écran, fournie (numérique)</td></tr>
     </table>
+    <div class="warn-box">Les deux tests sont chronométrés <b>séparément</b> : le temps non utilisé en numérique n'est pas reportable sur l'abstrait. Ici chaque session reproduit son propre chrono global.</div>
     <p style="font-size:14px;">Ce test ne rapporte aucun point de classement, mais son échec élimine quel que soit ton score ailleurs. Stratégie : atteindre confortablement le seuil, sans y engloutir du temps de verbal.</p>
     <div class="info-box"><b>Numérique :</b> pourcentages, ratios, moyennes, taux de croissance, lecture de tableaux et graphiques. Pas de maths avancées, mais de la vitesse. Une partie des questions est générée avec des chiffres différents à chaque session. <b>Abstrait :</b> séquences de formes suivant une ou plusieurs règles (rotation, taille, nombre, remplissage, couleur, traits). Méthode : inventorier les attributs un par un, tester une règle par attribut. Les six familles classiques de transformations (méthode Orseu) : forme, couleur, taille, trait horizontal, trait vertical, permutation.</div>
-    <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUMERIC_BANK.length + NUMERIC_TEMPLATES.length} questions · 90 s/question · chiffres renouvelés)</button>
-    <button class="btn wide" id="startAbs">Session abstraite (${ABSTRACT_BANK.length} séries · 60 s/série)</button>
+    <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUM_COUNT} questions · 20 min au total · chiffres renouvelés)</button>
+    <button class="btn wide" id="startAbs">Session abstraite (${ABS_COUNT} séries · 10 min au total)</button>
   </div>`;
-  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(NUMERIC_BANK.concat(NUMERIC_TEMPLATES.map(f=>f())),'numeric',90,'Numérique','Test 2','numabs'));
+  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(NUMERIC_BANK.concat(NUMERIC_TEMPLATES.map(f=>f())),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
   document.getElementById('startAbs').addEventListener('click', runAbstractSession);
 }
 function runAbstractSession(){
   const app = document.getElementById('app');
-  let order = shuffle(ABSTRACT_BANK.map((_,i)=>i));
-  let idx=0, score=0, timeLeft=60, timer=null, answered=false;
+  const count = Math.min(ABS_COUNT, ABSTRACT_BANK.length);
+  let order = shuffle(ABSTRACT_BANK.map((_,i)=>i)).slice(0, count);
+  let idx=0, score=0, timeLeft=count*ABS_SEC, timer=null, answered=false, ended=false;
+  function startClock(){
+    clearInterval(timer);
+    timer=ACTIVE_TIMER=setInterval(()=>{
+      timeLeft--; const t=document.getElementById('tmr');
+      if(t){t.textContent=fmtTime(timeLeft); if(timeLeft<=30) t.classList.add('low');}
+      if(timeLeft<=0){clearInterval(timer); endSession(true);}
+    },1000);
+  }
   function renderQ(){
-    answered=false; timeLeft=60;
+    answered=false;
     const item = ABSTRACT_BANK[order[idx]];
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Abstrait · '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
-      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+timeLeft+'s</span></div>'
+      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span></div>'
       +'<p style="font-size:13.5px;color:var(--ink-soft);">Quelle forme complète la séquence ?</p>'
       +'<div class="abs-sequence">'
       + item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
@@ -1921,13 +1975,10 @@ function runAbstractSession(){
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo('numabs'));
     app.querySelectorAll('.abs-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
-    document.getElementById('nextBtn').addEventListener('click',()=>{idx++; if(idx<order.length){renderQ();}else{endSession();}});
-    clearInterval(timer);
-    timer=ACTIVE_TIMER=setInterval(()=>{
-      timeLeft--; const t=document.getElementById('tmr');
-      if(t){t.textContent=timeLeft+'s'; if(timeLeft<=10) t.classList.add('low');}
-      if(timeLeft<=0){clearInterval(timer); if(!answered) submit(-1);}
-    },1000);
+    document.getElementById('nextBtn').addEventListener('click',()=>{
+      idx++;
+      if(idx<order.length){ renderQ(); startClock(); } else { endSession(false); }
+    });
   }
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
@@ -1941,17 +1992,24 @@ function runAbstractSession(){
       if(i===item.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
-    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':(choice===-1?'⏱ Temps écoulé. ':'✗ Incorrect. '))+item.ex+'</div>';
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+item.ex+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
-  function endSession(){
-    app.innerHTML = '<div class="card session-end"><span class="eyebrow">Session terminée</span><div class="n">'+score+'/'+order.length+'</div>'
+  function endSession(timedOut){
+    if(ended) return; ended=true;
+    clearInterval(timer);
+    app.innerHTML = '<div class="card session-end"><span class="eyebrow">'+(timedOut?'Temps écoulé':'Session terminée')+'</span><div class="n">'+score+'/'+order.length+'</div>'
+      +(timedOut?'<p style="color:var(--wine);">Temps imparti écoulé : '+(order.length-idx)+' série(s) non traitée(s).</p>':'')
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
-    document.getElementById('againBtn').addEventListener('click',()=>{order=shuffle(ABSTRACT_BANK.map((_,i)=>i));idx=0;score=0;renderQ();});
+    document.getElementById('againBtn').addEventListener('click',()=>{
+      order=shuffle(ABSTRACT_BANK.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=count*ABS_SEC; ended=false;
+      renderQ(); startClock();
+    });
     document.getElementById('backBtn').addEventListener('click',()=>goTo('numabs'));
   }
   renderQ();
+  startClock();
 }
 
 /* ================= CONNAISSANCES UE ================= */
@@ -1963,6 +2021,7 @@ function renderEuKnow(){
     <h2>25 % de la note finale</h2>
     <table class="spec-table">
       <tr><td>Format réel</td><td>30 questions QCM · 40 minutes</td></tr>
+      <tr><td>Seuil éliminatoire</td><td>15/30</td></tr>
       <tr><td>Poids</td><td>30 % préliminaire · 25 % final</td></tr>
       <tr><td>Contenu</td><td>institutions, procédures, grandes politiques</td></tr>
       <tr><td>Référentiel officiel</td><td>publié par EPSO ~2 mois avant le test</td></tr>
@@ -1970,7 +2029,7 @@ function renderEuKnow(){
     <div class="warn-box">Le test se passe en Langue 2. Apprends les notions ci-dessous ET leur vocabulaire anglais (section 9 : glossaire FR→EN). Dès que le référentiel officiel sort, bascule dessus en priorité absolue : c'est la matière exacte du test.</div>
   </div>
   <div id="kbList"></div>
-  <button class="btn wide" id="startQuiz" style="margin-top:6px;">Passer au quiz (${EU_QUIZ.length} questions · 60 s/question)</button>`;
+  <button class="btn wide" id="startQuiz" style="margin-top:6px;">Passer au quiz (${Math.min(EU_COUNT, EU_QUIZ.length)} questions tirées de ${EU_QUIZ.length} · 40 min au total)</button>`;
   const kbList = document.getElementById('kbList');
   kbList.innerHTML = EU_KNOWLEDGE.map((s,i)=>'<div class="kb-section"><button class="kb-head" data-i="'+i+'"><span>'+s.title+'</span><span class="car">▸</span></button><div class="kb-body" id="kbb'+i+'">'+s.body+'</div></div>').join('');
   kbList.querySelectorAll('.kb-head').forEach(b=>b.addEventListener('click',()=>{
@@ -1978,7 +2037,7 @@ function renderEuKnow(){
     const open = body.classList.toggle('open');
     b.querySelector('.car').style.transform = open?'rotate(90deg)':'rotate(0)';
   }));
-  document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(EU_QUIZ,'euknow',60,'Connaissances UE','Test 3','euknow'));
+  document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(EU_QUIZ,'euknow',EU_SEC,'Connaissances UE','Test 3','euknow',EU_COUNT));
 }
 
 /* ================= NUMÉRIQUES ================= */
@@ -1990,14 +2049,16 @@ function renderDigital(){
     <h2>25 % de la note finale — pas un simple filtre</h2>
     <table class="spec-table">
       <tr><td>Format réel</td><td>40 questions QCM · 30 minutes (45 s/question !)</td></tr>
+      <tr><td>Seuil éliminatoire</td><td>20/40</td></tr>
       <tr><td>Poids</td><td>30 % préliminaire · 25 % final</td></tr>
       <tr><td>Cadre de référence</td><td>DigComp (cadre européen des compétences numériques)</td></tr>
     </table>
     ${DIGITAL_CONTENT}
     <div class="info-box">Le rythme de 45 secondes par question exige des réflexes, pas des raisonnements : c'est un test de familiarité. Vu ton expérience data chez Outlier, ton risque n'est pas le fond mais le vocabulaire DigComp spécifique et les licences Creative Commons : c'est là qu'il faut réviser.</div>
-    <button class="btn wide" id="startQuiz">Passer au quiz (${DIGITAL_QUIZ.length} questions · 45 s/question)</button>
+    ${DIGITAL_QUIZ.length < DIG_COUNT ? '<div class="warn-box">Banque actuelle : '+DIGITAL_QUIZ.length+' questions, contre 40 au test réel. La session garde le rythme réel de 45 s par question, mais elle est plus courte que l\'épreuve. Banque à compléter.</div>' : ''}
+    <button class="btn wide" id="startQuiz">Passer au quiz (${Math.min(DIG_COUNT, DIGITAL_QUIZ.length)} questions · ${fmtTime(Math.min(DIG_COUNT, DIGITAL_QUIZ.length)*DIG_SEC)} au total)</button>
   </div>`;
-  document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(DIGITAL_QUIZ,'digital',45,'Compétences numériques','Test 4','digital'));
+  document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(DIGITAL_QUIZ,'digital',DIG_SEC,'Compétences numériques','Test 4','digital',DIG_COUNT));
 }
 
 /* ================= EUFTE ================= */
