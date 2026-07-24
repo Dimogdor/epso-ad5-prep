@@ -1649,12 +1649,13 @@ function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){const 
 
 /* ================= NAVIGATION ================= */
 let CURRENT = 'dashboard';
+let ACTIVE_TIMER = null; // ponytail: single chokepoint so goTo() can always kill a running session timer, wherever it was started
 function renderTabs(){
   const nav = document.getElementById('tabNav');
   nav.innerHTML = MODULES.map(m=>'<button class="tab-btn '+(m.id===CURRENT?'active':'')+'" data-m="'+m.id+'">'+(m.ep?m.ep:'—')+'<b>'+m.label+'</b></button>').join('');
   nav.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.m)));
 }
-function goTo(id){ CURRENT = id; renderTabs(); RENDERERS[id](); window.scrollTo({top:0,behavior:'smooth'}); }
+function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
@@ -1745,7 +1746,7 @@ function runQCMSession(bank, statKey, timeLimit, title, ep, backTo){
     app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{ idx++; if(idx<order.length){renderQ();}else{endSession();} });
     clearInterval(timer);
-    timer = setInterval(()=>{
+    timer = ACTIVE_TIMER = setInterval(()=>{
       timeLeft--; const t=document.getElementById('tmr');
       if(t){ t.textContent=timeLeft+'s'; if(timeLeft<=10) t.classList.add('low'); }
       if(timeLeft<=0){ clearInterval(timer); if(!answered) submit(-1); }
@@ -1788,7 +1789,8 @@ function renderVerbal(){
       <tr><td>Format réel</td><td>20 questions · 35 minutes</td></tr>
       <tr><td>Seuil éliminatoire</td><td>10/20</td></tr>
       <tr><td>Poids</td><td>40 % préliminaire · 35 % final</td></tr>
-      <tr><td>Rythme</td><td>~1 min 45 par question</td></tr>
+      <tr><td>Rythme réel du concours</td><td>~1 min 45 par question (35 min ÷ 20 q)</td></tr>
+      <tr><td>Chrono de cet outil</td><td>2 min 30 par texte de 3 affirmations (~50 s/affirmation)</td></tr>
     </table>
     <p style="font-size:14px;">Un court texte, puis des affirmations à classer <b>Vrai</b> / <b>Faux</b> / <b>Ne peut pas dire</b>, uniquement sur la base du texte. Le texte est le seul univers qui existe : si une information n'y figure pas, elle n'existe pas, même si elle te semble évidente.</p>
     <div class="warn-box"><b>Le piège n°1 :</b> confondre Faux et Ne peut pas dire. FAUX = le texte contredit l'affirmation. NE PEUT PAS DIRE = le texte ne permet pas de trancher, même si l'affirmation est plausible. La majorité des points perdus viennent de là.</div>
@@ -1835,7 +1837,7 @@ function runVerbalSession(){
     document.getElementById('validateBtn').addEventListener('click', validate);
     document.getElementById('nextBtn').addEventListener('click',()=>{idx++; if(idx<order.length){renderP();}else{endSession();}});
     clearInterval(timer);
-    timer=setInterval(()=>{
+    timer=ACTIVE_TIMER=setInterval(()=>{
       timeLeft--; const m=Math.floor(timeLeft/60), s=timeLeft%60;
       const t=document.getElementById('tmr');
       if(t){t.textContent=m+':'+(s<10?'0':'')+s; if(timeLeft<=20) t.classList.add('low');}
@@ -1920,7 +1922,7 @@ function runAbstractSession(){
     app.querySelectorAll('.abs-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{idx++; if(idx<order.length){renderQ();}else{endSession();}});
     clearInterval(timer);
-    timer=setInterval(()=>{
+    timer=ACTIVE_TIMER=setInterval(()=>{
       timeLeft--; const t=document.getElementById('tmr');
       if(t){t.textContent=timeLeft+'s'; if(timeLeft<=10) t.classList.add('low');}
       if(timeLeft<=0){clearInterval(timer); if(!answered) submit(-1);}
@@ -2076,7 +2078,7 @@ function renderEufte(){
       if(seconds<=0){ clearInterval(timer); running=false; }
     }
     document.getElementById('startTimer').addEventListener('click',()=>{
-      if(running) return; running=true; clearInterval(timer); timer=setInterval(tick,1000);
+      if(running) return; running=true; clearInterval(timer); timer=ACTIVE_TIMER=setInterval(tick,1000);
     });
     document.getElementById('resetTimer').addEventListener('click',()=>{
       clearInterval(timer); running=false; seconds=40*60; timerDisp.textContent='40:00';
