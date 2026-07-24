@@ -133,6 +133,16 @@ textarea.essay-area{width:100%;min-height:280px;border:1px solid var(--line);bor
 .tip p{font-size:14px;color:var(--ink-soft);margin:0;}
 .warn-box{background:var(--wine-bg);border-left:3px solid var(--wine);padding:12px 14px;border-radius:0 3px 3px 0;font-size:14px;margin:14px 0;}
 .info-box{background:var(--green-bg);border-left:3px solid var(--green);padding:12px 14px;border-radius:0 3px 3px 0;font-size:14px;margin:14px 0;}
+.mth{border:1px solid var(--line);border-radius:3px;margin-bottom:8px;background:var(--paper);padding:0 13px;}
+.mth summary{cursor:pointer;padding:11px 0;font-family:var(--serif);font-size:14.5px;font-weight:600;list-style:none;}
+.mth summary::-webkit-details-marker{display:none;}
+.mth summary::before{content:"▸ ";color:var(--gold);font-family:var(--mono);}
+.mth[open] summary::before{content:"▾ ";}
+.mth[open] summary{border-bottom:1px dashed var(--line);margin-bottom:9px;}
+.mth p,.mth li{font-size:13.5px;line-height:1.55;}
+.mth ul{padding-left:18px;margin:0 0 9px;}
+.mth li{margin-bottom:5px;}
+.mth p:last-child{margin-bottom:11px;}
 .plan-week{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;}
 .plan-week .pw{font-family:var(--mono);font-size:11.5px;color:var(--gold);width:70px;flex-shrink:0;font-weight:600;padding-top:2px;}
 footer.reset-zone{text-align:center;padding:26px 0 10px;}
@@ -1825,6 +1835,50 @@ function renderVerbal(){
     <div class="warn-box"><b>Le piège n°1 :</b> confondre Faux et Ne peut pas dire. FAUX = le texte contredit l'affirmation. NE PEUT PAS DIRE = le texte ne permet pas de trancher, même si l'affirmation est plausible. La majorité des points perdus viennent de là.</div>
     <div class="info-box"><b>Méthode :</b> lis d'abord les affirmations, puis scanne le texte pour la portion pertinente. Méfie-toi des quantificateurs (tous / certains / uniquement / jamais) et des chiffres légèrement modifiés.</div>
     <div class="info-box"><b>Chrono global :</b> comme au concours, tu reçois un temps unique pour toute la session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes, ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)}). À toi de répartir : t'attarder sur un texte difficile, c'est autant de temps en moins pour les suivants. Le chrono se met en pause pendant que tu lis la correction.</div>
+
+    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">MÉTHODE DÉTAILLÉE</p>
+    <details class="mth"><summary>Les trois types d'affirmation</summary>
+      <ul>
+        <li><b>VRAI</b> : entièrement démontrable à partir du texte seul, sans aucune connaissance extérieure. Soit une reformulation directe, soit une conclusion solidement construite en croisant plusieurs passages.</li>
+        <li><b>FAUX</b> : clairement contredite par le texte. Attention : « faux » ne veut pas dire « absent ». Il faut une information du texte qui démente réellement l'affirmation.</li>
+        <li><b>NE PEUT PAS DIRE</b> : le texte ne permet ni de confirmer ni d'infirmer. C'est le piège central du test.</li>
+      </ul>
+      <p>Le NPD se décline en deux formes, d'inégale difficulté. Celui qui « sonne faux » d'après tes connaissances est facile à écarter. Celui qui <b>« sonne vrai » parce que tu sais qu'il est vrai dans la réalité</b> est le plus dangereux : ton instinct te pousse à le valider. Rappel absolu : la seule affirmation vraie est celle qui est prouvée par le texte.</p>
+    </details>
+
+    <details class="mth"><summary>Les expressions suspectes à repérer</summary>
+      <ul>
+        <li><b>Déterminants et quantités.</b> « certains, plusieurs, beaucoup, un certain nombre » désignent une partie ; « tous, chaque, l'ensemble » désignent la totalité sans exception. Ils ne sont jamais interchangeables : si le texte dit « de nombreux pays », une affirmation qui dit « tous les pays » est fausse.</li>
+        <li><b>Fréquence.</b> « parfois, souvent, généralement, fréquemment, rarement, occasionnellement » sont tous relatifs. Les deux seuls absolus sont « jamais » et « toujours ».</li>
+        <li><b>Temps et mode des verbes.</b> « jusqu'à ce que » + passé change tout le sens. « pourrait, devrait, sur le point de » expriment une possibilité ou une intention, jamais un fait acquis.</li>
+        <li><b>Causalité contre chronologie.</b> « a entraîné, par conséquent, a résulté en » marquent une cause. Une simple succession dans le temps n'établit aucune cause. Ne jamais déduire un lien causal d'une chronologie.</li>
+        <li><b>Général contre particulier.</b> Deux pièges inverses : la généralisation (étendre à toute une catégorie ce qui n'est dit que de certains cas) et la sur-précision (ajouter un détail que le texte ne fournit pas).</li>
+        <li><b>Quasi-équivalence.</b> « sans modification majeure » n'est pas « n'a pas été modifié ». Des mots très proches peuvent cacher une différence de sens décisive.</li>
+        <li><b>Omission.</b> Une affirmation qui ne reprend pas toute l'information du texte n'est pas fausse pour autant. Une information partielle mais exacte reste vraie.</li>
+      </ul>
+    </details>
+
+    <details class="mth"><summary>L'ordre de lecture optimal</summary>
+      <ul>
+        <li>1. Lis d'abord la <b>question</b> : cherche-t-on l'affirmation vraie ou l'affirmation fausse ? Deux secondes qui évitent de perdre le point bêtement.</li>
+        <li>2. Lis les <b>affirmations</b> et retiens leurs mots-clés et leurs thèmes.</li>
+        <li>3. Lis le <b>texte</b> en te concentrant sur ces thèmes précis, plutôt que de tout mémoriser.</li>
+        <li>4. Dès qu'une affirmation est clairement confirmée et que tu es certain, <b>arrête-toi et passe</b>. Temps gagné.</li>
+        <li>5. Si tu hésites, élimine une par une en t'appuyant sur les trois types d'affirmation.</li>
+      </ul>
+      <p>Lire le texte en premier est l'instinct naturel, et c'est une perte de temps : tu mémorises des détails dont la plupart ne seront jamais interrogés.</p>
+    </details>
+
+    <details class="mth"><summary>S'entraîner efficacement</summary>
+      <ul>
+        <li>Commence sans chrono, en lisant des textes exigeants et en repérant à voix haute les expressions suspectes.</li>
+        <li>Écris, avec tes mots, <b>pourquoi</b> chaque mauvaise option est fausse. C'est là que la compétence se construit, pas dans le nombre de questions enchaînées.</li>
+        <li>Puis chronomètre-toi, et réduis progressivement le temps par question jusqu'à passer sous le rythme réel.</li>
+        <li>Entraîne-toi <b>à l'écran</b> et non sur papier : le concours est informatisé, et lire sur écran est plus lent tant qu'on n'y est pas habitué.</li>
+        <li>Recrée les conditions : pièce calme, sans interruption, minuteur lancé.</li>
+      </ul>
+      <p style="color:var(--ink-soft);font-size:12.5px;">Méthode adaptée de A. Baneth, <i>The Ultimate EU Test Book, Administrators</i>, chapitre 2.</p>
+    </details>
     <button class="btn wide" id="startVerbal">Démarrer une session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes · ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)} au total)</button>
   </div>`;
   document.getElementById('startVerbal').addEventListener('click', runVerbalSession);
@@ -1938,7 +1992,41 @@ function renderNumAbs(){
     </table>
     <div class="warn-box">Les deux tests sont chronométrés <b>séparément</b> : le temps non utilisé en numérique n'est pas reportable sur l'abstrait. Ici chaque session reproduit son propre chrono global.</div>
     <p style="font-size:14px;">Ce test ne rapporte aucun point de classement, mais son échec élimine quel que soit ton score ailleurs. Stratégie : atteindre confortablement le seuil, sans y engloutir du temps de verbal.</p>
-    <div class="info-box"><b>Numérique :</b> pourcentages, ratios, moyennes, taux de croissance, lecture de tableaux et graphiques. Pas de maths avancées, mais de la vitesse. Une partie des questions est générée avec des chiffres différents à chaque session. <b>Abstrait :</b> séquences de formes suivant une ou plusieurs règles (rotation, taille, nombre, remplissage, couleur, traits). Méthode : inventorier les attributs un par un, tester une règle par attribut. Les six familles classiques de transformations (méthode Orseu) : forme, couleur, taille, trait horizontal, trait vertical, permutation.</div>
+    <div class="info-box"><b>Numérique :</b> pourcentages, ratios, moyennes, taux de croissance, lecture de tableaux et graphiques. Pas de maths avancées, mais de la vitesse. Une partie des questions est générée avec des chiffres différents à chaque session. <b>Abstrait :</b> séquences de formes suivant une ou plusieurs règles simultanées.</div>
+
+    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">MÉTHODE DÉTAILLÉE · ABSTRAIT</p>
+    <details class="mth"><summary>Les six familles de transformation</summary>
+      <p>Quasiment toute question de raisonnement abstrait se ramène à une combinaison de six transformations élémentaires. Les connaître par cœur transforme la recherche en vérification.</p>
+      <ul>
+        <li><b>Forme</b> : un cercle devient un carré, un triangle un pentagone, ou le nombre de côtés évolue.</li>
+        <li><b>Couleur (ou remplissage)</b> : une figure blanche devient noire, ou la teinte s'éclaircit ou s'assombrit par paliers.</li>
+        <li><b>Taille</b> : la figure grandit ou rétrécit, en général d'un pas constant.</li>
+        <li><b>Trait horizontal</b> : ajout ou suppression.</li>
+        <li><b>Trait vertical</b> : ajout ou suppression.</li>
+        <li><b>Permutation</b> : quand une case contient plusieurs figures, elles échangent leur position.</li>
+      </ul>
+      <p style="color:var(--ink-soft);font-size:12.5px;">Taxonomie issue de E. Hetru et C. Mercier, <i>Test de capacité de raisonnement abstrait</i>, ORSEU.</p>
+    </details>
+
+    <details class="mth"><summary>La méthode d'analyse, attribut par attribut</summary>
+      <p>L'erreur classique est de fixer la séquence en espérant que la règle saute aux yeux. Procède au contraire par inventaire systématique.</p>
+      <ul>
+        <li>1. Liste les <b>attributs qui varient</b> d'une case à l'autre : forme, couleur, taille, traits, position, nombre d'éléments.</li>
+        <li>2. Traite <b>un attribut à la fois</b>, en ignorant complètement les autres. Une règle par attribut.</li>
+        <li>3. Vérifie ton hypothèse sur <b>toutes</b> les étapes, pas seulement sur les deux premières. Une règle qui marche de 1 à 2 mais pas de 2 à 3 est fausse.</li>
+        <li>4. Méfie-toi des <b>attributs distracteurs</b> : un élément qui ne change jamais est là pour occuper ton attention.</li>
+        <li>5. Une fois toutes les règles identifiées, applique-les à la dernière figure, puis cherche cette réponse parmi les options. Ne pars jamais des options.</li>
+      </ul>
+    </details>
+
+    <details class="mth"><summary>Gérer le temps et les pièges</summary>
+      <ul>
+        <li>Les questions sont classées par <b>difficulté croissante</b> : les premières valent autant de points que les dernières, donc sécurise-les sans précipitation.</li>
+        <li>Il n'est pas nécessaire de tout traiter pour réussir. Mieux vaut un bloc de réponses justes qu'un test entier bâclé.</li>
+        <li>Si une question résiste après deux hypothèses testées, passe. Y revenir plus tard avec un œil neuf coûte moins cher que s'acharner.</li>
+        <li>Piège fréquent des options : une réponse correcte sur l'attribut le plus visible mais fausse sur un attribut secondaire. Vérifie chaque attribut avant de valider.</li>
+      </ul>
+    </details>
     <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUM_COUNT} questions · 20 min au total · chiffres renouvelés)</button>
     <button class="btn wide" id="startAbs">Session abstraite (${ABS_COUNT} séries · 10 min au total)</button>
   </div>`;
