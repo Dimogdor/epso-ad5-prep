@@ -183,138 +183,185 @@ const MODULES = [
 ];
 
 /* ================= BANQUE VERBAL (16 textes) ================= */
+/* Format EPSO réel : un texte, 4 affirmations A/B/C/D, une seule pleinement
+   démontrée par le texte (= bonne réponse). Les 3 autres sont fausses ou
+   indémontrables (ne peut pas dire). c = index de l'affirmation correcte. */
 const VERBAL_BANK = [
 {passage:`En 2023, la part des énergies renouvelables dans la consommation finale brute d'énergie de l'Union européenne a dépassé 24 %, contre environ 12 % en 2010. Cette progression s'explique notamment par le développement de l'éolien terrestre et du solaire photovoltaïque, dont les coûts de production ont fortement diminué au cours de la dernière décennie. Certains États membres, comme la Suède ou l'Autriche, affichent des parts d'énergies renouvelables largement supérieures à la moyenne de l'Union, en raison notamment de leur recours important à l'hydroélectricité. À l'inverse, plusieurs pays d'Europe centrale restent fortement dépendants du charbon pour leur production électrique.`,
-statements:[
-{t:`La part des énergies renouvelables dans l'UE a plus que doublé entre 2010 et 2023.`,a:'V',ex:`De 12 % à plus de 24 %, c'est plus qu'un doublement. Le texte le dit explicitement.`},
-{t:`L'éolien terrestre et le solaire photovoltaïque sont les deux seules sources d'énergie renouvelable ayant vu leurs coûts baisser.`,a:'N',ex:`Le texte cite ces deux sources mais ne dit jamais qu'elles sont les seules. Rien n'exclut que d'autres sources aient aussi vu leurs coûts diminuer.`},
-{t:`Le charbon a été totalement abandonné dans tous les États membres d'Europe centrale.`,a:'F',ex:`Le texte dit au contraire que plusieurs pays restent fortement dépendants du charbon.`}]},
+opts:[
+`Le charbon a été totalement abandonné dans tous les États membres d'Europe centrale.`,
+`L'éolien terrestre et le solaire photovoltaïque sont les deux seules sources renouvelables dont les coûts ont diminué.`,
+`La part des énergies renouvelables dans l'UE a plus que doublé entre 2010 et 2023.`,
+`La Suède et l'Autriche affichent des parts d'énergies renouvelables inférieures à la moyenne de l'Union.`],
+c:2,ex:`De 12 % à plus de 24 %, c'est plus qu'un doublement : réponse démontrée. Le charbon reste utilisé (« plusieurs pays restent dépendants »), la Suède et l'Autriche sont au-dessus de la moyenne, et « les deux seules » sources est un ajout non prouvé (ne peut pas dire).`},
 
 {passage:`Selon les dernières données disponibles, le taux d'emploi des personnes âgées de 20 à 64 ans dans l'Union européenne a atteint un niveau record, dépassant les 75 %. Cette progression s'explique en partie par l'entrée plus tardive des jeunes sur le marché du travail, compensée par un maintien plus long des travailleurs âgés en activité. Les écarts entre États membres restent toutefois marqués : certains pays du sud de l'Europe affichent des taux d'emploi inférieurs à la moyenne de l'Union, en particulier chez les jeunes de moins de 25 ans. Le télétravail, largement développé depuis la pandémie, s'est maintenu dans plusieurs secteurs, notamment les services et l'administration.`,
-statements:[
-{t:`Le taux d'emploi des 20-64 ans dans l'UE a dépassé 75 %.`,a:'V',ex:`Affirmation reprise directement du texte.`},
-{t:`Tous les pays du sud de l'Europe ont un taux d'emploi des jeunes inférieur à la moyenne européenne.`,a:'N',ex:`Le texte dit "certains pays du sud", pas "tous". On ne peut pas généraliser.`},
-{t:`Le télétravail a complètement disparu depuis la fin de la pandémie.`,a:'F',ex:`Le texte affirme au contraire qu'il s'est maintenu dans plusieurs secteurs.`}]},
+opts:[
+`Le taux d'emploi des 20-64 ans dans l'UE a dépassé 75 %.`,
+`Tous les pays du sud de l'Europe ont un taux d'emploi des jeunes inférieur à la moyenne européenne.`,
+`Le télétravail a complètement disparu depuis la fin de la pandémie.`,
+`L'entrée plus précoce des jeunes sur le marché du travail explique la hausse du taux d'emploi.`],
+c:0,ex:`Le dépassement des 75 % est affirmé par le texte. « Tous » les pays du sud est une généralisation abusive (le texte dit « certains »), le télétravail s'est maintenu, et l'entrée des jeunes est plus tardive, pas plus précoce.`},
 
 {passage:`Le 9 mai 1950, le ministre français des Affaires étrangères Robert Schuman présente une déclaration proposant de placer la production franco-allemande de charbon et d'acier sous une Haute Autorité commune, ouverte à la participation des autres pays européens. Cette proposition, préparée avec Jean Monnet, vise à rendre la guerre entre la France et l'Allemagne non seulement impensable mais matériellement impossible. Elle aboutit, l'année suivante, à la signature du traité de Paris instituant la Communauté européenne du charbon et de l'acier (CECA), rassemblant six pays fondateurs. Cette date du 9 mai est aujourd'hui célébrée chaque année comme la Journée de l'Europe.`,
-statements:[
-{t:`La déclaration Schuman a été présentée le 9 mai 1950.`,a:'V',ex:`Date donnée explicitement en première phrase.`},
-{t:`Le traité de Paris instituant la CECA a été signé la même année que la déclaration Schuman.`,a:'F',ex:`Le texte précise "l'année suivante", donc pas la même année.`},
-{t:`Jean Monnet est devenu le premier président de la Haute Autorité de la CECA.`,a:'N',ex:`Le texte dit seulement que Monnet a préparé la proposition. Même si c'est vrai historiquement, ce n'est pas dans CE texte. Piège classique : ne jamais utiliser ses connaissances externes.`}]},
+opts:[
+`Le traité de Paris instituant la CECA a été signé la même année que la déclaration Schuman.`,
+`La déclaration Schuman a été présentée le 9 mai 1950.`,
+`Jean Monnet est devenu le premier président de la Haute Autorité de la CECA.`,
+`La CECA rassemblait à l'origine douze pays fondateurs.`],
+c:1,ex:`La date du 9 mai 1950 est explicite. Le traité de Paris est signé « l'année suivante » (1951), la CECA compte six fondateurs, et le rôle de Monnet à la Haute Autorité n'est pas dans le texte (connaissance externe interdite).`},
 
 {passage:`Une étude portant sur douze pays européens a montré que la couverture vaccinale contre la grippe saisonnière chez les personnes de plus de 65 ans variait fortement d'un pays à l'autre, allant de moins de 20 % à plus de 70 % de la population concernée. Les auteurs de l'étude soulignent que les pays disposant de campagnes de vaccination gratuites et organisées directement par les médecins traitants affichent généralement des taux de couverture plus élevés. L'étude ne portait pas sur la vaccination contre d'autres maladies infectieuses ni sur les populations plus jeunes.`,
-statements:[
-{t:`L'étude a porté sur douze pays européens.`,a:'V',ex:`Chiffre donné dès la première phrase.`},
-{t:`La couverture vaccinale contre la grippe chez les plus de 65 ans est identique dans tous les pays étudiés.`,a:'F',ex:`Le texte dit au contraire qu'elle variait fortement d'un pays à l'autre.`},
-{t:`L'étude a également analysé la couverture vaccinale contre la rougeole.`,a:'F',ex:`Le texte exclut explicitement les autres maladies infectieuses.`}]},
+opts:[
+`La couverture vaccinale contre la grippe chez les plus de 65 ans est identique dans tous les pays étudiés.`,
+`L'étude a également analysé la couverture vaccinale contre la rougeole.`,
+`Les campagnes gratuites organisées par les médecins traitants garantissent une couverture supérieure à 70 %.`,
+`L'étude a porté sur douze pays européens.`],
+c:3,ex:`Douze pays : chiffre explicite. La couverture varie fortement (pas identique), les autres maladies sont exclues, et « garantissent plus de 70 % » sur-interprète le « généralement plus élevés » du texte.`},
 
 {passage:`Le règlement européen sur l'intelligence artificielle, entré progressivement en application depuis 2024, classe les systèmes d'IA selon quatre niveaux de risque : inacceptable, élevé, limité et minimal. Les systèmes présentant un risque inacceptable, comme la notation sociale généralisée par les autorités publiques, sont purement et simplement interdits sur le territoire de l'Union. Les systèmes à haut risque, utilisés par exemple dans le recrutement ou l'évaluation de crédit, sont soumis à des obligations strictes de transparence et de supervision humaine avant leur mise sur le marché. Le règlement s'applique aux fournisseurs de systèmes d'IA établis dans l'Union, mais également à ceux établis hors de l'Union dès lors que leurs systèmes sont utilisés sur le marché européen.`,
-statements:[
-{t:`Le règlement européen sur l'IA prévoit quatre niveaux de risque.`,a:'V',ex:`Quatre niveaux cités explicitement : inacceptable, élevé, limité, minimal.`},
-{t:`Les systèmes d'IA utilisés dans le recrutement sont purement et simplement interdits.`,a:'F',ex:`L'interdiction pure et simple concerne le risque inacceptable. Le recrutement relève du haut risque, soumis à obligations, pas interdit.`},
-{t:`Le règlement prévoit des sanctions financières en cas de non-respect.`,a:'N',ex:`Le texte ne mentionne aucune sanction. On ne peut ni confirmer ni infirmer.`}]},
+opts:[
+`Les systèmes d'IA utilisés dans le recrutement sont purement et simplement interdits.`,
+`Le règlement ne s'applique qu'aux fournisseurs établis dans l'Union européenne.`,
+`Le règlement européen sur l'IA prévoit quatre niveaux de risque.`,
+`Le règlement prévoit des sanctions financières en cas de non-respect.`],
+c:2,ex:`Quatre niveaux (inacceptable, élevé, limité, minimal) : explicite. Le recrutement relève du haut risque (soumis à obligations, pas interdit), le règlement s'applique aussi hors de l'Union, et aucune sanction n'est mentionnée.`},
 
 {passage:`La Politique agricole commune (PAC) consacre une part importante du budget de l'Union européenne, avec des paiements directs versés aux agriculteurs sous condition du respect de certaines pratiques environnementales, dans le cadre de ce que l'on appelle la conditionnalité. Depuis la réforme entrée en vigueur en 2023, une partie croissante de ces aides est conditionnée à la mise en œuvre de pratiques dites agroécologiques, comme la diversification des cultures ou le maintien de surfaces non productives favorables à la biodiversité. Les organisations agricoles restent divisées sur ces exigences, certaines estimant qu'elles pèsent excessivement sur la compétitivité des exploitations, notamment les plus petites.`,
-statements:[
-{t:`La PAC verse des paiements directs aux agriculteurs sous certaines conditions environnementales.`,a:'V',ex:`C'est la définition de la conditionnalité donnée par le texte.`},
-{t:`Toutes les organisations agricoles soutiennent unanimement la réforme de 2023.`,a:'F',ex:`Le texte dit qu'elles restent divisées, ce qui exclut l'unanimité.`},
-{t:`La réforme de 2023 a supprimé tous les paiements directs aux petites exploitations.`,a:'N',ex:`Le texte parle de compétitivité affectée, mais ne dit jamais que les paiements ont été supprimés.`}]},
+opts:[
+`La PAC verse des paiements directs aux agriculteurs sous certaines conditions environnementales.`,
+`Toutes les organisations agricoles soutiennent unanimement la réforme de 2023.`,
+`La réforme de 2023 a supprimé tous les paiements directs aux petites exploitations.`,
+`La conditionnalité rend facultatif le respect des pratiques environnementales.`],
+c:0,ex:`La conditionnalité (paiements sous conditions environnementales) est la définition donnée par le texte. Les organisations restent « divisées » (pas unanimes), la suppression des paiements n'est pas dite, et la conditionnalité impose ces pratiques, elle ne les rend pas facultatives.`},
 
 {passage:`La population de l'Union européenne vieillit de manière significative : l'âge médian y dépasse désormais 44 ans, contre environ 38 ans au début des années 2000. Ce vieillissement résulte à la fois de l'allongement de l'espérance de vie et d'un taux de natalité durablement inférieur au seuil de renouvellement des générations dans la quasi-totalité des États membres. Les projections démographiques indiquent que, sans apport migratoire, la population en âge de travailler pourrait diminuer sensiblement au cours des prochaines décennies, ce qui alimente les débats sur la soutenabilité des systèmes de retraite et sur les politiques migratoires européennes.`,
-statements:[
-{t:`L'âge médian dans l'UE a augmenté d'environ six ans depuis le début des années 2000.`,a:'V',ex:`44 moins 38 égale 6. Calcul direct à partir du texte.`},
-{t:`Le taux de natalité est supérieur au seuil de renouvellement des générations dans la majorité des États membres.`,a:'F',ex:`Le texte dit l'inverse : inférieur au seuil dans la quasi-totalité des États membres.`},
-{t:`L'immigration compense actuellement entièrement le déclin de la population en âge de travailler.`,a:'N',ex:`Le texte dit que SANS apport migratoire la population diminuerait, mais ne précise pas si l'immigration actuelle compense partiellement ou entièrement.`}]},
+opts:[
+`Le taux de natalité est supérieur au seuil de renouvellement des générations dans la majorité des États membres.`,
+`L'âge médian dans l'UE a augmenté d'environ six ans depuis le début des années 2000.`,
+`L'immigration compense actuellement entièrement le déclin de la population en âge de travailler.`,
+`Le vieillissement de la population s'explique uniquement par la baisse de la natalité.`],
+c:1,ex:`44 moins 38 égale environ six ans : calcul direct. La natalité est inférieure au seuil, l'effet de l'immigration actuelle n'est pas précisé, et le vieillissement tient à deux causes (espérance de vie ET natalité), pas une seule.`},
 
 {passage:`Plusieurs grandes villes européennes ont mis en place des zones à faibles émissions, restreignant ou interdisant la circulation des véhicules les plus polluants dans leur centre. Ces dispositifs s'accompagnent généralement d'investissements dans les transports publics et les infrastructures cyclables, financés en partie par des fonds européens dédiés à la cohésion territoriale et à la transition écologique. Une étude comparative menée dans dix villes ayant instauré de telles zones a constaté une amélioration mesurable de la qualité de l'air dans les deux années suivant leur mise en place, sans toutefois établir de lien direct avec une baisse de la congestion routière.`,
-statements:[
-{t:`Des fonds européens contribuent au financement des infrastructures cyclables dans certaines villes.`,a:'V',ex:`Investissements financés en partie par des fonds européens, dit le texte.`},
-{t:`L'étude comparative a démontré que les zones à faibles émissions réduisent la congestion routière.`,a:'F',ex:`Le texte dit explicitement le contraire : sans établir de lien direct avec la congestion.`},
-{t:`L'étude comparative portait sur quinze villes européennes.`,a:'F',ex:`Le texte indique dix villes, pas quinze. Attention aux chiffres modifiés.`}]},
+opts:[
+`L'étude comparative a démontré que les zones à faibles émissions réduisent la congestion routière.`,
+`L'étude comparative portait sur quinze villes européennes.`,
+`L'amélioration de la qualité de l'air a été plus marquée dans les grandes villes que dans les petites.`,
+`Des fonds européens contribuent au financement des infrastructures cyclables dans certaines villes.`],
+c:3,ex:`Le financement par des fonds européens est explicite. L'étude n'établit aucun lien avec la congestion, elle porte sur dix villes (pas quinze), et rien n'est dit sur une différence grandes/petites villes.`},
 
 {passage:`Le programme Capitale européenne de la culture, lancé en 1985, désigne chaque année une ou plusieurs villes chargées d'organiser, pendant douze mois, un vaste programme d'évènements culturels. Au-delà de son rayonnement culturel, ce label a souvent un impact économique notable sur les villes désignées, en stimulant la fréquentation touristique et en accélérant certains projets de rénovation urbaine. Des études menées sur plusieurs éditions passées suggèrent toutefois que les effets économiques à long terme varient fortement selon la capacité des villes à capitaliser sur cette dynamique une fois l'année de célébration achevée.`,
-statements:[
-{t:`Le programme Capitale européenne de la culture existe depuis 1985.`,a:'V',ex:`Date donnée dès la première phrase.`},
-{t:`Chaque ville désignée conserve indéfiniment les mêmes retombées économiques après son année de célébration.`,a:'F',ex:`Le texte dit que les effets à long terme varient fortement selon les villes.`},
-{t:`Le label est décerné par un jury composé exclusivement de représentants de la Commission européenne.`,a:'N',ex:`Le texte ne précise rien sur la composition du jury.`}]},
+opts:[
+`Chaque ville désignée conserve indéfiniment les mêmes retombées économiques après son année de célébration.`,
+`Le label est décerné par un jury composé exclusivement de représentants de la Commission européenne.`,
+`Le programme Capitale européenne de la culture existe depuis 1985.`,
+`Une seule ville est désignée chaque année.`],
+c:2,ex:`1985 : date explicite. Les effets à long terme « varient fortement » (pas indéfiniment identiques), la composition du jury n'est pas donnée, et le texte parle d'« une ou plusieurs villes » chaque année.`},
 
 {passage:`La directive européenne relative à la sécurité des réseaux et des systèmes d'information, dite directive NIS2, élargit sensiblement le champ des secteurs considérés comme critiques, incluant désormais, outre l'énergie et les transports, des domaines comme la gestion des déchets, la fabrication de dispositifs médicaux ou les services postaux. Les entités concernées sont tenues de mettre en place des mesures de gestion des risques et de notifier les incidents significatifs aux autorités compétentes dans des délais stricts. Les États membres devaient transposer cette directive dans leur droit national, un processus qui a pris du retard dans plusieurs pays.`,
-statements:[
-{t:`La directive NIS2 élargit le champ des secteurs considérés comme critiques.`,a:'V',ex:`Affirmation directe du texte.`},
-{t:`Tous les États membres ont transposé la directive NIS2 dans les délais prévus.`,a:'F',ex:`Le texte indique que la transposition a pris du retard dans plusieurs pays.`},
-{t:`La directive NIS2 impose des délais stricts pour la notification des incidents significatifs.`,a:'V',ex:`Repris directement du texte.`}]},
+opts:[
+`La directive NIS2 impose des délais stricts pour la notification des incidents significatifs.`,
+`Tous les États membres ont transposé la directive NIS2 dans les délais prévus.`,
+`La directive NIS2 exclut les services postaux de son champ d'application.`,
+`La directive NIS2 fixe des sanctions financières uniformes dans toute l'Union.`],
+c:0,ex:`Les délais stricts de notification sont dans le texte. La transposition a « pris du retard », les services postaux sont au contraire inclus, et aucune sanction n'est mentionnée (ne peut pas dire).`},
 
 {passage:`Le tourisme représente une part significative de l'économie de plusieurs régions côtières et insulaires européennes. Toutefois, la concentration saisonnière des visiteurs pose des défis croissants : pression sur les ressources en eau, saturation des infrastructures de transport et hausse des prix du logement pour les résidents permanents. Certaines destinations ont commencé à expérimenter des mesures de régulation, comme des taxes de séjour majorées en haute saison ou des quotas de visiteurs journaliers sur les sites les plus fréquentés. Les effets de ces mesures sur la fréquentation restent encore peu documentés, la plupart ayant été introduites récemment.`,
-statements:[
-{t:`La concentration saisonnière des touristes exerce une pression sur les ressources en eau dans certaines régions.`,a:'V',ex:`Cité explicitement parmi les défis.`},
-{t:`Les taxes de séjour majorées ont prouvé leur efficacité pour réduire la fréquentation touristique.`,a:'F',ex:`Le texte dit que les effets restent peu documentés. Affirmer une efficacité prouvée contredit le texte.`},
-{t:`La majorité des touristes visitant ces régions viennent d'autres pays européens.`,a:'N',ex:`Le texte ne dit rien sur l'origine géographique des visiteurs.`}]},
+opts:[
+`Les taxes de séjour majorées ont prouvé leur efficacité pour réduire la fréquentation touristique.`,
+`La concentration saisonnière des touristes exerce une pression sur les ressources en eau dans certaines régions.`,
+`La majorité des touristes visitant ces régions viennent d'autres pays européens.`,
+`Les mesures de régulation ont toutes été introduites il y a plus de dix ans.`],
+c:1,ex:`La pression sur les ressources en eau est citée parmi les défis. L'efficacité des taxes reste « peu documentée », l'origine des touristes n'est pas donnée, et les mesures ont été introduites « récemment ».`},
 
 {passage:`Dans le cadre de sa stratégie industrielle, l'Union européenne a identifié une liste de matières premières critiques dont l'approvisionnement est jugé stratégique pour les transitions numérique et écologique. Parmi elles figurent le lithium, indispensable aux batteries, ainsi que plusieurs terres rares utilisées dans les aimants permanents des éoliennes et des moteurs électriques. Une législation adoptée en 2024 fixe des objectifs indicatifs : à l'horizon 2030, au moins 10 % de la consommation annuelle de l'Union devrait être extraite sur son territoire, et au moins 25 % provenir du recyclage. Ces objectifs ne sont toutefois pas juridiquement contraignants pour les États membres.`,
-statements:[
-{t:`Le lithium figure parmi les matières premières jugées critiques par l'Union européenne.`,a:'V',ex:`Cité explicitement comme indispensable aux batteries.`},
-{t:`Les objectifs fixés pour 2030 sont juridiquement contraignants pour les États membres.`,a:'F',ex:`Le texte dit explicitement le contraire : objectifs indicatifs, non contraignants.`},
-{t:`L'Union européenne importe actuellement la majorité de son lithium depuis l'Amérique du Sud.`,a:'N',ex:`Le texte ne dit rien sur l'origine géographique actuelle des importations.`}]},
+opts:[
+`Les objectifs fixés pour 2030 sont juridiquement contraignants pour les États membres.`,
+`La législation de 2024 vise à extraire sur le territoire de l'Union au moins 25 % de la consommation annuelle.`,
+`L'Union européenne importe actuellement la majorité de son lithium depuis l'Amérique du Sud.`,
+`Le lithium figure parmi les matières premières jugées critiques par l'Union européenne.`],
+c:3,ex:`Le lithium est cité comme indispensable aux batteries. Les objectifs sont « indicatifs, non contraignants », le seuil d'extraction domestique est 10 % (le 25 % vise le recyclage), et l'origine des importations n'est pas précisée.`},
 
 {passage:`L'apprentissage des langues étrangères varie considérablement au sein de l'Union européenne. Dans certains États membres, la quasi-totalité des élèves du secondaire étudient au moins deux langues étrangères, tandis que dans d'autres, une seule langue est obligatoire. L'anglais demeure de loin la langue la plus enseignée, suivie du français, de l'allemand et de l'espagnol, dans des proportions variables selon les régions. Des études suggèrent qu'une exposition précoce aux langues favorise leur maîtrise à l'âge adulte, sans pour autant garantir un niveau avancé si l'apprentissage n'est pas poursuivi dans la durée.`,
-statements:[
-{t:`L'anglais est la langue étrangère la plus enseignée dans l'Union européenne.`,a:'V',ex:`Dit explicitement : de loin la langue la plus enseignée.`},
-{t:`Une exposition précoce aux langues garantit un niveau avancé à l'âge adulte.`,a:'F',ex:`Le texte dit précisément le contraire : sans pour autant garantir un niveau avancé si l'apprentissage ne se poursuit pas.`},
-{t:`Le français est plus enseigné que l'espagnol dans la majorité des États membres.`,a:'N',ex:`Le texte donne un ordre global (français avant espagnol) mais précise "dans des proportions variables selon les régions" : on ne peut pas conclure pour la majorité des États pris individuellement.`}]},
+opts:[
+`Dans tous les États membres, les élèves du secondaire étudient au moins deux langues étrangères.`,
+`L'anglais est la langue étrangère la plus enseignée dans l'Union européenne.`,
+`Une exposition précoce aux langues garantit un niveau avancé à l'âge adulte.`,
+`Le français est plus enseigné que l'espagnol dans la majorité des États membres.`],
+c:1,ex:`L'anglais est « de loin » la plus enseignée : explicite. Le nombre de langues obligatoires varie selon les États (pas deux partout), l'exposition précoce ne « garantit » pas un niveau avancé, et l'ordre français/espagnol vaut globalement, pas forcément par État.`},
 
 {passage:`Le mécanisme d'ajustement carbone aux frontières de l'Union européenne vise à faire payer aux importateurs de certains produits, comme l'acier, le ciment ou les engrais, un prix du carbone équivalent à celui supporté par les producteurs européens soumis au marché du carbone de l'Union. Durant une phase transitoire, les importateurs sont uniquement tenus de déclarer les émissions incorporées dans leurs produits, sans paiement. L'objectif affiché est double : éviter que les efforts climatiques européens ne soient contournés par la délocalisation de la production, et inciter les partenaires commerciaux à adopter leurs propres mécanismes de tarification du carbone.`,
-statements:[
-{t:`Durant la phase transitoire, les importateurs doivent payer une taxe carbone sur leurs produits.`,a:'F',ex:`Le texte dit explicitement : uniquement tenus de déclarer, sans paiement.`},
-{t:`Le ciment fait partie des produits couverts par le mécanisme.`,a:'V',ex:`Cité explicitement avec l'acier et les engrais.`},
-{t:`Plusieurs partenaires commerciaux de l'Union ont déjà adopté leur propre tarification du carbone en réaction à ce mécanisme.`,a:'N',ex:`C'est l'objectif affiché, mais le texte ne dit pas si cela s'est produit.`}]},
+opts:[
+`Durant la phase transitoire, les importateurs doivent payer une taxe carbone sur leurs produits.`,
+`Le mécanisme s'applique uniquement aux produits fabriqués au sein de l'Union.`,
+`Le ciment fait partie des produits couverts par le mécanisme.`,
+`Plusieurs partenaires commerciaux ont déjà adopté leur propre tarification du carbone en réaction à ce mécanisme.`],
+c:2,ex:`Le ciment est cité avec l'acier et les engrais. En phase transitoire il n'y a qu'une déclaration sans paiement, le mécanisme vise les importations (pas la production interne), et la réaction des partenaires est un objectif affiché, pas un fait établi.`},
 
 {passage:`Les jeunes Européens de 16 à 30 ans peuvent bénéficier de plusieurs programmes de mobilité financés par l'Union. Erasmus+ soutient les échanges d'étudiants, d'apprentis et d'enseignants, tandis que le Corps européen de solidarité permet de s'engager dans des projets de volontariat dans un autre pays. Une enquête menée auprès d'anciens participants indique qu'une majorité d'entre eux estiment que leur expérience de mobilité a amélioré leurs perspectives professionnelles. L'enquête souligne cependant que les jeunes issus de milieux défavorisés restent sous-représentés parmi les participants, malgré des dispositifs de soutien financier spécifiques.`,
-statements:[
-{t:`Le Corps européen de solidarité permet de s'engager dans des projets de volontariat dans un autre pays.`,a:'V',ex:`Définition donnée directement par le texte.`},
-{t:`Tous les anciens participants estiment que la mobilité a amélioré leurs perspectives professionnelles.`,a:'F',ex:`Le texte dit une majorité, pas la totalité.`},
-{t:`Les dispositifs de soutien financier spécifiques ont été supprimés pour les jeunes défavorisés.`,a:'F',ex:`Le texte dit "malgré des dispositifs de soutien financier spécifiques" : ils existent donc toujours.`}]},
+opts:[
+`Le Corps européen de solidarité permet de s'engager dans des projets de volontariat dans un autre pays.`,
+`Tous les anciens participants estiment que la mobilité a amélioré leurs perspectives professionnelles.`,
+`Les dispositifs de soutien financier destinés aux jeunes défavorisés ont été supprimés.`,
+`Erasmus+ est le programme de mobilité le plus utilisé par les jeunes Européens.`],
+c:0,ex:`La définition du Corps européen de solidarité est directe. C'est une « majorité » (pas tous) des participants, les dispositifs de soutien existent toujours (« malgré des dispositifs »), et aucun classement d'usage des programmes n'est donné.`},
 
 {passage:`La surpêche demeure une préoccupation dans plusieurs zones maritimes européennes, malgré les quotas de capture fixés annuellement par les ministres compétents sur la base d'avis scientifiques. Ces avis recommandent des limites permettant de maintenir les populations de poissons à des niveaux durables. Or, pour certaines espèces, les quotas finalement adoptés dépassent les recommandations scientifiques, sous la pression d'intérêts économiques à court terme. Des organisations environnementales publient chaque année des analyses comparant quotas adoptés et avis scientifiques, constatant des écarts variables selon les zones et les espèces concernées.`,
-statements:[
-{t:`Les quotas de capture sont fixés chaque année.`,a:'V',ex:`Le texte parle de quotas fixés annuellement.`},
-{t:`Pour certaines espèces, les quotas adoptés dépassent les recommandations scientifiques.`,a:'V',ex:`Affirmation reprise directement du texte.`},
-{t:`Les avis scientifiques sont juridiquement contraignants pour les ministres.`,a:'F',ex:`Le texte montre que les ministres peuvent s'en écarter (et le font pour certaines espèces) : les avis ne sont donc pas contraignants d'après ce texte.`}]},
+opts:[
+`Les avis scientifiques sont juridiquement contraignants pour les ministres compétents.`,
+`Les organisations environnementales fixent elles-mêmes les quotas de capture annuels.`,
+`Pour certaines espèces, les quotas adoptés dépassent les recommandations scientifiques.`,
+`Les quotas dépassant les avis scientifiques concernent la majorité des espèces.`],
+c:2,ex:`Le dépassement des avis pour « certaines espèces » est explicite. Les avis ne sont pas contraignants (les ministres s'en écartent), les quotas sont fixés par les ministres (les ONG ne font que publier des analyses), et « majorité » sur-interprète « certaines ».`},
 
 {passage:`Créé le 5 mai 1949 par le traité de Londres, le Conseil de l'Europe est une organisation intergouvernementale distincte de l'Union européenne, bien que son siège se trouve également à Strasbourg. Il compte aujourd'hui 46 États membres depuis l'exclusion de la Russie en 2022. Son texte le plus connu, la Convention européenne des droits de l'homme, adoptée en 1950, est appliquée par la Cour européenne des droits de l'homme, qui ne doit pas être confondue avec la Cour de justice de l'Union européenne. Tous les États membres de l'Union sont également membres du Conseil de l'Europe, mais l'inverse n'est pas vrai.`,
-statements:[
-{t:`Le Conseil de l'Europe compte davantage d'États membres que l'Union européenne.`,a:'V',ex:`Tous les États de l'UE en sont membres et l'inverse n'est pas vrai : le Conseil de l'Europe en compte donc strictement plus. Déduction logique à partir du texte.`},
-{t:`La Cour européenne des droits de l'homme est une institution de l'Union européenne.`,a:'F',ex:`Elle applique la CEDH du Conseil de l'Europe, organisation distincte de l'UE, et le texte demande précisément de ne pas la confondre avec la CJUE.`},
-{t:`La Russie avait rejoint le Conseil de l'Europe en 1996.`,a:'N',ex:`Le texte mentionne son exclusion en 2022 mais ne dit rien de sa date d'adhésion. Même si c'est exact historiquement, ce n'est pas dans CE texte.`}]},
+opts:[
+`La Cour européenne des droits de l'homme est une institution de l'Union européenne.`,
+`Le Conseil de l'Europe compte davantage d'États membres que l'Union européenne.`,
+`Le Conseil de l'Europe et l'Union européenne ont leur siège dans deux villes différentes.`,
+`La Russie a rejoint le Conseil de l'Europe en 1996.`],
+c:1,ex:`Tous les États de l'UE sont au Conseil de l'Europe et l'inverse n'est pas vrai : il en compte donc plus (déduction). La CEDH relève du Conseil de l'Europe (pas de l'UE), les deux siègent à Strasbourg, et la date d'adhésion de la Russie n'est pas dans le texte.`},
 
 {passage:`Signé en 1952 par les six pays fondateurs de la CECA, le traité instituant une Communauté européenne de défense prévoyait la création d'une armée européenne intégrée. Le projet, d'initiative française, fut pourtant rejeté par l'Assemblée nationale française le 30 août 1954, par le biais d'une motion de procédure qui évita tout débat de fond. Cet échec entraîna l'abandon du projet parallèle de Communauté politique européenne et réorienta durablement la construction européenne vers la voie de l'intégration économique, qui aboutit trois ans plus tard à la signature des traités de Rome.`,
-statements:[
-{t:`Le traité instituant la CED a été rejeté par le pays qui en était à l'origine.`,a:'V',ex:`Projet d'initiative française, rejeté par l'Assemblée nationale française : le texte le dit explicitement.`},
-{t:`L'Assemblée nationale a rejeté la CED à l'issue d'un long débat de fond.`,a:'F',ex:`Le texte précise l'inverse : une motion de procédure a évité tout débat de fond.`},
-{t:`Le Royaume-Uni avait refusé de participer aux négociations de la CED.`,a:'N',ex:`Le texte ne mentionne pas le Royaume-Uni. Impossible de trancher sur cette seule base.`}]},
+opts:[
+`L'Assemblée nationale française a rejeté la CED à l'issue d'un long débat de fond.`,
+`Le Royaume-Uni avait refusé de participer aux négociations de la CED.`,
+`Le rejet de la CED a accéléré la création d'une armée européenne intégrée.`,
+`Le traité instituant la CED a été rejeté par le pays qui en était à l'origine.`],
+c:3,ex:`La CED, d'initiative française, a été rejetée par la France : explicite. Le rejet s'est fait par une motion de procédure sans débat de fond, a enterré le projet d'armée (au lieu de l'accélérer), et le rôle du Royaume-Uni n'est pas évoqué.`},
 
 {passage:`Entré en vigueur le 1er janvier 1994, l'accord sur l'Espace économique européen étend l'essentiel du marché intérieur de l'Union à trois pays de l'Association européenne de libre-échange : la Norvège, l'Islande et le Liechtenstein. La Suisse, également membre de l'AELE, avait signé l'accord mais son peuple l'a rejeté par référendum en 1992 ; elle gère depuis ses relations avec l'Union par une série d'accords bilatéraux. L'accord EEE couvre les quatre libertés de circulation, mais exclut notamment la politique agricole commune, la politique commerciale et l'union douanière.`,
-statements:[
-{t:`La Suisse est membre de l'AELE sans faire partie de l'Espace économique européen.`,a:'V',ex:`Membre de l'AELE, elle a rejeté l'accord EEE par référendum : les deux éléments sont dans le texte.`},
-{t:`L'accord EEE fait participer la Norvège à l'union douanière de l'Union.`,a:'F',ex:`Le texte exclut explicitement l'union douanière du champ de l'accord.`},
-{t:`La Norvège a rejeté l'adhésion à l'Union européenne par référendum.`,a:'N',ex:`Vrai historiquement, mais le texte n'en parle pas : on ne peut pas conclure.`}]},
+opts:[
+`La Suisse est membre de l'AELE sans faire partie de l'Espace économique européen.`,
+`L'accord EEE fait participer la Norvège à l'union douanière de l'Union.`,
+`L'accord EEE inclut la politique agricole commune.`,
+`La Norvège a rejeté l'adhésion à l'Union européenne par référendum.`],
+c:0,ex:`La Suisse est bien à l'AELE mais hors EEE (référendum de 1992). L'EEE exclut l'union douanière et la politique agricole commune, et le référendum norvégien sur l'adhésion à l'UE n'est pas mentionné.`},
 
 {passage:`Pour la période 2021-2027, le programme Erasmus+ dispose d'un budget de 26,2 milliards d'euros, en nette augmentation par rapport aux 14,7 milliards de la période précédente. Le programme ne se limite pas aux étudiants : il soutient aussi la mobilité des apprentis, des enseignants et des jeunes en formation professionnelle. L'initiative DiscoverEU, intégrée à Erasmus+, offre par ailleurs à des jeunes de dix-huit ans des titres de transport pour découvrir le continent. Selon la Commission, une majorité des anciens participants estiment que cette expérience a amélioré leurs perspectives professionnelles.`,
-statements:[
-{t:`Le budget 2021-2027 d'Erasmus+ dépasse 26 milliards d'euros.`,a:'V',ex:`26,2 milliards, donné en première phrase.`},
-{t:`Le programme Erasmus+ est exclusivement réservé aux étudiants.`,a:'F',ex:`Le texte cite aussi les apprentis, les enseignants et les jeunes en formation professionnelle.`},
-{t:`La majorité des participants à DiscoverEU sont des étudiants.`,a:'N',ex:`Le texte ne donne aucune répartition des participants à DiscoverEU.`}]},
+opts:[
+`Le programme Erasmus+ est exclusivement réservé aux étudiants.`,
+`Le budget d'Erasmus+ a diminué par rapport à la période précédente.`,
+`Le budget 2021-2027 d'Erasmus+ dépasse 26 milliards d'euros.`,
+`La majorité des participants à DiscoverEU sont des étudiants.`],
+c:2,ex:`26,2 milliards : chiffre du texte. Le programme couvre aussi apprentis, enseignants et formation professionnelle, le budget a fortement augmenté (14,7 vers 26,2), et la composition de DiscoverEU n'est pas précisée.`},
 
 {passage:`Depuis juin 2017, le régime européen dit « Roam like at home » permet aux consommateurs voyageant dans l'Union d'utiliser leur téléphone au tarif de leur pays d'origine, sans frais d'itinérance. Initialement prévu pour dix ans, le dispositif a été prolongé en 2022 jusqu'en 2032. Les opérateurs peuvent toutefois appliquer une politique d'utilisation raisonnable afin d'éviter les abus, comme la souscription d'un abonnement dans un pays où le consommateur ne réside pas. Selon un Eurobaromètre de 2023, plus de huit voyageurs européens sur dix bénéficient directement de ce régime lors de leurs déplacements dans l'Union.`,
-statements:[
-{t:`La suppression des frais d'itinérance a été prolongée jusqu'en 2032.`,a:'V',ex:`Prolongation décidée en 2022, dit le texte.`},
-{t:`Les opérateurs ne disposent d'aucun moyen de limiter les usages abusifs du dispositif.`,a:'F',ex:`Le texte prévoit une politique d'utilisation raisonnable contre les abus.`},
-{t:`Le régime s'applique également en Norvège et en Islande.`,a:'N',ex:`Le texte ne parle que des déplacements dans l'Union. Rien sur les pays tiers.`}]},
+opts:[
+`Les opérateurs ne disposent d'aucun moyen de limiter les usages abusifs du dispositif.`,
+`La suppression des frais d'itinérance a été prolongée jusqu'en 2032.`,
+`Le régime « Roam like at home » est entré en vigueur en 2022.`,
+`Le régime s'applique également en Norvège et en Islande.`],
+c:1,ex:`La prolongation jusqu'en 2032 est dite (décidée en 2022). Les opérateurs peuvent appliquer une « politique d'utilisation raisonnable », le régime existe depuis juin 2017 (2022 n'est que la prolongation), et son application hors UE n'est pas évoquée.`},
 
 {passage:`L'idée d'une organisation politique du continent européen est bien antérieure à 1950. Dès 1923, le comte Coudenhove-Kalergi lance le mouvement Paneuropa, et en 1929 Aristide Briand propose devant la Société des Nations un lien fédéral entre les peuples européens. Ces projets restent sans suite, emportés par la crise des années trente puis par la guerre. En mai 1948, le congrès de La Haye réunit des centaines de personnalités européennes ; il révèle un clivage durable entre partisans d'une fédération dotée de pouvoirs propres et défenseurs d'une simple coopération entre États souverains, clivage qui traverse encore les débats européens contemporains.`,
-statements:[
-{t:`La proposition d'Aristide Briand est postérieure au lancement du mouvement Paneuropa.`,a:'V',ex:`1929 contre 1923 : les deux dates sont dans le texte.`},
-{t:`Le congrès de La Haye a dégagé un consensus en faveur d'une fédération européenne.`,a:'F',ex:`Le texte dit l'inverse : il a révélé un clivage durable entre fédéralistes et partisans de la coopération entre États.`},
-{t:`Winston Churchill présidait le congrès de La Haye.`,a:'N',ex:`Le texte ne nomme aucun président du congrès. Piège classique de connaissance externe.`}]},
+opts:[
+`Le congrès de La Haye a dégagé un consensus en faveur d'une fédération européenne.`,
+`Le mouvement Paneuropa a été lancé après la Seconde Guerre mondiale.`,
+`Winston Churchill présidait le congrès de La Haye.`,
+`La proposition d'Aristide Briand (1929) est postérieure au lancement du mouvement Paneuropa (1923).`],
+c:3,ex:`1929 vient après 1923 : les deux dates sont dans le texte. Le congrès de La Haye a révélé un clivage (pas un consensus), Paneuropa date de 1923 (avant-guerre), et aucune présidence du congrès n'est nommée.`},
 ];
 
 /* ================= BANQUE NUMÉRIQUE (16) ================= */
@@ -1843,8 +1890,8 @@ function renderVerbal(){
       <tr><td>Poids</td><td>40 % préliminaire · 35 % final</td></tr>
       <tr><td>Rythme moyen</td><td>1 min 45 par texte (35 min ÷ 20), à gérer toi-même</td></tr>
     </table>
-    <p style="font-size:14px;">Un court texte, puis des affirmations à classer <b>Vrai</b> / <b>Faux</b> / <b>Ne peut pas dire</b>, uniquement sur la base du texte. Le texte est le seul univers qui existe : si une information n'y figure pas, elle n'existe pas, même si elle te semble évidente.</p>
-    <div class="warn-box"><b>Le piège n°1 :</b> confondre Faux et Ne peut pas dire. FAUX = le texte contredit l'affirmation. NE PEUT PAS DIRE = le texte ne permet pas de trancher, même si l'affirmation est plausible. La majorité des points perdus viennent de là.</div>
+    <p style="font-size:14px;">Format réel EPSO : un court texte, puis <b>quatre affirmations A/B/C/D dont une seule est correcte</b>, c'est-à-dire pleinement démontrée par le texte. Les trois autres sont fausses (contredites par le texte) ou indémontrables. Le texte est le seul univers qui existe : si une information n'y figure pas, tu ne peux pas la tenir pour vraie, même si elle te semble évidente.</p>
+    <div class="warn-box"><b>Le piège n°1 :</b> l'affirmation « ne peut pas dire » qui sonne vraie parce que tu la sais vraie dans la réalité. Elle n'est PAS la bonne réponse si le texte ne la prouve pas. Une seule affirmation est entièrement soutenue par le texte : c'est elle, et elle seule, qu'il faut choisir.</div>
     <div class="info-box"><b>Méthode :</b> lis d'abord les affirmations, puis scanne le texte pour la portion pertinente. Méfie-toi des quantificateurs (tous / certains / uniquement / jamais) et des chiffres légèrement modifiés.</div>
     <div class="info-box"><b>Chrono global :</b> comme au concours, tu reçois un temps unique pour toute la session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes, ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)}). À toi de répartir : t'attarder sur un texte difficile, c'est autant de temps en moins pour les suivants. Le chrono se met en pause pendant que tu lis la correction.</div>
 
@@ -1872,11 +1919,10 @@ function renderVerbal(){
 
     <details class="mth"><summary>L'ordre de lecture optimal</summary>
       <ul>
-        <li>1. Lis d'abord la <b>question</b> : cherche-t-on l'affirmation vraie ou l'affirmation fausse ? Deux secondes qui évitent de perdre le point bêtement.</li>
-        <li>2. Lis les <b>affirmations</b> et retiens leurs mots-clés et leurs thèmes.</li>
-        <li>3. Lis le <b>texte</b> en te concentrant sur ces thèmes précis, plutôt que de tout mémoriser.</li>
-        <li>4. Dès qu'une affirmation est clairement confirmée et que tu es certain, <b>arrête-toi et passe</b>. Temps gagné.</li>
-        <li>5. Si tu hésites, élimine une par une en t'appuyant sur les trois types d'affirmation.</li>
+        <li>1. Lis d'abord les <b>quatre affirmations</b> et retiens leurs mots-clés et leurs thèmes. Tu cherches la seule qui soit pleinement démontrée par le texte.</li>
+        <li>2. Lis le <b>texte</b> en te concentrant sur ces thèmes précis, plutôt que de tout mémoriser.</li>
+        <li>3. Dès qu'une affirmation est clairement et entièrement confirmée par le texte, c'est la bonne : <b>valide et passe</b>. Temps gagné.</li>
+        <li>4. Si tu hésites, élimine les autres une par une : celle qui est contredite par le texte est fausse, celle que le texte ne permet pas de prouver est « ne peut pas dire ». Il ne doit rester qu'une affirmation entièrement soutenue.</li>
       </ul>
       <p>Lire le texte en premier est l'instinct naturel, et c'est une perte de temps : tu mémorises des détails dont la plupart ne seront jamais interrogés.</p>
     </details>
@@ -1899,7 +1945,7 @@ function runVerbalSession(){
   const app = document.getElementById('app');
   const count = Math.min(VERB_COUNT, VERBAL_BANK.length);
   let order = shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0, count);
-  let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, choices={}, validated=false, ended=false;
+  let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, answered=false, ended=false;
   function startClock(){
     clearInterval(timer);
     timer=ACTIVE_TIMER=setInterval(()=>{
@@ -1909,73 +1955,45 @@ function runVerbalSession(){
     },1000);
   }
   function renderP(){
+    answered=false;
     const item = VERBAL_BANK[order[idx]];
-    const stOrder = shuffle(item.statements.map((_,i)=>i));
-    choices={}; validated=false;
     app.innerHTML = '<div class="card">'
-      +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
+      +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'/'+idx+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">temps global pour '+order.length+' textes</span></div>'
       +'<div class="passage-box">'+item.passage+'</div>'
-      +'<div id="stmts">'
-      + stOrder.map(si=>{
-          const s=item.statements[si];
-          return '<div class="statement-row" data-si="'+si+'"><div class="stext">'+s.t+'</div>'
-            +'<div class="vfn-row"><button class="vfn-btn" data-v="V">VRAI</button><button class="vfn-btn" data-v="F">FAUX</button><button class="vfn-btn" data-v="N">NE PEUT PAS DIRE</button></div>'
-            +'<div class="fbslot"></div></div>';
-        }).join('')
-      +'</div>'
-      +'<button class="btn wide" id="validateBtn" disabled style="margin-top:8px;">Valider mes réponses</button>'
-      +'<button class="btn wide hidden" id="nextBtn" style="margin-top:8px;">Texte suivant →</button></div>'
+      +'<p style="font-size:13.5px;font-weight:600;margin:2px 0 10px;">Quelle affirmation est correcte, uniquement d\'après le texte ?</p>'
+      +'<div id="opts">'+item.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'"><b>'+String.fromCharCode(65+i)+'.</b> '+o+'</button>').join('')+'</div>'
+      +'<div id="fb"></div>'
+      +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Texte suivant →</button></div>'
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo('verbal'));
-    app.querySelectorAll('.statement-row').forEach(row=>{
-      row.querySelectorAll('.vfn-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          if(row.dataset.locked) return;
-          row.querySelectorAll('.vfn-btn').forEach(b=>b.classList.remove('sel'));
-          btn.classList.add('sel');
-          choices[row.dataset.si]=btn.dataset.v;
-          document.getElementById('validateBtn').disabled = Object.keys(choices).length < item.statements.length;
-        });
-      });
-    });
-    document.getElementById('validateBtn').addEventListener('click', validate);
+    app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
       idx++;
       if(idx<order.length){ renderP(); startClock(); } else { endSession(false); }
     });
   }
-  function validate(){
-    if(validated) return; validated=true;
-    clearInterval(timer);
+  function submit(choice){
+    if(answered) return; answered=true; clearInterval(timer);
     const item = VERBAL_BANK[order[idx]];
-    document.querySelectorAll('.statement-row').forEach(row=>{
-      row.dataset.locked='1';
-      const si = row.dataset.si; const s = item.statements[si];
-      const chosen = choices[si];
-      PROGRESS.verbal.att++;
-      const ok = chosen===s.a;
-      if(ok){score++; PROGRESS.verbal.cor++;}
-      row.querySelectorAll('.vfn-btn').forEach(b=>{
-        b.disabled=true;
-        if(b.dataset.v===s.a) b.classList.add('correct');
-        else if(b.dataset.v===chosen) b.classList.add('incorrect');
-      });
-      const lbl={V:'VRAI',F:'FAUX',N:'NE PEUT PAS DIRE'};
-      row.querySelector('.fbslot').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓':'✗')+' Réponse : '+lbl[s.a]+'. '+s.ex+'</div>';
-    });
+    const ok = choice===item.c;
+    if(ok) score++;
+    PROGRESS.verbal.att++; if(ok) PROGRESS.verbal.cor++;
     saveProgress(); renderStreak();
-    document.getElementById('validateBtn').classList.add('hidden');
+    app.querySelectorAll('.qcm-opt').forEach((b,i)=>{
+      b.disabled=true;
+      if(i===item.c) b.classList.add('correct');
+      else if(i===choice) b.classList.add('incorrect');
+    });
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+item.c)+'. '+item.ex+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
   function endSession(timedOut){
     if(ended) return; ended=true;
     clearInterval(timer);
-    const done = validated ? idx+1 : idx;           // textes réellement validés
-    const total = done*3;                            // 3 affirmations par texte validé
-    app.innerHTML = '<div class="card session-end"><span class="eyebrow">'+(timedOut?'Temps écoulé':'Session terminée')+'</span><div class="n">'+score+'/'+total+'</div>'
-      +'<p style="color:var(--ink-soft);">'+done+' texte(s) validé(s) sur '+order.length+'.</p>'
-      +(timedOut?'<p style="color:var(--wine);">Le temps global est écoulé. Au concours, les textes non traités ne rapportent aucun point.</p>':'')
+    app.innerHTML = '<div class="card session-end"><span class="eyebrow">'+(timedOut?'Temps écoulé':'Session terminée')+'</span><div class="n">'+score+'/'+order.length+'</div>'
+      +(timedOut?'<p style="color:var(--wine);">Le temps global est écoulé : '+(order.length-idx)+' texte(s) non traité(s). Au concours, ils ne rapportent aucun point.</p>':'')
+      +'<p style="color:var(--ink-soft);">Statistiques cumulées mises à jour.</p>'
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
     document.getElementById('againBtn').addEventListener('click',()=>{
