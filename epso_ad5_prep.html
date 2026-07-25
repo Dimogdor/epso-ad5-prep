@@ -93,6 +93,12 @@ main{padding-top:20px;}
 .feedback.ok{border-color:var(--green);}
 .feedback.no{border-color:var(--wine);}
 .qcm-question{font-size:16px;margin-bottom:14px;}
+.data-wrap{overflow-x:auto;margin-bottom:14px;border:1px solid var(--line);border-radius:3px;}
+.data-table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
+.data-table caption{caption-side:top;text-align:left;padding:9px 10px 7px;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+.data-table th,.data-table td{border-top:1px solid var(--line);padding:6px 10px;text-align:right;white-space:nowrap;}
+.data-table th{background:var(--paper-raised);font-weight:600;font-size:11.5px;}
+.data-table th:first-child,.data-table td:first-child{text-align:left;font-family:var(--sans);}
 .qcm-opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper-raised);border-radius:3px;padding:11px 14px;margin-bottom:8px;font-size:14.5px;}
 .qcm-opt.sel{border-color:var(--ink);}
 .qcm-opt.correct{background:var(--green-bg);border-color:var(--green);}
@@ -104,7 +110,8 @@ main{padding-top:20px;}
 .abs-arrow{font-size:18px;color:var(--ink-soft);}
 .abs-q{width:64px;height:64px;background:var(--paper);border:2px dashed var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--gold);}
 .abs-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;}
-.abs-opt{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:8px;}
+.abs-opt{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:8px;position:relative;}
+.abs-letter{position:absolute;top:3px;left:5px;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);}
 .abs-opt.sel{border-color:var(--ink);border-width:2px;}
 .abs-opt.correct{border-color:var(--green);background:var(--green-bg);}
 .abs-opt.incorrect{border-color:var(--wine);background:var(--wine-bg);}
@@ -730,14 +737,62 @@ opts:[`18 %`,`20 %`,`22 %`,`25 %`],c:2,ex:`(55 − 45) ÷ 45 = 10 ÷ 45 ≈ 22 %
 
 /* Générateurs paramétriques : chiffres renouvelés à chaque session */
 function ri(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
-function mkNum(q,correct,distractors,ex,unit){
+/* Le test numérique du concours propose CINQ options, la cinquième étant toujours
+   « Aucune de ces réponses ». Elle est parfois la bonne : on retire alors la valeur
+   exacte des quatre premières. Sans ce cas de figure, on prend le réflexe de ne
+   jamais la cocher, ce qui est exactement le piège. */
+/* Nombre de décimales d'une valeur, pour fabriquer des distracteurs de même précision. */
+function decOf(v){ const s=String(v); const i=s.indexOf('.'); return i<0?0:Math.min(s.length-i-1,3); }
+/* Affichage à la française : virgule décimale, espace pour les milliers. */
+function frNum(v){ return typeof v==='number' ? fmtN(v, decOf(v)) : String(v); }
+
+function mkNum(q,correct,distractors,ex,unit,table){
   const u = unit||'';
+  const num = typeof correct==='number';
+  const d = num ? decOf(correct) : 0;
+  const round = v => num ? +(+v).toFixed(d) : v;
   const vals=[correct];
-  distractors.forEach(d=>{ if(vals.indexOf(d)===-1) vals.push(d); });
-  let pad=1;
-  while(vals.length<4){ const v=correct+pad*7; if(vals.indexOf(v)===-1) vals.push(v); pad++; }
-  const order = shuffle(vals.slice(0,4).map((_,i)=>i));
-  return {q:q, opts:order.map(i=>vals[i]+u), c:order.indexOf(0), ex:ex};
+  distractors.forEach(x=>{ const v=round(x); if(vals.indexOf(v)===-1) vals.push(v); });
+  // Filet de sécurité quand le générateur fournit trop peu de distracteurs distincts.
+  // D'abord des variantes proportionnelles, puis un décalage d'un cran de précision,
+  // ce qui garantit des valeurs différentes même pour une réponse nulle ou négative.
+  const step = d>0 ? Math.pow(10,-d) : 1;
+  for(let pad=1; num && vals.length<4 && pad<=40; pad++){
+    const v = round(correct*(1 + (pad%2?1:-1)*0.06*Math.ceil(pad/2)));
+    if(isFinite(v) && vals.indexOf(v)===-1) vals.push(v);
+  }
+  for(let k=1; vals.length<4 && k<=500; k++){
+    const cands = num ? [round(correct+k*step), round(correct-k*step)] : [correct+' ('+k+')'];
+    cands.forEach(v=>{ if(vals.length<4 && vals.indexOf(v)===-1) vals.push(v); });
+  }
+  let four = vals.slice(0,4);
+  // Le cas « aucune de ces réponses » n'est activé que pour une valeur numérique :
+  // fabriquer un substitut plausible d'un nom de pays ou d'un rapport n'a pas de sens.
+  const noneIsRight = num && ri(1,6)===1;
+  if(noneIsRight){
+    let sub = correct, k=1;
+    while(four.indexOf(sub)!==-1 && k<=20){ sub = round(correct*(1+0.11*k)); k++; }
+    four = four.map(v=>v===correct ? sub : v);
+  }
+  const item = {q:q, opts:four.map(v=>frNum(v)+u).concat([NONE_OPT]), c: noneIsRight ? 4 : four.indexOf(correct), ex:ex};
+  if(noneIsRight) item.ex = ex+` Ici la valeur exacte (`+frNum(correct)+u+`) ne figure pas parmi les propositions : la bonne réponse est « `+NONE_OPT+` ».`;
+  if(table) item.table = table;
+  return item;
+}
+/* Rend un tableau de données comme celui affiché au concours. */
+function dataTable(caption, headers, rows){
+  return '<table class="data-table"><caption>'+caption+'</caption><thead><tr>'
+    + headers.map(h=>'<th>'+h+'</th>').join('')
+    + '</tr></thead><tbody>'
+    + rows.map(r=>'<tr>'+r.map((c,i)=>i===0?'<td>'+c+'</td>':'<td>'+c+'</td>').join('')+'</tr>').join('')
+    + '</tbody></table>';
+}
+/* Formatage à l'européenne : espace fine pour les milliers, virgule décimale. */
+function fmtN(v,dec){
+  const n = dec===undefined ? v : +(+v).toFixed(dec);
+  const s = String(n).split('.');
+  s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  return s.join(',');
 }
 const NUMERIC_TEMPLATES = [
   ()=>{ const p=[10,20,25,50][ri(0,3)], avant=ri(3,12)*20, apres=avant*(100+p)/100;
@@ -826,6 +881,151 @@ const NUMERIC_TEMPLATES = [
       `Le rapport totalise `+parts.reduce((a,b)=>a+b,0)+` parts. Le plus gros en prend `+Math.max(...parts)+`, soit `+Math.max(...parts)*10+` % du total (`+gros+` M€).`,` %`); },
 ];
 
+/* ================= NUMÉRIQUE : QUESTIONS SUR TABLEAU =================
+   Format réel du concours : un tableau de données, une question qui suppose
+   deux ou trois opérations enchaînées, cinq options dont « Aucune de ces
+   réponses ». Le tableau contient toujours des colonnes inutiles : savoir
+   ignorer une colonne fait partie de l'exercice. */
+const PAYS = ['Belgique','Danemark','Espagne','Finlande','France','Grèce','Irlande','Italie','Pays-Bas','Pologne','Portugal','Suède','Tchéquie','Autriche','Allemagne','Hongrie'];
+function pickN(arr,n){ return shuffle(arr).slice(0,n); }
+
+const NUMERIC_TABLE_TEMPLATES = [
+  /* Déduire une grandeur absolue à partir d'un pourcentage et d'une valeur absolue,
+     puis comparer deux pays. C'est le mécanisme exact de l'échantillon officiel. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const pct=+(ri(80,340)/100).toFixed(2), dep=ri(15,90)*100, hab=ri(15,25)*1000;
+      return {n, pct, dep, hab, brev:+(ri(900,3600)/10).toFixed(1)}; });
+    const rapports=[[3,1],[3,2],[2,1],[1,2],[2,3]];
+    const r = rapports[ri(0,4)];
+    const a = rows[0], b = rows[1];
+    b.dep = Math.round(a.dep * b.pct / a.pct * r[1] / r[0]);
+    const pibA = a.dep/(a.pct/100), pibB = b.dep/(b.pct/100);
+    const exact = +(pibA/pibB).toFixed(3);
+    const table = dataTable('Dépenses de recherche et développement',
+      ['Pays','Dép. R&D (% du PIB)','Dép. R&D (M€)','PIB par habitant (€)','Brevets par million d\'hab.'],
+      rows.map(x=>[x.n, fmtN(x.pct,2), fmtN(x.dep), fmtN(x.hab), fmtN(x.brev,1)]));
+    return mkNum(`Quel est approximativement le rapport entre le PIB de `+a.n+` et celui de `+b.n+` ?`,
+      r[0]+':'+r[1], [r[1]+':'+r[0], (r[0]+1)+':'+r[1], r[0]+':'+(r[1]+1)],
+      `Le PIB ne figure pas dans le tableau : il se déduit de la dépense de R&D et de sa part dans le PIB. `+a.n+` : `+fmtN(a.dep)+` ÷ `+fmtN(a.pct,2)+` % = `+fmtN(Math.round(pibA))+` M€. `+b.n+` : `+fmtN(b.dep)+` ÷ `+fmtN(b.pct,2)+` % = `+fmtN(Math.round(pibB))+` M€. Rapport ≈ `+String(exact).replace('.',',')+`, soit `+r[0]+':'+r[1]+`. La colonne PIB par habitant est un distracteur : sans la population, elle ne sert à rien.`,
+      '', table);
+  },
+  /* Deux pourcentages composés plus une variation de la base. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>({n, a0:+(ri(150,340)/100).toFixed(2), a1:+(ri(150,340)/100).toFixed(2),
+      g0:+(ri(220,420)/10).toFixed(1), g1:+(ri(220,420)/10).toFixed(1), pop:+(ri(15,850)/10).toFixed(1)}));
+    const x = rows[ri(0,4)], croiss = [2,3,4,5][ri(0,3)];
+    const ratio = (1+croiss/100) * (x.a1*x.g1) / (x.a0*x.g0);
+    const res = +((ratio-1)*100).toFixed(2);
+    const naif = +(((x.a1*x.g1)/(x.a0*x.g0)-1)*100).toFixed(2);
+    const table = dataTable('Recherche publique et privée, 2020 et 2024',
+      ['Pays','Dép. R&D 2020 (% du PIB)','Dép. R&D 2024 (% du PIB)','Part financée par l\'État 2020 (%)','Part financée par l\'État 2024 (%)','Population (millions)'],
+      rows.map(r=>[r.n, fmtN(r.a0,2), fmtN(r.a1,2), fmtN(r.g0,1), fmtN(r.g1,1), fmtN(r.pop,1)]));
+    return mkNum(`Si le PIB de `+x.n+` a augmenté de `+croiss+` % entre 2020 et 2024, de combien la dépense publique de R&D a-t-elle varié sur la période ?`,
+      res, [naif, +(res+croiss).toFixed(2), +(res/2).toFixed(2)],
+      `Dépense publique = PIB × part de R&D dans le PIB × part financée par l'État. Le rapport 2024/2020 vaut `+(1+croiss/100).toString().replace('.',',')+` × (`+fmtN(x.a1,2)+` × `+fmtN(x.g1,1)+`) ÷ (`+fmtN(x.a0,2)+` × `+fmtN(x.g0,1)+`) = `+String(+ratio.toFixed(4)).replace('.',',')+`, soit `+String(res).replace('.',',')+` %. Oublier la croissance du PIB donne `+String(naif).replace('.',',')+` % et c'est le piège.`,
+      ' %', table);
+  },
+  /* Somme de deux lignes, avec des colonnes voisines qui invitent à l'erreur. */
+  ()=>{
+    const conts=[['Afrique',30065000],['Asie',44579000],['Europe',9938000],['Amérique du Nord',24256000],['Amérique du Sud',17819000],['Océanie',8112000]];
+    const sel = shuffle(conts).slice(0,5);
+    const rows = sel.map(([n,s])=>[n, fmtN(s), fmtN(ri(300,4000)*10/10,1), ri(30,85), ri(10,55)]);
+    const i1=ri(0,4); let i2=ri(0,4); while(i2===i1) i2=ri(0,4);
+    const somme = sel[i1][1]+sel[i2][1];
+    const table = dataTable('Démographie mondiale par continent',
+      ['Continent','Superficie (km²)','Population (millions)','Population urbaine (%)','Nombre de pays'], rows);
+    return mkNum(`Quelle est la superficie cumulée de ces deux ensembles : `+sel[i1][0]+` et `+sel[i2][0]+` ?`,
+      fmtN(somme), [fmtN(somme+60000), fmtN(somme-60000), fmtN(sel[i1][1]*2)],
+      `Addition directe des deux superficies : `+fmtN(sel[i1][1])+` + `+fmtN(sel[i2][1])+` = `+fmtN(somme)+` km². Les options voisines ne diffèrent que de quelques dizaines de milliers : il faut lire les chiffres jusqu'au bout.`,
+      ' km²', table);
+  },
+  /* Valeur par habitant reconstituée depuis un total et une population. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const pop=ri(4,70), parHab=ri(120,900); return {n, pop, budget:pop*parHab, taux:+(ri(30,95)/10).toFixed(1), part:ri(5,40)}; });
+    const x = rows[ri(0,4)];
+    const table = dataTable('Dépenses publiques de recherche',
+      ['Pays','Budget recherche (M€)','Population (millions)','Taux de chômage (%)','Part du privé (%)'],
+      rows.map(r=>[r.n, fmtN(r.budget), fmtN(r.pop), fmtN(r.taux,1), fmtN(r.part)]));
+    return mkNum(`Quel est le budget de recherche par habitant en `+x.n+` ?`,
+      x.budget/x.pop, [Math.round(x.budget/x.pop/10), Math.round(x.budget/x.pop*10), x.budget-x.pop],
+      `Budget par habitant = `+fmtN(x.budget)+` millions d'euros ÷ `+fmtN(x.pop)+` millions d'habitants = `+fmtN(x.budget/x.pop)+` €. Les deux grandeurs étant en millions, elles se simplifient : le résultat est en euros par habitant.`,
+      ' €', table);
+  },
+  /* Part d'une sous-population : deux pourcentages successifs lus dans le tableau. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>({n, tot:ri(20,90)*1000, femmes:[40,45,50,55,60][ri(0,4)], admis:[5,10,15,20,25][ri(0,4)], moy:+(ri(90,140)/10).toFixed(1)}));
+    const x = rows[ri(0,4)];
+    const res = x.tot*x.femmes/100*x.admis/100;
+    const table = dataTable('Candidats à un concours par pays',
+      ['Pays','Candidats inscrits','Part de femmes (%)','Taux d\'admission des femmes (%)','Note moyenne (/20)'],
+      rows.map(r=>[r.n, fmtN(r.tot), fmtN(r.femmes), fmtN(r.admis), fmtN(r.moy,1)]));
+    return mkNum(`Combien de femmes ont été admises en `+x.n+` ?`,
+      res, [x.tot*x.admis/100, x.tot*x.femmes/100, res*2],
+      `Deux pourcentages s'appliquent l'un après l'autre : `+fmtN(x.femmes)+` % de `+fmtN(x.tot)+` = `+fmtN(x.tot*x.femmes/100)+` femmes, dont `+fmtN(x.admis)+` % admises, soit `+fmtN(res)+`. Appliquer le taux d'admission au total des candidats est l'erreur classique.`,
+      '', table);
+  },
+  /* Comparaison de croissances relatives entre lignes : la plus forte progression. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const v0=ri(20,90)*10, pct=[5,8,10,12,15,20,25,30][ri(0,7)]; return {n, v0, v1:Math.round(v0*(100+pct)/100), pct}; });
+    const best = rows.reduce((a,b)=>b.pct>a.pct?b:a);
+    const table = dataTable('Exportations de biens, 2019 et 2024',
+      ['Pays','Exportations 2019 (M€)','Exportations 2024 (M€)','Part dans le PIB (%)'],
+      rows.map(r=>[r.n, fmtN(r.v0), fmtN(r.v1), fmtN(ri(150,450)/10,1)]));
+    const opts = rows.filter(r=>r!==best).slice(0,3).map(r=>r.n);
+    return mkNum(`Quel pays a connu la plus forte progression de ses exportations en pourcentage entre 2019 et 2024 ?`,
+      best.n, opts,
+      `La progression se mesure en relatif, pas en valeur absolue : `+best.n+` passe de `+fmtN(best.v0)+` à `+fmtN(best.v1)+` M€, soit `+fmtN(best.pct)+` %, la plus forte hausse du tableau. Le pays dont l'augmentation en euros est la plus grande n'est pas forcément celui qui progresse le plus vite.`,
+      '', table);
+  },
+  /* Moyenne pondérée à partir d'un tableau : le piège de la moyenne simple. */
+  ()=>{
+    const p = pickN(PAYS,4);
+    const rows = p.map(n=>({n, eff:ri(2,9)*100, moy:+(ri(100,160)/10).toFixed(1)}));
+    const tot = rows.reduce((s,r)=>s+r.eff,0);
+    const pond = +(rows.reduce((s,r)=>s+r.eff*r.moy,0)/tot).toFixed(2);
+    const simple = +(rows.reduce((s,r)=>s+r.moy,0)/rows.length).toFixed(2);
+    const table = dataTable('Résultats par centre d\'examen',
+      ['Centre','Candidats','Note moyenne (/20)','Taux de réussite (%)'],
+      rows.map(r=>[r.n, fmtN(r.eff), fmtN(r.moy,1), fmtN(ri(300,900)/10,1)]));
+    return mkNum(`Quelle est la note moyenne de l'ensemble des `+fmtN(tot)+` candidats ?`,
+      pond, [simple, +(pond+0.37).toFixed(2), +(pond-0.62).toFixed(2), +(pond+0.91).toFixed(2), +(pond-1.14).toFixed(2)],
+      `Il faut pondérer par les effectifs : somme des (candidats × note) ÷ `+fmtN(tot)+` = `+String(pond).replace('.',',')+`. La moyenne des quatre moyennes donne `+String(simple).replace('.',',')+` et n'est juste que si les centres ont le même effectif.`,
+      '/20', table);
+  },
+  /* Écart en points de pourcentage contre variation relative. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const a=+(ri(40,180)/10).toFixed(1); let b=+(ri(40,180)/10).toFixed(1);
+      if(b===a) b=+(a+1.3).toFixed(1); return {n, a, b}; });
+    const x = rows[ri(0,4)];
+    const pts = +(x.b-x.a).toFixed(1);
+    const rel = +((x.b-x.a)/x.a*100).toFixed(1);
+    const table = dataTable('Taux de chômage, 2019 et 2024',
+      ['Pays','Taux 2019 (%)','Taux 2024 (%)','Population active (millions)'],
+      rows.map(r=>[r.n, fmtN(r.a,1), fmtN(r.b,1), fmtN(ri(15,300)/10,1)]));
+    return mkNum(`De combien de points de pourcentage le taux de chômage a-t-il varié en `+x.n+` entre 2019 et 2024 ?`,
+      pts, [rel, +(x.a+x.b).toFixed(1), +(-pts).toFixed(1)],
+      `Une variation en points de pourcentage est une simple soustraction : `+fmtN(x.b,1)+` moins `+fmtN(x.a,1)+` = `+String(pts).replace('.',',')+` point(s). La variation relative, elle, vaut `+String(rel).replace('.',',')+` % : les deux réponses sont proposées, il faut lire la question.`,
+      ' points', table);
+  },
+];
+
+/* Le vivier d'une session : les questions écrites, les générateurs sur énoncé et
+   les générateurs sur tableau. Les items écrits n'ont que quatre options : on leur
+   ajoute la cinquième pour que toutes les questions aient la forme du concours. */
+function mkNumericPool(){
+  const fixes = NUMERIC_BANK.map(it => it.opts.length===5 ? it : {...it, opts: it.opts.concat([NONE_OPT])});
+  return fixes
+    .concat(NUMERIC_TEMPLATES.map(f=>f()))
+    .concat(NUMERIC_TABLE_TEMPLATES.map(f=>f()))
+    .concat(NUMERIC_TABLE_TEMPLATES.map(f=>f()));
+}
+
 /* ================= BANQUE ABSTRAIT ================= */
 function regularPoly(cx,cy,r,sides,rotDeg){
   const pts=[]; const rot=(rotDeg-90)*Math.PI/180;
@@ -905,6 +1105,8 @@ const ABSTRACT_BANK = [
 /* ponytail: 17 séries figées, c'est deux sessions avant de tout connaître par cœur.
    Les séries sont donc générées à partir de familles de règles paramétrées, et la
    banque écrite à la main sert de complément. Chaque session tire des séries inédites. */
+/* Le test abstrait du concours propose cinq figures candidates, A à E. */
+const ABS_OPTS = 5;
 const ABS_COLORS = ['#1B2438','#7A1F3D','#2F6B4F','#B8860B'];
 
 /* Signature visuelle d'une figure : deux figures de même clé sont indiscernables
@@ -1059,25 +1261,40 @@ function genAbstract(){
   const opts = [answer];
   // shown[3] en tête : "la figure ne change pas" est le distracteur le plus courant.
   for(const cand of [shown[3], shown[2]].concat(absPerturb(answer))){
-    if(opts.length>=4) break;
+    if(opts.length>=ABS_OPTS) break;
     const k = absKey(cand);
     if(keys.has(k)) continue;
     keys.add(k); opts.push(cand);
   }
   let g=1;
-  while(opts.length<4){
+  while(opts.length<ABS_OPTS){
     const cand = answer.dots>0 ? {...answer,dots:answer.dots+2+g} : {...answer,sides:(answer.sides||0)+g,rot:(answer.rot||0)+17*g};
     const k = absKey(cand);
     if(!keys.has(k)){ keys.add(k); opts.push(cand); }
-    if(++g>12) break;
+    if(++g>16) break;
   }
   const p = shuffle(opts.map((_,i)=>i));
   return {title:f.title, seq:shown, opts:p.map(i=>opts[i]), c:p.indexOf(0), ex:f.ex};
 }
 
+/* Les séries écrites à la main n'ont que quatre figures candidates : on les complète
+   à cinq avec des variantes distinctes de la bonne réponse. */
+function absTopUp(item){
+  if(item.opts.length>=ABS_OPTS) return item;
+  const opts = item.opts.slice();
+  const keys = new Set(opts.map(absKey));
+  for(const cand of absPerturb(opts[item.c])){
+    if(opts.length>=ABS_OPTS) break;
+    const k = absKey(cand);
+    if(keys.has(k)) continue;
+    keys.add(k); opts.push(cand);
+  }
+  return {...item, opts};
+}
+
 /* Une session mélange quelques séries écrites à la main et des séries générées. */
 function mkAbsSeries(n){
-  const out = shuffle(ABSTRACT_BANK).slice(0, Math.min(3, n));
+  const out = shuffle(ABSTRACT_BANK).slice(0, Math.min(3, n)).map(absTopUp);
   const seen = new Set();
   let guard = 0;
   while(out.length<n && guard++<500){
@@ -2570,7 +2787,15 @@ function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){const 
 /* ponytail: les banques ecrites a la main placaient la bonne reponse en B dans la
    grande majorite des cas. On permute les options a l'affichage plutot que de
    reecrire chaque entree : la position de la bonne reponse change a chaque session. */
-function shuffleOpts(item){ const p=shuffle(item.opts.map((_,i)=>i)); return {opts:p.map(i=>item.opts[i]), c:p.indexOf(item.c)}; }
+/* Au concours, « Aucune de ces réponses » est toujours la dernière option : elle est
+   donc épinglée et seules les autres sont permutées. */
+const NONE_OPT = `Aucune de ces réponses`;
+function shuffleOpts(item){
+  const pinned = item.opts.map((o,i)=>i).filter(i=>String(item.opts[i])===NONE_OPT);
+  const free = shuffle(item.opts.map((_,i)=>i).filter(i=>pinned.indexOf(i)<0));
+  const p = free.concat(pinned);
+  return {opts:p.map(i=>item.opts[i]), c:p.indexOf(item.c)};
+}
 function fmtTime(s){ if(s<0) s=0; const m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r; }
 
 /* ================= NAVIGATION ================= */
@@ -2689,6 +2914,7 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">'+ep+' · '+title+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">'+(idx+1)+' / '+order.length+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">Score session : '+score+'/'+idx+'</span></div>'
+      +(item.table?'<div class="data-wrap">'+item.table+'</div>':'')
       +'<div class="qcm-question">'+item.q+'</div>'
       +'<div id="opts">'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
@@ -2918,7 +3144,7 @@ function renderNumAbs(){
     <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUM_COUNT} questions · 20 min au total · chiffres renouvelés)</button>
     <button class="btn wide" id="startAbs">Session abstraite (${ABS_COUNT} séries · 10 min au total)</button>
   </div>`;
-  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(NUMERIC_BANK.concat(NUMERIC_TEMPLATES.map(f=>f())),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
+  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
   document.getElementById('startAbs').addEventListener('click', runAbstractSession);
 }
 function runAbstractSession(){
@@ -2947,7 +3173,7 @@ function runAbstractSession(){
       + item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
       +'<span class="abs-arrow">→</span><div class="abs-q">?</div></div>'
       +'<div class="abs-options" id="absOpts">'
-      + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'">'+shapeSVG(o)+'</button>').join('')
+      + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'"><span class="abs-letter">'+String.fromCharCode(65+i)+'</span>'+shapeSVG(o)+'</button>').join('')
       +'</div><div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
