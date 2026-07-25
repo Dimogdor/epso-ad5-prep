@@ -2715,45 +2715,285 @@ const DIGITAL_QUIZ = [
 {q:`Identifier soi-même une compétence numérique qui manque et suivre une formation relève :`,opts:[`De la résolution de problèmes, au titre de l'identification des besoins`,`De la sécurité`,`De la communication`,`De la création de contenu`],c:0,ex:`Le domaine 5 inclut explicitement l'identification des lacunes et le développement de ses propres compétences.`},
 ];
 
-/* ================= EUFTE ================= */
-const EUFTE_PROMPTS = [
-`L'élargissement de l'Union européenne aux Balkans occidentaux et à l'Ukraine : opportunité stratégique ou risque de dilution politique ?`,
-`Le Pacte vert pour l'Europe peut-il concilier compétitivité économique et transition écologique ?`,
-`La règle de l'unanimité doit-elle être maintenue en matière de politique étrangère européenne ?`,
-`Le télétravail transfrontalier pose-t-il un défi pour la cohésion du marché intérieur européen ?`,
-`L'intelligence artificielle : l'Union européenne doit-elle privilégier la régulation ou l'innovation ?`,
-`La politique agricole commune reste-t-elle adaptée aux enjeux climatiques et économiques actuels ?`,
-`Le vieillissement démographique en Europe : quelles réponses au niveau de l'Union ?`,
-`La souveraineté numérique européenne est-elle un objectif réaliste face aux géants américains et chinois ?`,
-`Une défense européenne commune : nécessité stratégique ou concurrence inutile avec l'OTAN ?`,
-`Le mécanisme d'ajustement carbone aux frontières : protectionnisme déguisé ou instrument climatique légitime ?`,
-`Faut-il conditionner davantage les fonds européens au respect de l'État de droit ?`,
-`La mobilité des jeunes (Erasmus+, Corps européen de solidarité) contribue-t-elle réellement à la citoyenneté européenne ?`,
-`L'Union européenne doit-elle créer un euro numérique ?`,
-`Réduire les dépendances de l'Union pour les matières premières critiques : à quel prix ?`,
-`Le Pacte sur la migration et l'asile de 2024 concilie-t-il solidarité entre États et contrôle des frontières ?`,
-`Lutte contre la désinformation et liberté d'expression : le DSA trouve-t-il le bon équilibre ?`,
-`Quelle place pour le nucléaire dans la transition énergétique européenne ?`,
-`Faut-il passer à la majorité qualifiée en matière de fiscalité ?`,
-`Le multilinguisme des institutions européennes est-il une richesse ou un coût ?`,
-`Les accords de libre-échange de l'Union menacent-ils son agriculture ?`,
+/* ================= EUFTE =================
+   Format réel vérifié sur l'épreuve blanche officielle (TAO, versions EN et FR) :
+   ce n'est pas une dissertation d'opinion. On reçoit un DOCUMENT SOURCE et une
+   consigne professionnelle (rôle, destinataire, type de document à produire),
+   et 40 minutes pour rédiger. Les cinq critères ci-dessous sont les « anchors »
+   publiés par EPSO : ils portent sur la communication écrite, pas sur les
+   connaissances. */
+const EUFTE_ANCHORS = [
+`Structure la communication écrite avec un enchaînement logique des idées.`,
+`Écrit de façon concise, sans mots ni phrases inutiles.`,
+`Présente le sujet de manière claire et compréhensible.`,
+`Adapte et calibre l'écrit au destinataire et à la finalité visés.`,
+`Utilise efficacement les informations fournies pour traiter la consigne.`,
 ];
-const EUFTE_DOSSIER = {
-topic:`Sur la base des extraits ci-dessous, rédigez un essai structuré sur la question : « L'Union européenne doit-elle accélérer sa transition vers les énergies renouvelables malgré les coûts de court terme ? »`,
+
+const EUFTE_TASKS = [
+{
+title:`Statistiques européennes : examens par les pairs`,
+source:`Rapport spécial de la Cour des comptes européenne sur la qualité des statistiques européennes`,
+brief:`Vous travaillez à Eurostat, l'office statistique de l'Union européenne. Le rapport spécial ci-dessous vient d'être publié. Le directeur général du service d'audit interne de la Commission souhaite s'entretenir avec la directrice générale d'Eurostat des constatations de la Cour relatives aux examens par les pairs. Rédigez une note d'information comprenant des éléments de langage à l'intention de la directrice générale d'Eurostat, afin de l'aider à préparer cette réunion.`,
 sources:[
-`Source A (rapport institutionnel) : « La part des renouvelables dans la consommation énergétique de l'Union a plus que doublé depuis 2010. Les coûts de production de l'éolien et du solaire ont diminué de plus de moitié sur la même période, rendant ces technologies compétitives face aux énergies fossiles dans la plupart des États membres. »`,
-`Source B (organisation professionnelle) : « L'accélération imposée par les objectifs climatiques pèse sur les industries intensives en énergie. Sans mécanismes de compensation adaptés, certaines productions risquent de se délocaliser vers des pays aux normes moins strictes, sans bénéfice net pour le climat. »`,
-`Source C (institut de recherche) : « La dépendance aux importations d'hydrocarbures expose l'Union à des chocs géopolitiques majeurs. Chaque point de pourcentage gagné par les renouvelables domestiques réduit cette vulnérabilité et améliore la balance commerciale de l'Union. »`],
-note:`Consigne type EPSO : ton essai doit S'APPUYER sur les sources fournies (les citer, les confronter), pas seulement sur tes connaissances. C'est précisément ce que les correcteurs évaluent.`};
+`<b>Constatation 1.</b> Les examens par les pairs sont le principal instrument de vérification du respect du code de bonnes pratiques de la statistique européenne. Trois cycles ont été menés depuis 2006. Le troisième cycle a couvert l'ensemble des instituts nationaux de statistique et Eurostat lui-même.`,
+`<b>Constatation 2.</b> Le troisième cycle a formulé environ 400 recommandations d'amélioration. Au moment de l'audit, un peu plus de la moitié avaient été mises en œuvre. Aucun mécanisme ne permet à Eurostat d'imposer la mise en œuvre d'une recommandation adressée à un institut national.`,
+`<b>Constatation 3.</b> Les examens portent sur les processus et la gouvernance, mais très peu sur la qualité effective des données produites. La Cour relève que deux instituts ayant obtenu de bons résultats aux examens ont ensuite fait l'objet de corrections statistiques importantes.`,
+`<b>Constatation 4.</b> Le calendrier des cycles, d'environ neuf ans, est jugé trop long par la Cour pour détecter à temps une dégradation de la qualité. Plusieurs autorités statistiques nationales estiment à l'inverse que la charge administrative d'un cycle plus court serait excessive.`,
+`<b>Recommandation de la Cour.</b> Raccourcir l'intervalle entre les cycles, intégrer un examen ciblé de la qualité des données produites, et publier un suivi annuel du taux de mise en œuvre des recommandations.`,
+],
+model:`<b>BRIEFING NOTE</b><br>
+<b>To:</b> Director-General, Eurostat<br>
+<b>Subject:</b> Meeting with the Director-General of the Internal Audit Service on the ECA's findings on peer reviews<br>
+<b>Date of meeting:</b> [date]<br><br>
+
+<b>1. Purpose</b><br>
+To prepare you for the discussion on the peer review findings of the ECA special report on European statistics, and to propose the line we take.<br><br>
+
+<b>2. What the Court found</b><br>
+The Court examined peer reviews as the main compliance tool for the European Statistics Code of Practice. It makes four points. First, coverage is complete: the third round assessed every national statistical institute and Eurostat itself. Second, follow-up is weak: of roughly 400 recommendations, slightly over half had been implemented at the time of the audit, and we have no power to compel a national institute to act. Third, scope is too narrow: reviews look at processes and governance rather than at the quality of the data actually produced, and two well-rated institutes subsequently had to make significant corrections. Fourth, the nine-year cycle is too long to detect deterioration in time.<br><br>
+
+<b>3. Where we agree, and where we do not</b><br>
+We accept the substance of the first three findings. On the fourth, national authorities have told us that a shorter cycle would add a disproportionate administrative burden. Our position is that the frequency issue is real but that the answer is a targeted intermediate review, not a full additional cycle.<br><br>
+
+<b>4. Speaking points</b><br>
+• "We share the Court's diagnosis on follow-up. The gap is not one of will but of legal instruments: peer review recommendations are not binding on national institutes."<br>
+• "We will publish an annual implementation scoreboard by institute. Transparency is the lever we do have, and it costs nothing."<br>
+• "We agree that process compliance is not a proxy for data quality. The two cases the Court cites make that point better than we could."<br>
+• "On frequency, we propose a light targeted review at mid-cycle focused on data quality, rather than shortening the full cycle. This meets the Court's concern while keeping the burden acceptable to national authorities."<br>
+• "We would welcome the Internal Audit Service's view on how to measure the effectiveness of follow-up, since that is the weakest link."<br><br>
+
+<b>5. Point to watch</b><br>
+If asked why implementation stands at just over half, avoid attributing it to national reluctance. The honest answer is that no deadline is attached to recommendations. Proposing deadlines is a constructive response.`,
+why:[
+`<b>Structure.</b> Objet, constatations, position, éléments de langage, point de vigilance. Le destinataire trouve chaque chose là où il l'attend, sans avoir à chercher.`,
+`<b>Concision.</b> Aucune phrase d'introduction générale sur l'importance des statistiques. On entre directement dans la matière. Les éléments de langage sont des phrases prêtes à être dites.`,
+`<b>Clarté.</b> Les quatre constatations sont numérotées « premièrement, deuxièmement... » : on peut suivre à l'oral pendant une réunion.`,
+`<b>Adaptation au destinataire.</b> C'est une note interne pour une directrice générale qui va parler à un pair : ton factuel, position assumée, et un point de vigilance sur ce qu'il ne faut pas dire. Le format éléments de langage entre guillemets est exactement ce qui a été demandé.`,
+`<b>Utilisation des sources.</b> Les cinq constatations du document sont reprises, y compris le désaccord des autorités nationales sur le raccourcissement du cycle, qui est utilisé pour construire une contre-proposition au lieu d'être ignoré.`,
+],
+},
+{
+title:`Cybersécurité des institutions de l'Union`,
+source:`Rapport de la Cour des comptes européenne sur la préparation des institutions de l'Union aux cyberattaques`,
+brief:`Vous travaillez à la direction générale de l'informatique de la Commission européenne. Le rapport ci-dessous vient d'être publié. Votre directeur doit intervenir la semaine prochaine devant le comité interinstitutionnel réunissant les responsables informatiques des autres institutions. Rédigez une note d'information assortie d'éléments de langage lui permettant de préparer cette intervention.`,
+sources:[
+`<b>Constatation 1.</b> Le nombre d'incidents de sécurité significatifs déclarés par les institutions, organes et agences de l'Union a été multiplié par plus de dix en cinq ans. L'audit relève que le niveau de préparation n'est pas proportionné à cette évolution.`,
+`<b>Constatation 2.</b> La maturité en matière de cybersécurité varie fortement d'une entité à l'autre. Les entités les plus petites disposent rarement d'une fonction de sécurité dédiée et s'appuient sur des ressources mutualisées non contraignantes.`,
+`<b>Constatation 3.</b> Les dépenses consacrées à la sécurité informatique varient d'un facteur supérieur à dix entre entités comparables, sans corrélation apparente avec l'exposition au risque.`,
+`<b>Constatation 4.</b> L'équipe d'intervention en cas d'urgence informatique commune aux institutions est reconnue comme utile, mais ses effectifs et son financement dépendent de contributions volontaires, ce qui limite sa capacité à monter en charge lors d'un incident majeur.`,
+`<b>Constatation 5.</b> La formation de sensibilisation du personnel n'est pas obligatoire dans toutes les entités. Les exercices de simulation d'hameçonnage montrent des taux de clic très différents selon les institutions.`,
+`<b>Recommandation de la Cour.</b> Rendre contraignantes des règles communes de cybersécurité, doter l'équipe d'intervention de moyens stables, et généraliser la formation obligatoire.`,
+],
+model:`<b>BRIEFING NOTE</b><br>
+<b>To:</b> Director, DG DIGIT<br>
+<b>Subject:</b> Speaking points for the interinstitutional IT committee on the ECA report on cyber-preparedness<br><br>
+
+<b>1. Purpose</b><br>
+To brief you ahead of your intervention and to set out the line that keeps the Commission constructive without accepting a coordinating role we are not resourced for.<br><br>
+
+<b>2. The Court's diagnosis in one paragraph</b><br>
+Significant incidents have grown more than tenfold in five years while preparedness has not kept pace. Maturity is uneven, security spending varies by more than a factor of ten between comparable bodies with no visible link to risk exposure, the shared incident response team depends on voluntary contributions, and awareness training is not mandatory everywhere.<br><br>
+
+<b>3. Why this matters for the committee</b><br>
+The interinstitutional level is where three of the five findings can actually be addressed. Spending disparities and training obligations are decided entity by entity, but common binding rules and stable funding for the response team require agreement in this room.<br><br>
+
+<b>4. Speaking points</b><br>
+• "The tenfold rise in significant incidents is the number to keep in mind. Everything else in this report follows from it."<br>
+• "Uneven maturity is a collective problem, not a problem of the smaller entities. An attacker entering through the least protected body reaches a shared network."<br>
+• "We support making common cybersecurity rules binding. Voluntary coordination has been tested and the spending gap shows the result."<br>
+• "The response team cannot be expected to scale during a major incident while its funding depends on goodwill. We propose moving it to a stable and predictable basis."<br>
+• "Mandatory awareness training is the cheapest measure on the list. The variation in phishing simulation results tells us it works where it is applied."<br><br>
+
+<b>5. Points to watch</b><br>
+Do not commit the Commission to funding the shared response team alone; propose a distribution key instead. If smaller agencies object to binding rules on grounds of proportionality, offer a tiered set of requirements rather than an exemption.`,
+why:[
+`<b>Structure.</b> Un diagnostic resserré, puis la raison pour laquelle ce forum précis est le bon, puis les éléments de langage. L'ordre suit la logique de la réunion et non celle du rapport.`,
+`<b>Concision.</b> Les cinq constatations sont condensées en un seul paragraphe. Un lecteur pressé a l'essentiel en dix lignes.`,
+`<b>Clarté.</b> Une idée par point, formulée en phrase simple. La menace est expliquée concrètement : l'attaquant entre par le maillon faible et atteint un réseau partagé.`,
+`<b>Adaptation.</b> Écrit pour quelqu'un qui va parler devant ses homologues : on lui donne des phrases dicibles, et surtout deux garde-fous de négociation, ce qu'attend un directeur avant une réunion interinstitutionnelle.`,
+`<b>Utilisation des sources.</b> Chaque élément de langage s'appuie sur une constatation chiffrée du document (facteur dix sur les incidents, facteur dix sur les dépenses, écarts aux simulations d'hameçonnage).`,
+],
+},
+{
+title:`Élargissement de la zone euro`,
+source:`Note de synthèse sur l'adoption de l'euro par un nouvel État membre`,
+brief:`Vous travaillez à la direction générale des affaires économiques et financières de la Commission. Votre cheffe d'unité doit répondre à une délégation d'un État membre qui n'a pas encore adopté l'euro et qui s'interroge sur le calendrier et les conséquences d'une adhésion. Rédigez une note d'information factuelle, assortie d'éléments de langage, à son intention.`,
+sources:[
+`<b>Élément 1.</b> L'adoption de l'euro n'est pas une option pour la plupart des États membres : à l'exception du Danemark, qui bénéficie d'une dérogation obtenue à Maastricht, tous se sont engagés à adopter la monnaie unique dès qu'ils remplissent les critères de convergence.`,
+`<b>Élément 2.</b> Les quatre critères portent sur la stabilité des prix, la soutenabilité des finances publiques, la stabilité du taux de change et le niveau des taux d'intérêt à long terme. La participation préalable au mécanisme de change pendant au moins deux ans sans tension grave est requise.`,
+`<b>Élément 3.</b> L'entrée est décidée par le Conseil sur proposition de la Commission, après rapports de convergence de la Commission et de la Banque centrale européenne, et consultation du Parlement européen.`,
+`<b>Élément 4.</b> Les enquêtes d'opinion menées dans le dernier pays entrant montraient une majorité de réponses défavorables avant le basculement, la crainte dominante portant sur une hausse des prix.`,
+`<b>Élément 5.</b> Les études réalisées après les basculements précédents concluent à un effet de l'arrondi sur les prix réel mais limité, très inférieur à la hausse perçue par les consommateurs. Le double affichage des prix pendant plusieurs mois est l'instrument le plus efficace pour contenir cet écart de perception.`,
+],
+model:`<b>BRIEFING NOTE</b><br>
+<b>To:</b> Head of Unit, DG ECFIN<br>
+<b>Subject:</b> Meeting with the delegation of [Member State] on euro adoption<br><br>
+
+<b>1. Purpose</b><br>
+To give you the factual position on the procedure and on the price concern the delegation is likely to raise.<br><br>
+
+<b>2. The legal position</b><br>
+Adoption is an obligation, not a choice. Denmark holds the only opt-out, agreed at Maastricht. Every other Member State outside the euro area has committed to adopt the currency once it meets the convergence criteria. The delegation may frame the question as whether to join; the accurate framing is when.<br><br>
+
+<b>3. The procedure in four steps</b><br>
+The four convergence criteria cover price stability, sound public finances, exchange rate stability and long-term interest rates. Participation in the exchange rate mechanism for at least two years without severe tension is a precondition. The Commission and the European Central Bank each produce a convergence report. The Council then decides on a Commission proposal, after consulting the European Parliament.<br><br>
+
+<b>4. The price question</b><br>
+This is where the meeting will concentrate. Public opinion in the most recent joining country was majority negative before changeover, driven by fear of price rises. The evidence from earlier changeovers is that rounding does push prices up, but by far less than consumers perceive. The gap is one of perception, and dual price display over several months is the measure that has narrowed it most effectively.<br><br>
+
+<b>5. Speaking points</b><br>
+• "The criteria are the same for everyone and they are published. There is no political negotiation on the thresholds."<br>
+• "The two-year exchange rate mechanism requirement means the timetable is set well before the decision itself."<br>
+• "On prices, we do not dispute that rounding has an effect. What the data show is that the perceived increase is consistently larger than the measured one."<br>
+• "Dual display is the single most effective tool available to you, and it is entirely under national control."<br><br>
+
+<b>6. Point to watch</b><br>
+Avoid predicting a date. The convergence reports are the only basis on which timing is discussed, and pre-empting them would be read as a commitment.`,
+why:[
+`<b>Structure.</b> Position juridique, procédure, puis le point sensible traité à part. Le plan répond à ce que la délégation va demander, pas à l'ordre du document source.`,
+`<b>Concision.</b> Les quatre critères tiennent en une phrase. La procédure en quatre étapes tient en quatre lignes.`,
+`<b>Clarté.</b> La reformulation « la question n'est pas si mais quand » transforme un point juridique en une phrase que la cheffe d'unité peut réutiliser telle quelle.`,
+`<b>Adaptation.</b> Destinataire : une cheffe d'unité qui reçoit une délégation étrangère. D'où le ton diplomatique, la reconnaissance explicite que l'effet d'arrondi existe, et l'avertissement de ne pas annoncer de date.`,
+`<b>Utilisation des sources.</b> Les cinq éléments sont exploités, y compris l'opinion défavorable, qui sert à anticiper l'objection au lieu d'être passée sous silence.`,
+],
+},
+{
+title:`Pouvoirs budgétaires du Parlement européen`,
+source:`Étude sur l'évolution des pouvoirs du Parlement européen`,
+brief:`Vous travaillez au secrétariat général de la Commission. Une nouvelle cheffe d'unité prend ses fonctions et doit participer à sa première réunion de conciliation budgétaire. Rédigez une note de cadrage lui expliquant l'état des pouvoirs du Parlement en matière budgétaire et les points d'attention pratiques.`,
+sources:[
+`<b>Élément 1.</b> Le Parlement européen n'a d'abord été qu'une assemblée consultative composée de délégués des parlements nationaux. Il est élu au suffrage universel direct depuis 1979.`,
+`<b>Élément 2.</b> Les traités budgétaires des années 1970 lui ont donné le dernier mot sur une partie des dépenses, puis le pouvoir de rejeter le budget dans son ensemble. La distinction entre dépenses obligatoires et non obligatoires, qui limitait sa marge, a été supprimée par le traité de Lisbonne.`,
+`<b>Élément 3.</b> Depuis Lisbonne, le budget annuel est adopté conjointement par le Parlement et le Conseil. En cas de désaccord, un comité de conciliation dispose de vingt et un jours pour trouver un projet commun.`,
+`<b>Élément 4.</b> Le cadre financier pluriannuel, qui fixe les plafonds, est adopté par le Conseil à l'unanimité après approbation du Parlement. Le Parlement ne peut pas l'amender : il approuve ou rejette.`,
+`<b>Élément 5.</b> Le Parlement donne décharge à la Commission sur l'exécution du budget, sur recommandation du Conseil et au vu du rapport de la Cour des comptes. Le refus de décharge est politiquement lourd, même s'il n'emporte pas de conséquence juridique automatique.`,
+],
+model:`<b>NOTE FOR THE ATTENTION OF THE HEAD OF UNIT</b><br>
+<b>Subject:</b> The European Parliament's budgetary powers ahead of your first conciliation meeting<br><br>
+
+<b>1. Purpose</b><br>
+To set out what the Parliament can and cannot do on the budget, and what this means in the room.<br><br>
+
+<b>2. How the balance shifted</b><br>
+The Parliament began as a consultative assembly of national delegates and has been directly elected since 1979. The budgetary treaties of the 1970s gave it the last word on part of expenditure and the power to reject the budget as a whole. Lisbon removed the distinction between compulsory and non-compulsory expenditure, which had been the main limit on its reach.<br><br>
+
+<b>3. What this means today</b><br>
+Three points matter in practice.<br>
+First, the annual budget is adopted jointly with the Council. If they disagree, a conciliation committee has twenty-one days to agree a joint text.<br>
+Second, the multiannual financial framework is different. The Council decides unanimously and the Parliament can only consent or refuse. It cannot amend. Its leverage is therefore the threat of refusal, exercised before the text is fixed rather than during.<br>
+Third, discharge for implementation is granted by the Parliament on a Council recommendation and on the basis of the Court of Auditors' report. Refusal carries no automatic legal effect but is politically costly.<br><br>
+
+<b>4. Practical points for the meeting</b><br>
+• The twenty-one day deadline is short and binding. Positions harden quickly, so anything we can settle technically beforehand will not have to be settled politically.<br>
+• Expect the Parliament to use annual budget negotiations to reopen priorities it could not amend in the multiannual framework. This is a predictable consequence of its consent-only role there.<br>
+• Discharge is a separate track but not a separate relationship. Unresolved implementation concerns resurface in budgetary negotiations.<br><br>
+
+<b>5. In short</b><br>
+The Parliament is a co-decision-maker on the annual budget, a gatekeeper on the multiannual framework, and an auditor of implementation. Treating those three roles as one is the most common misreading.`,
+why:[
+`<b>Structure.</b> Un rappel historique très court, puis trois points opérationnels, puis une synthèse en une phrase. La note se lit en trois minutes.`,
+`<b>Concision.</b> Le rappel historique tient en trois phrases parce que le destinataire n'a pas besoin de plus : ce qui l'intéresse est la réunion de la semaine prochaine.`,
+`<b>Clarté.</b> Chaque pouvoir est nommé par ce qu'il permet et par ce qu'il ne permet pas, ce qui évite l'ambiguïté sur le cadre pluriannuel.`,
+`<b>Adaptation.</b> Destinataire : une personne qui prend ses fonctions. D'où la section pratique, le rappel du délai contraignant et l'anticipation du comportement de l'autre partie.`,
+`<b>Utilisation des sources.</b> Les cinq éléments sont utilisés, et le dernier est transformé en conseil opérationnel plutôt que recopié.`,
+],
+},
+{
+title:`Objectifs numériques à l'horizon 2030`,
+source:`État d'avancement des objectifs de la décennie numérique`,
+brief:`Vous travaillez à la direction générale des réseaux de communication, du contenu et des technologies. Votre directrice doit présenter l'état d'avancement des objectifs numériques devant un groupe de travail du Conseil. Rédigez une note d'information avec éléments de langage.`,
+sources:[
+`<b>Élément 1.</b> L'objectif fixé pour 2030 est qu'au moins 80 % des personnes âgées de 16 à 74 ans disposent de compétences numériques au moins élémentaires. Le niveau constaté récemment se situe autour de 56 %.`,
+`<b>Élément 2.</b> L'objectif de 20 millions de spécialistes des technologies de l'information employés dans l'Union est loin d'être atteint : le niveau constaté est d'environ la moitié.`,
+`<b>Élément 3.</b> L'objectif de connectivité prévoit une couverture gigabit de tous les foyers et une couverture 5G de toutes les zones habitées. La progression est plus rapide en zone urbaine qu'en zone rurale, où l'écart se creuse.`,
+`<b>Élément 4.</b> L'objectif prévoit que trois entreprises sur quatre recourent aux services d'informatique en nuage, aux données massives ou à l'intelligence artificielle. L'adoption progresse chez les grandes entreprises et stagne chez les petites.`,
+`<b>Élément 5.</b> Les écarts entre États membres sont importants sur les cinq objectifs, et la trajectoire actuelle ne conduit à atteindre aucun d'entre eux à l'échéance sans accélération.`,
+],
+model:`<b>BRIEFING NOTE</b><br>
+<b>To:</b> Director, DG CNECT<br>
+<b>Subject:</b> Speaking points for the Council working party on Digital Decade progress<br><br>
+
+<b>1. Purpose</b><br>
+To give you a defensible account of where we stand, and a line on the question you will certainly be asked: whether the 2030 targets are still realistic.<br><br>
+
+<b>2. Where we stand</b><br>
+On current trends, none of the targets is on course. Basic digital skills stand at around 56 % against a target of 80 %. The ICT specialist workforce is at roughly half of the 20 million target. Connectivity is progressing, but faster in urban than in rural areas, so the gap is widening rather than closing. Cloud, big data and artificial intelligence adoption is rising among large firms and flat among small ones. Divergence between Member States is significant on all five targets.<br><br>
+
+<b>3. Reading the numbers</b><br>
+Two of these gaps are structural rather than cyclical. Skills and workforce cannot be closed by investment alone within the remaining period, because both depend on training cycles measured in years. Connectivity and business adoption are more responsive to funding and regulation. That distinction should drive where we ask for effort.<br><br>
+
+<b>4. Speaking points</b><br>
+• "The targets remain the right benchmark. What the data show is that the current pace is not sufficient, not that the ambition was misplaced."<br>
+• "Skills is the binding constraint. A firm cannot adopt technologies it has no one to operate."<br>
+• "The rural connectivity gap is widening. Aggregate coverage figures conceal this and we should stop leading with them."<br>
+• "Adoption among small enterprises is where the largest gain per euro is available, and where progress has stalled."<br>
+• "Divergence between Member States means a single Union-level average tells us very little. National trajectories are the relevant unit of discussion."<br><br>
+
+<b>5. Point to watch</b><br>
+If pressed on whether the targets will be met, do not commit either way. The accurate answer is that they will not be met on current trends, which is precisely why the trajectory review exists.`,
+why:[
+`<b>Structure.</b> Constat chiffré, grille de lecture, éléments de langage. La grille de lecture est ce qui distingue une note d'un simple relevé de chiffres.`,
+`<b>Concision.</b> Cinq objectifs traités en un paragraphe, sans répéter les libellés officiels.`,
+`<b>Clarté.</b> La distinction entre écarts structurels et écarts conjoncturels donne au lecteur un critère de décision, pas seulement une information.`,
+`<b>Adaptation.</b> Destinataire : une directrice devant un groupe de travail du Conseil, où les États membres sont susceptibles de contester les moyennes. D'où l'insistance sur les trajectoires nationales et la consigne de ne pas s'engager sur l'atteinte des cibles.`,
+`<b>Utilisation des sources.</b> Les cinq éléments sont repris avec leurs chiffres, et le cinquième, sur la divergence, est converti en argument de méthode.`,
+],
+},
+{
+title:`Absorption des fonds de cohésion`,
+source:`Rapport d'audit sur la mise en œuvre de la politique de cohésion`,
+brief:`Vous travaillez à la direction générale de la politique régionale et urbaine. Votre directeur général rencontre le ministre chargé des fonds européens d'un État membre dont le taux d'absorption est en retard. Rédigez une note d'information assortie d'éléments de langage.`,
+sources:[
+`<b>Constatation 1.</b> Le taux d'absorption des crédits de cohésion en milieu de période de programmation reste nettement inférieur à celui observé au même stade de la période précédente.`,
+`<b>Constatation 2.</b> Le chevauchement entre la fin de la période précédente, la mise en œuvre du plan de relance et le démarrage de la période en cours a saturé les capacités administratives nationales et régionales.`,
+`<b>Constatation 3.</b> Les autorités de gestion signalent que la complexité des règles d'éligibilité et la crainte des corrections financières les conduisent à sélectionner des projets peu risqués plutôt que des projets à fort effet.`,
+`<b>Constatation 4.</b> Les petits porteurs de projets sont les plus pénalisés par la charge administrative, alors qu'ils représentent une part importante des bénéficiaires potentiels dans les régions les moins développées.`,
+`<b>Constatation 5.</b> La règle de dégagement d'office conduit à une accélération des engagements en fin de période, au détriment de la qualité de la sélection.`,
+],
+model:`<b>BRIEFING NOTE</b><br>
+<b>To:</b> Director-General, DG REGIO<br>
+<b>Subject:</b> Meeting with the Minister for European Funds of [Member State] on absorption<br><br>
+
+<b>1. Purpose</b><br>
+To prepare the discussion on the absorption shortfall and to keep it on causes rather than on blame.<br><br>
+
+<b>2. The situation</b><br>
+Absorption at mid-period is clearly below the level reached at the same stage of the previous programming period. The audit identifies causes that are largely common to Member States rather than specific to this one, which is the frame we should set early in the meeting.<br><br>
+
+<b>3. The four causes identified</b><br>
+Administrative capacity was saturated by the overlap of three exercises: closing the previous period, delivering the recovery plan and starting the current period. Eligibility rules are complex and the fear of financial corrections pushes managing authorities towards low-risk projects rather than high-impact ones. Small project promoters carry the heaviest relative administrative burden, and they are a large share of potential beneficiaries in the least developed regions. Finally, the automatic decommitment rule concentrates commitments at the end of the period, at the cost of selection quality.<br><br>
+
+<b>4. Speaking points</b><br>
+• "The shortfall is not a national failure. The overlap of three delivery exercises affected everyone, and the audit says so."<br>
+• "We are concerned about what absorption pressure does to selection quality. Spending the envelope and spending it well are not the same objective."<br>
+• "Risk aversion among managing authorities is a rational response to correction risk. If we want bolder projects, we have to reduce the penalty for good-faith error."<br>
+• "Simplification for small promoters is where we can move fastest, through simplified cost options."<br>
+• "We would rather discuss capacity now than decommitment later."<br><br>
+
+<b>5. Points to watch</b><br>
+Do not offer any flexibility on the decommitment rule: it is set in the regulation and any hint would be reported as a signal. If the Minister asks for a deadline extension, redirect to technical assistance and simplification, which are within our control.`,
+why:[
+`<b>Structure.</b> Le cadrage arrive avant les causes, ce qui est délibéré : dans une réunion tendue, poser que le problème est partagé conditionne tout le reste de l'échange.`,
+`<b>Concision.</b> Quatre causes en un paragraphe de six lignes, sans reprendre le vocabulaire administratif du rapport.`,
+`<b>Clarté.</b> La formule « dépenser l'enveloppe et bien la dépenser ne sont pas le même objectif » énonce le problème de fond en une phrase.`,
+`<b>Adaptation.</b> Destinataire : un directeur général face à un ministre. Le registre est diplomatique, l'aversion au risque des autorités de gestion est qualifiée de rationnelle plutôt que de fautive, et deux lignes rouges de négociation sont explicitées.`,
+`<b>Utilisation des sources.</b> Les cinq constatations sont utilisées, et celle sur le dégagement d'office sert à construire la ligne rouge finale.`,
+],
+},
+];
+
 const CHECKLIST = [
-`Introduction : contexte, problématique, annonce du plan`,
-`Les sources fournies sont utilisées et confrontées (pas seulement tes connaissances)`,
-`Chaque argument est illustré par un exemple concret lié à l'UE`,
-`Les deux faces du débat sont abordées`,
-`Un argument = un paragraphe, avec transitions logiques`,
-`Conclusion : synthèse + ouverture, sans argument nouveau`,
-`Relecture : orthographe, syntaxe, cohérence (en Langue 2 !)`,
-`Le temps de 40 minutes a été respecté`,
+`Objet et destinataire identifiés dès la première ligne`,
+`Plan apparent : le lecteur trouve chaque information là où il l'attend`,
+`Chaque constatation du document source est exploitée, pas seulement citée`,
+`Les désaccords ou objections contenus dans les sources sont traités, pas ignorés`,
+`Éléments de langage rédigés comme des phrases prêtes à être dites`,
+`Un point de vigilance : ce qu'il ne faut pas dire ou promettre`,
+`Aucune phrase d'introduction générale sans contenu`,
+`Registre adapté au destinataire et à la finalité`,
+`Relecture langue en Langue 2`,
+`Les 40 minutes ont été respectées`,
 ];
 
 /* ================= STOCKAGE ================= */
@@ -3268,69 +3508,79 @@ function renderDigital(){
 /* ================= EUFTE ================= */
 function renderEufte(){
   const app = document.getElementById('app');
-  let promptIdx = Math.floor(Math.random()*EUFTE_PROMPTS.length);
-  let seconds = 40*60, timer=null, running=false, dossierMode=false, finished=false;
+  let taskIdx = Math.floor(Math.random()*EUFTE_TASKS.length);
+  let seconds = 40*60, timer=null, running=false, finished=false;
   async function loadDraft(){
     try{ const r = await window.storage.get('epso-eufte-draft'); return r&&r.value?r.value:''; }catch(e){ return ''; }
   }
-  function saveDraft(txt){ window.storage.set('epso-eufte-draft', txt).catch(()=>{}); }
+  function saveDraft(txt){ try{ window.storage.set('epso-eufte-draft', txt).catch(()=>{}); }catch(e){} }
   loadDraft().then(draft=>{
     app.innerHTML = `
     <div class="card">
       <span class="eyebrow">Test 5 · EUFTE (Free-Text Essay on EU Matters) · <span class="pill l2">en Langue 2 (anglais)</span></span>
       <h2>L'écrit final</h2>
       <table class="spec-table">
-        <tr><td>Format réel</td><td>essai libre · 40 minutes</td></tr>
+        <tr><td>Format réel</td><td>consigne professionnelle à partir d'un document source · 40 minutes</td></tr>
         <tr><td>Notation</td><td>sur 10 · seuil 5/10</td></tr>
         <tr><td>Poids</td><td>15 % de la note finale (ne compte pas au préliminaire)</td></tr>
         <tr><td>Qui le passe</td><td>le top ~2 235 du classement préliminaire (1,5×)</td></tr>
-        <tr><td>Particularité</td><td>un document de référence est fourni 2 semaines avant ; l'essai s'appuie sur des sources</td></tr>
+        <tr><td>Documentation</td><td>mise en ligne par EPSO avant l'épreuve et fournie de nouveau pendant</td></tr>
       </table>
-      <div class="warn-box">EPSO évalue la façon dont tu UTILISES les sources fournies, pas seulement tes connaissances. Écrire de mémoire est le mauvais entraînement : travaille en mode dossier (bouton ci-dessous). Et écris en ANGLAIS, ta Langue 2.</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-        <button class="btn ghost" id="modeSimple">Sujet libre</button>
-        <button class="btn ghost" id="modeDossier">Mode dossier (avec sources)</button>
-      </div>
-      <div id="promptZone"></div>
+      <div class="warn-box">Ce n'est pas une dissertation d'opinion. L'épreuve blanche officielle donne un rôle, un destinataire et un type de document à produire, à partir d'un rapport source. On te demande par exemple une <b>note d'information avec éléments de langage</b> pour un directeur général. Écris en <b>anglais</b>, ta Langue 2.</div>
+
+      <details class="mth"><summary>Les cinq critères d'évaluation publiés par EPSO</summary>
+        <p>EPSO appelle ces critères des « anchors ». Ils portent sur la communication écrite : ce n'est ni un test de langue, ni un test de connaissances.</p>
+        <ul>${EUFTE_ANCHORS.map(a=>'<li>'+a+'</li>').join('')}</ul>
+        <p style="color:var(--ink-soft);font-size:12.5px;">Le cinquième est le plus discriminant : un texte brillant qui n'exploite pas le document fourni est mal noté.</p>
+      </details>
+
+      <div class="essay-meta"><span>Sujet <b id="taskNum"></b> sur ${EUFTE_TASKS.length}</span>
+        <button class="btn ghost" id="newTask" style="padding:5px 12px;font-size:12.5px;">Changer de sujet</button></div>
+      <div id="taskZone"></div>
+
       <div class="essay-meta">
         <span id="timerDisp" style="font-size:16px;font-weight:600;">40:00</span>
         <span id="wc">0 mots</span>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button class="btn" id="startTimer">▶ Chrono 40 min</button>
-        <button class="btn ghost" id="resetTimer">↺ Réinitialiser</button>
+        <button class="btn" id="startTimer">Chrono 40 min</button>
+        <button class="btn ghost" id="resetTimer">Réinitialiser</button>
       </div>
-      <textarea class="essay-area" id="essayArea" placeholder="Write your essay here (in English, your Language 2). Draft auto-saved.">${draft}</textarea>
+      <textarea class="essay-area" id="essayArea" placeholder="Write your briefing note here, in English. Draft auto-saved.">${draft}</textarea>
+      <div id="modelZone"></div>
     </div>
     <div class="card">
-      <h2 style="font-size:16px;">Structure qui marche en 40 minutes</h2>
-      <p style="font-size:13.5px;"><b>5 min</b> · lire les sources, choisir un angle, plan en 3 lignes. <b>30 min</b> · rédaction : intro (contexte + problématique + plan), 2-3 paragraphes argumentés qui CITENT et CONFRONTENT les sources, conclusion (synthèse + ouverture). <b>5 min</b> · relecture langue et cohérence.</p>
+      <h2 style="font-size:16px;">Répartition des 40 minutes</h2>
+      <p style="font-size:13.5px;"><b>8 min</b> · lire le document source et repérer une idée exploitable par constatation. <b>4 min</b> · poser le plan : objet, constat, position, éléments de langage, point de vigilance. <b>24 min</b> · rédaction. <b>4 min</b> · relecture langue.</p>
+      <div class="info-box">Le piège de temps est la lecture. Le document source contient plus de matière que nécessaire : une constatation exploitée à fond vaut mieux que cinq survolées.</div>
     </div>
     <div class="card">
       <h2 style="font-size:16px;">Grille d'auto-évaluation</h2>
       ${CHECKLIST.map((c,i)=>'<label class="checklist-item"><input type="checkbox" id="chk'+i+'"><span>'+c+'</span></label>').join('')}
       <button class="btn wide" id="finishBtn" style="margin-top:12px;">Terminer cette session</button>
     </div>`;
-    function showSimple(){
-      dossierMode=false;
-      document.getElementById('promptZone').innerHTML =
-        '<div class="essay-prompt" id="promptBox">'+EUFTE_PROMPTS[promptIdx]+'</div>'
-        +'<button class="btn ghost" id="newPrompt" style="margin-bottom:10px;">🔀 Nouveau sujet</button>';
-      document.getElementById('newPrompt').addEventListener('click',()=>{
-        let n; do{ n=Math.floor(Math.random()*EUFTE_PROMPTS.length); }while(n===promptIdx && EUFTE_PROMPTS.length>1);
-        promptIdx=n; showSimple();
-      });
+
+    function showTask(){
+      const t = EUFTE_TASKS[taskIdx];
+      document.getElementById('taskNum').textContent = (taskIdx+1);
+      document.getElementById('taskZone').innerHTML =
+         '<div class="essay-prompt">'+t.brief+'</div>'
+        +'<p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:14px 0 8px;">DOCUMENT SOURCE · '+t.source.toUpperCase()+'</p>'
+        + t.sources.map(x=>'<div class="passage-box" style="font-size:13.5px;">'+x+'</div>').join('');
+      document.getElementById('modelZone').innerHTML =
+         '<details class="mth" style="margin-top:14px;"><summary>Voir une correction notée au maximum</summary>'
+        +'<div class="info-box" style="margin-bottom:12px;">À lire seulement après avoir rédigé. Cette version vise le haut de la grille sur les cinq critères. Elle n\'est pas la seule possible : c\'est la méthode qui compte, pas les formulations.</div>'
+        +'<div class="passage-box" style="font-size:13.5px;line-height:1.65;">'+t.model+'</div>'
+        +'<p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:16px 0 8px;">POURQUOI CETTE COPIE MARQUE SUR CHAQUE CRITÈRE</p>'
+        +'<ul style="font-size:13.5px;line-height:1.6;">'+t.why.map(w=>'<li style="margin-bottom:7px;">'+w+'</li>').join('')+'</ul>'
+        +'</details>';
     }
-    function showDossier(){
-      dossierMode=true;
-      document.getElementById('promptZone').innerHTML =
-        '<div class="essay-prompt">'+EUFTE_DOSSIER.topic+'</div>'
-        + EUFTE_DOSSIER.sources.map(s=>'<div class="passage-box" style="font-size:13.5px;">'+s+'</div>').join('')
-        +'<div class="info-box">'+EUFTE_DOSSIER.note+'</div>';
-    }
-    document.getElementById('modeSimple').addEventListener('click',showSimple);
-    document.getElementById('modeDossier').addEventListener('click',showDossier);
-    showSimple();
+    document.getElementById('newTask').addEventListener('click',()=>{
+      let n; do{ n=Math.floor(Math.random()*EUFTE_TASKS.length); }while(n===taskIdx && EUFTE_TASKS.length>1);
+      taskIdx=n; showTask();
+    });
+    showTask();
+
     const area = document.getElementById('essayArea');
     const wc = document.getElementById('wc');
     function updateWC(){ const words=area.value.trim().split(/\s+/).filter(Boolean).length; wc.textContent=words+' mots'; }
@@ -3339,8 +3589,7 @@ function renderEufte(){
     area.addEventListener('input',()=>{ updateWC(); clearTimeout(saveTimeout); saveTimeout=setTimeout(()=>saveDraft(area.value),600); });
     const timerDisp = document.getElementById('timerDisp');
     function tick(){
-      seconds--; const m=Math.floor(seconds/60), s=seconds%60;
-      timerDisp.textContent = m+':'+(s<10?'0':'')+s;
+      seconds--; timerDisp.textContent = fmtTime(seconds);
       if(seconds<=0){ clearInterval(timer); running=false; }
     }
     document.getElementById('startTimer').addEventListener('click',()=>{
