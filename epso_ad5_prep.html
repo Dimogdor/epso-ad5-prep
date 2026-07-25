@@ -190,7 +190,7 @@ const MODULES = [
   {id:'strategy', ep:'', label:'Stratégie'},
 ];
 
-/* ================= BANQUE VERBAL (16 textes) ================= */
+/* ================= BANQUE VERBAL ================= */
 /* Format EPSO réel : un texte, 4 affirmations A/B/C/D, une seule pleinement
    démontrée par le texte (= bonne réponse). Les 3 autres sont fausses ou
    indémontrables (ne peut pas dire). c = index de l'affirmation correcte. */
@@ -370,9 +370,329 @@ opts:[
 `Winston Churchill présidait le congrès de La Haye.`,
 `La proposition d'Aristide Briand (1929) est postérieure au lancement du mouvement Paneuropa (1923).`],
 c:3,ex:`1929 vient après 1923 : les deux dates sont dans le texte. Le congrès de La Haye a révélé un clivage (pas un consensus), Paneuropa date de 1923 (avant-guerre), et aucune présidence du congrès n'est nommée.`},
+
+{passage:`Le mécanisme d'ajustement carbone aux frontières impose aux importateurs de certains produits, notamment le ciment, l'acier, l'aluminium et les engrais, de déclarer les émissions incorporées dans les marchandises qu'ils font entrer dans l'Union. Il a été conçu pour répondre au risque de fuite de carbone, c'est-à-dire au déplacement de la production vers des pays appliquant des contraintes climatiques moins strictes. Une période transitoire, limitée à des obligations déclaratives, a précédé l'entrée en vigueur des obligations financières. Plusieurs partenaires commerciaux de l'Union ont exprimé des réserves, estimant que le dispositif pourrait peser sur leurs exportations. La Commission a répondu que le mécanisme s'appliquait indistinctement aux producteurs européens et étrangers.`,
+opts:[
+`Le mécanisme concerne l'ensemble des produits importés dans l'Union.`,
+`Les obligations déclaratives ont précédé les obligations financières.`,
+`Tous les partenaires commerciaux de l'Union ont approuvé le dispositif.`,
+`Le mécanisme a fait diminuer les émissions mondiales de CO2.`],
+c:1,ex:`Le texte dit explicitement qu'une période transitoire limitée aux déclarations a précédé les obligations financières. Le champ est limité à certains produits énumérés, « plusieurs partenaires » ont au contraire exprimé des réserves, et aucun effet sur les émissions mondiales n'est mesuré dans le texte.`},
+
+{passage:`Le vieillissement démographique modifie la structure de la population active de l'Union. Le rapport entre le nombre de personnes de 65 ans et plus et celui des personnes en âge de travailler augmente régulièrement depuis plusieurs décennies. Cette évolution résulte de deux dynamiques distinctes : l'allongement de l'espérance de vie et la baisse durable de la fécondité. Les systèmes de retraite par répartition, qui reposent sur les cotisations des actifs, sont particulièrement exposés à ce basculement. Plusieurs États membres ont engagé des réformes portant sur l'âge de départ ou sur la durée de cotisation. D'autres misent davantage sur l'augmentation du taux d'emploi des seniors et sur l'immigration de travail.`,
+opts:[
+`L'allongement de l'espérance de vie est la seule cause du vieillissement démographique.`,
+`Les régimes par capitalisation sont plus exposés que les régimes par répartition.`,
+`Le vieillissement résulte de la conjonction d'une espérance de vie plus longue et d'une fécondité en baisse.`,
+`Tous les États membres ont relevé l'âge légal de départ à la retraite.`],
+c:2,ex:`Le texte identifie deux dynamiques distinctes, ce que reprend exactement cette affirmation. Il désigne les régimes par répartition comme les plus exposés, ne dit rien des régimes par capitalisation, et évoque « plusieurs » États membres, pas tous.`},
+
+{passage:`La politique de cohésion mobilise une part importante du budget pluriannuel de l'Union. Elle vise à réduire les écarts de développement entre les régions européennes, en concentrant l'essentiel des financements sur celles dont le produit intérieur brut par habitant est le plus éloigné de la moyenne de l'Union. Les fonds sont mis en œuvre en gestion partagée : la Commission approuve les programmes, mais la sélection des projets relève des autorités nationales et régionales. Cette architecture est régulièrement critiquée pour sa complexité administrative, qui pèse notamment sur les petits porteurs de projets. Des évaluations montrent par ailleurs que la capacité d'absorption des crédits varie fortement d'un État à l'autre.`,
+opts:[
+`La Commission sélectionne elle-même les projets financés.`,
+`La sélection des projets incombe aux autorités nationales et régionales.`,
+`La politique de cohésion représente la totalité du budget de l'Union.`,
+`La complexité administrative a été supprimée lors de la dernière réforme.`],
+c:1,ex:`La gestion partagée est décrite précisément : la Commission approuve les programmes, les autorités nationales et régionales choisissent les projets. Le texte parle d'une part importante du budget, pas de la totalité, et présente la complexité comme une critique persistante.`},
+
+{passage:`L'antibiorésistance constitue une préoccupation croissante pour les autorités sanitaires. Elle désigne la capacité de certaines bactéries à survivre à des traitements auparavant efficaces. Le phénomène est favorisé par un usage excessif ou inapproprié des antibiotiques, aussi bien en médecine humaine qu'en élevage. Des travaux publiés au cours des dernières années estiment que les infections résistantes provoquent chaque année plusieurs dizaines de milliers de décès dans l'Union. Les stratégies de réponse combinent la réduction des prescriptions, une meilleure surveillance des consommations et le soutien à la recherche de nouvelles molécules. Ce dernier volet se heurte à un obstacle économique : un antibiotique nouveau doit être utilisé le moins possible, ce qui décourage l'investissement privé.`,
+opts:[
+`Le recours excessif aux antibiotiques en élevage est sans effet sur la résistance bactérienne.`,
+`La recherche de nouveaux antibiotiques est freinée par le fait qu'ils doivent être peu utilisés.`,
+`L'antibiorésistance a été éradiquée dans plusieurs États membres.`,
+`Les nouvelles molécules sont plus rentables que les traitements existants.`],
+c:1,ex:`Le paradoxe économique est énoncé mot pour mot dans la dernière phrase. Le texte cite au contraire l'élevage parmi les causes, ne mentionne aucune éradication, et présente la faible rentabilité comme un frein.`},
+
+{passage:`Le principe de subsidiarité encadre l'exercice des compétences non exclusives de l'Union. Il prévoit que celle-ci n'intervient que si les objectifs poursuivis ne peuvent pas être atteints de manière suffisante par les États membres, et peuvent l'être mieux au niveau de l'Union en raison des dimensions ou des effets de l'action envisagée. Ce principe se distingue du principe de proportionnalité, qui porte non pas sur l'opportunité d'agir mais sur l'intensité de l'action. Les parlements nationaux disposent d'un mécanisme leur permettant de signaler qu'une proposition législative leur paraît méconnaître la subsidiarité. Ce contrôle est politique : il oblige la Commission à réexaminer sa proposition, sans pour autant la contraindre à la retirer.`,
+opts:[
+`La subsidiarité s'applique aux compétences exclusives de l'Union.`,
+`Un avis motivé des parlements nationaux contraint la Commission à retirer sa proposition.`,
+`La proportionnalité porte sur l'intensité de l'action, la subsidiarité sur l'opportunité d'agir.`,
+`Le contrôle de subsidiarité est exercé par la Cour de justice à titre principal.`],
+c:2,ex:`La distinction entre les deux principes est posée telle quelle dans le texte. La subsidiarité ne joue que hors compétences exclusives, le contrôle parlementaire oblige à réexaminer sans contraindre à retirer, et la Cour n'est pas évoquée.`},
+
+{passage:`Les océans absorbent une part significative du dioxyde de carbone émis par les activités humaines. Cette absorption ralentit le réchauffement de l'atmosphère, mais elle a une contrepartie : la dissolution du CO2 dans l'eau de mer en abaisse le pH, un phénomène désigné sous le terme d'acidification. Les organismes qui fabriquent une coquille ou un squelette calcaire, comme les mollusques et certains coraux, y sont particulièrement sensibles. Les chercheurs observent également des effets sur les stades larvaires de plusieurs espèces exploitées par la pêche. L'ampleur des conséquences économiques reste discutée, notamment parce qu'elle dépend de la capacité d'adaptation des écosystèmes, encore mal connue.`,
+opts:[
+`L'absorption du CO2 par les océans est sans effet sur leur chimie.`,
+`Les conséquences économiques de l'acidification font l'objet d'une estimation consensuelle.`,
+`L'acidification résulte de la dissolution du dioxyde de carbone dans l'eau de mer.`,
+`Les coraux sont les seuls organismes affectés par l'acidification.`],
+c:2,ex:`Le mécanisme est décrit explicitement. Le texte indique au contraire que l'absorption abaisse le pH, que l'ampleur économique « reste discutée », et cite les mollusques à côté des coraux.`},
+
+{passage:`Le programme-cadre de recherche de l'Union finance des projets sélectionnés sur la base de l'excellence scientifique, évaluée par des pairs. Une partie des crédits est allouée à des équipes individuelles, à travers des bourses attribuées sans condition de nationalité ni de thématique imposée. Une autre partie soutient des consortiums associant plusieurs pays autour de priorités définies à l'avance. Le taux de succès des candidatures reste faible, ce qui conduit certains observateurs à s'interroger sur le coût collectif du temps consacré à des dossiers non retenus. Des pays associés, qui ne sont pas membres de l'Union, participent au programme au titre d'accords spécifiques.`,
+opts:[
+`Seuls les ressortissants d'États membres peuvent bénéficier des bourses individuelles.`,
+`Des pays qui ne sont pas membres de l'Union participent au programme.`,
+`Le taux de succès des candidatures dépasse la moitié des dossiers déposés.`,
+`Toutes les subventions sont attribuées à des consortiums multinationaux.`],
+c:1,ex:`La dernière phrase mentionne les pays associés. Les bourses individuelles sont attribuées sans condition de nationalité, le taux de succès est qualifié de faible, et une partie des crédits va justement à des équipes individuelles.`},
+
+{passage:`La directive relative au détachement des travailleurs organise la situation des salariés envoyés temporairement par leur employeur dans un autre État membre. Le principe retenu est que le salarié détaché reste affilié au régime de sécurité sociale de son pays d'origine, tout en bénéficiant, pour un ensemble de matières énumérées, des règles applicables dans le pays d'accueil. Cette dissociation entre droit du travail et protection sociale a nourri des débats récurrents sur la concurrence entre systèmes nationaux. Une révision a resserré le dispositif, notamment en alignant davantage la rémunération sur celle des travailleurs locaux et en encadrant la durée du détachement.`,
+opts:[
+`Le travailleur détaché est affilié au régime de sécurité sociale du pays d'accueil.`,
+`La révision a supprimé le détachement au sein de l'Union.`,
+`Le travailleur détaché reste affilié à la sécurité sociale de son pays d'origine.`,
+`Le détachement ne fait l'objet d'aucune limite de durée.`],
+c:2,ex:`C'est le principe énoncé au début du texte. L'affiliation reste dans le pays d'origine, la révision a resserré sans supprimer, et elle a précisément encadré la durée.`},
+
+{passage:`Les villes concentrent la majorité de la population européenne et une part importante des émissions liées au chauffage et aux transports. Plusieurs d'entre elles ont mis en place des zones à faibles émissions, dont l'accès est restreint selon le niveau de pollution des véhicules. Les évaluations disponibles font état d'une amélioration mesurable de la qualité de l'air dans les périmètres concernés. Ces dispositifs suscitent toutefois des contestations, formulées principalement en termes d'équité : les ménages les plus modestes disposent souvent des véhicules les plus anciens, donc les plus susceptibles d'être exclus. Certaines municipalités ont assorti la restriction d'aides au renouvellement du parc automobile.`,
+opts:[
+`Les zones à faibles émissions n'ont produit aucun effet mesurable sur la qualité de l'air.`,
+`Toutes les municipalités concernées ont mis en place des aides au renouvellement.`,
+`Les contestations portent principalement sur l'équité sociale du dispositif.`,
+`Les véhicules récents sont les premiers exclus de ces zones.`],
+c:2,ex:`Le texte qualifie explicitement les contestations d'arguments d'équité. Il fait état d'une amélioration mesurable, dit que « certaines » municipalités accompagnent le dispositif, et ce sont les véhicules anciens qui sont visés.`},
+
+{passage:`L'intelligence artificielle générative repose sur des modèles entraînés à prédire la suite la plus probable d'une séquence, à partir de très grands volumes de textes. Cette architecture explique à la fois leur aisance rédactionnelle et leur principale limite : le modèle produit ce qui ressemble à une réponse plausible, sans disposer d'un mécanisme interne de vérification des faits. Les erreurs qui en résultent sont d'autant plus difficiles à repérer qu'elles sont formulées avec assurance. Des travaux cherchent à réduire ce phénomène, notamment en connectant le modèle à des sources documentaires consultées au moment de la réponse. Cette approche améliore la traçabilité, sans supprimer entièrement le risque.`,
+opts:[
+`Les modèles génératifs disposent d'un mécanisme interne de vérification des faits.`,
+`La connexion à des sources documentaires supprime totalement le risque d'erreur.`,
+`Les erreurs de ces modèles sont difficiles à repérer parce qu'elles sont formulées avec assurance.`,
+`Ces modèles sont entraînés uniquement sur des textes scientifiques validés.`],
+c:2,ex:`C'est la phrase centrale du texte. L'absence de vérification interne est affirmée, l'approche documentaire « ne supprime pas entièrement » le risque, et la nature des textes d'entraînement n'est pas précisée.`},
+
+{passage:`Le budget de l'Union est adopté selon une procédure faisant intervenir le Parlement européen et le Conseil sur un pied d'égalité, à partir d'un projet établi par la Commission. Il s'inscrit dans le cadre financier pluriannuel, qui fixe pour plusieurs années des plafonds de dépenses par grande catégorie. Le budget annuel doit être présenté en équilibre : l'Union ne peut pas recourir à l'emprunt pour financer son fonctionnement courant. Des instruments exceptionnels, adoptés sur des bases juridiques spécifiques, ont toutefois permis de mobiliser des emprunts pour des programmes de relance. Le financement ordinaire repose principalement sur des ressources propres versées par les États membres.`,
+opts:[
+`Le budget annuel de l'Union peut être adopté en déficit.`,
+`Le cadre financier pluriannuel fixe des plafonds de dépenses par grande catégorie.`,
+`La Commission adopte seule le budget annuel.`,
+`L'Union n'a jamais eu recours à l'emprunt.`],
+c:1,ex:`La définition du cadre pluriannuel est donnée telle quelle. Le budget doit être en équilibre, il est adopté par le Parlement et le Conseil, et le texte mentionne des emprunts exceptionnels pour la relance.`},
+
+{passage:`La pollution lumineuse désigne l'altération de l'obscurité naturelle par l'éclairage artificiel. Longtemps considérée comme une nuisance mineure, elle fait l'objet d'un intérêt scientifique croissant. Des études documentent ses effets sur les insectes nocturnes, attirés puis épuisés par les sources lumineuses, ainsi que sur les oiseaux migrateurs, dont l'orientation peut être perturbée. Chez l'être humain, l'exposition à la lumière en soirée influence la sécrétion de mélatonine et, par ce biais, la qualité du sommeil. Plusieurs collectivités ont expérimenté l'extinction de l'éclairage public à certaines heures. Les retours font état d'économies d'énergie, sans que les craintes initiales en matière de sécurité aient été confirmées par les données disponibles.`,
+opts:[
+`L'extinction nocturne de l'éclairage public a entraîné une hausse avérée de l'insécurité.`,
+`La pollution lumineuse n'affecte que les espèces animales.`,
+`Les données disponibles n'ont pas confirmé les craintes en matière de sécurité.`,
+`La pollution lumineuse fait l'objet d'un intérêt scientifique constant depuis un siècle.`],
+c:2,ex:`La dernière phrase le dit explicitement. Le texte évoque aussi des effets sur le sommeil humain et décrit un intérêt scientifique « croissant », après une longue période où le sujet était jugé mineur.`},
+
+{passage:`Le marché intérieur repose sur quatre libertés de circulation : les marchandises, les personnes, les services et les capitaux. Son approfondissement a longtemps privilégié les biens, pour lesquels l'harmonisation des normes techniques et la reconnaissance mutuelle ont produit des effets rapides. Les services demeurent plus fragmentés, en raison notamment de la diversité des régimes nationaux d'autorisation et de qualification professionnelle. Cette asymétrie est régulièrement relevée dans les rapports d'évaluation, qui estiment qu'une part substantielle du potentiel de croissance reste inexploitée. Les propositions visant à lever ces obstacles se heurtent à la sensibilité de certaines professions réglementées.`,
+opts:[
+`Le marché intérieur repose sur trois libertés de circulation.`,
+`L'intégration des services est plus avancée que celle des marchandises.`,
+`La fragmentation des services tient notamment à la diversité des régimes nationaux d'autorisation.`,
+`Les professions réglementées ont été harmonisées dans l'ensemble de l'Union.`],
+c:2,ex:`La cause est indiquée mot pour mot. Le texte énumère quatre libertés, décrit les services comme plus fragmentés que les biens, et présente les professions réglementées comme un obstacle persistant.`},
+
+{passage:`Les négociations d'adhésion à l'Union se déroulent par chapitres, correspondant aux différents domaines de l'acquis. Chaque chapitre est ouvert puis clos à l'unanimité des États membres, ce qui donne à chacun d'eux un pouvoir de blocage à toutes les étapes du processus. Les critères politiques, économiques et administratifs définis au début des années quatre-vingt-dix conditionnent l'ouverture même des négociations. La durée du processus est variable : certains pays ont adhéré moins de dix ans après le dépôt de leur candidature, d'autres conservent le statut de candidat depuis bien plus longtemps. Le traité prévoit que l'accord final soit ratifié par l'ensemble des États membres.`,
+opts:[
+`L'ouverture d'un chapitre de négociation se décide à la majorité qualifiée.`,
+`Chaque État membre peut bloquer l'ouverture comme la clôture d'un chapitre.`,
+`Tous les pays candidats adhèrent en moins de dix ans.`,
+`La ratification finale relève du seul Parlement européen.`],
+c:1,ex:`L'unanimité à l'ouverture et à la clôture est indiquée, ce qui équivaut à un pouvoir de blocage individuel. Le texte exclut la majorité qualifiée, souligne la variabilité des durées, et prévoit une ratification par l'ensemble des États membres.`},
+
+{passage:`Le transport ferroviaire de marchandises représente une part modeste du fret européen, très inférieure à celle de la route. Les causes avancées tiennent à la fois à l'infrastructure et à l'organisation : écartements et systèmes de signalisation encore hétérogènes selon les pays, priorité fréquemment accordée aux trains de voyageurs sur les lignes partagées, et difficulté à garantir des délais comparables à ceux du transport routier. Le déploiement d'un système européen unifié de gestion du trafic vise à réduire une partie de ces obstacles techniques. Son calendrier a été révisé à plusieurs reprises, le coût des équipements à bord constituant un point de friction avec les entreprises ferroviaires.`,
+opts:[
+`Le fret ferroviaire dépasse le fret routier en Europe.`,
+`Le calendrier de déploiement du système unifié de gestion du trafic a été révisé plusieurs fois.`,
+`Les systèmes de signalisation sont désormais identiques dans tous les États membres.`,
+`Les trains de marchandises sont prioritaires sur les lignes partagées.`],
+c:1,ex:`La révision répétée du calendrier figure dans la dernière phrase. Le fret ferroviaire est décrit comme très inférieur à la route, la signalisation reste hétérogène, et la priorité va aux trains de voyageurs.`},
+
+{passage:`L'agence chargée de la surveillance des frontières extérieures a vu son mandat élargi à plusieurs reprises. Initialement limitée à la coordination opérationnelle entre autorités nationales, elle dispose désormais d'un contingent propre et de compétences en matière de retour. Cette montée en puissance s'est accompagnée d'un renforcement des mécanismes de contrôle, notamment d'un dispositif interne de suivi des droits fondamentaux. Des organisations non gouvernementales estiment ces garanties insuffisantes au regard de l'ampleur des opérations menées. La responsabilité juridique demeure partagée entre l'agence et les États membres sur le territoire desquels les opérations se déroulent, ce qui complique l'identification de l'autorité redevable en cas de manquement.`,
+opts:[
+`L'agence exerce seule la responsabilité juridique des opérations.`,
+`Le partage de responsabilité entre l'agence et les États complique l'identification de l'autorité redevable.`,
+`L'agence se limite toujours à la coordination entre autorités nationales.`,
+`Les organisations non gouvernementales jugent les garanties suffisantes.`],
+c:1,ex:`La dernière phrase énonce précisément cette difficulté. Le mandat a été élargi au-delà de la coordination, la responsabilité est partagée et non exclusive, et les ONG jugent les garanties insuffisantes.`},
+
+{passage:`La production alimentaire mobilise une part importante des terres et de l'eau douce disponibles. Les régimes alimentaires riches en produits d'origine animale y contribuent davantage, en raison des surfaces nécessaires à l'alimentation du bétail. Des travaux estiment qu'un déplacement partiel vers les protéines végétales réduirait sensiblement la pression sur les ressources. Ces analyses soulignent toutefois que la comparaison dépend fortement des systèmes de production considérés : l'élevage extensif sur des prairies impropres à la culture ne se compare pas à l'engraissement intensif reposant sur des aliments importés. Les politiques publiques peinent à traduire cette diversité en instruments simples.`,
+opts:[
+`Toutes les formes d'élevage ont la même empreinte sur les ressources.`,
+`La comparaison entre régimes alimentaires dépend des systèmes de production considérés.`,
+`Le passage aux protéines végétales est sans effet sur l'usage des terres.`,
+`Les politiques publiques ont adopté des instruments adaptés à cette diversité.`],
+c:1,ex:`La nuance est explicite dans le texte. Il distingue justement élevage extensif et engraissement intensif, estime que le déplacement vers le végétal réduirait la pression, et conclut que les politiques peinent à s'adapter.`},
+
+{passage:`Le droit d'initiative législative appartient en principe à la Commission, qui décide seule de proposer ou non un texte. Le Parlement européen et le Conseil peuvent lui demander de soumettre une proposition, mais elle n'est pas tenue de donner suite : elle doit en revanche motiver un refus. Cette configuration est parfois présentée comme un déficit démocratique, l'organe élu au suffrage direct ne pouvant pas engager lui-même le processus législatif. Ses défenseurs y voient au contraire une garantie d'intérêt général, la Commission étant supposée agir indépendamment des préférences nationales. Le débat sur l'attribution d'un droit d'initiative au Parlement revient régulièrement dans les discussions sur la réforme des traités.`,
+opts:[
+`Le Parlement européen dispose d'un droit d'initiative législative général.`,
+`La Commission doit motiver son refus de donner suite à une demande de proposition.`,
+`La Commission est tenue de donner suite aux demandes du Conseil.`,
+`Le droit d'initiative du Parlement a été introduit lors de la dernière révision des traités.`],
+c:1,ex:`L'obligation de motivation est indiquée expressément. Le Parlement ne dispose pas de ce droit, la Commission n'est pas tenue de donner suite, et le texte présente la question comme un débat récurrent, non comme une réforme acquise.`},
+
+{passage:`La lutte contre l'évasion fiscale au sein de l'Union se heurte à une contrainte institutionnelle : la fiscalité directe relève de l'unanimité au Conseil. Chaque État membre peut donc s'opposer à un texte qu'il juge contraire à ses intérêts. Des avancées ont néanmoins été obtenues, notamment sur l'échange automatique d'informations entre administrations fiscales et sur la transposition d'un accord international relatif à un niveau minimum d'imposition des grandes entreprises. Les critiques portent moins sur le principe de ces mesures que sur leur portée effective, plusieurs dispositifs comportant des exceptions et des seuils qui en réduisent le champ.`,
+opts:[
+`La fiscalité directe est décidée à la majorité qualifiée au Conseil.`,
+`L'unanimité en matière de fiscalité directe donne à chaque État un droit d'opposition.`,
+`Aucune avancée n'a été obtenue en matière d'échange d'informations fiscales.`,
+`Les critiques portent principalement sur le principe des mesures adoptées.`],
+c:1,ex:`Le texte fait de l'unanimité la contrainte centrale et en tire ce droit d'opposition. Il exclut la majorité qualifiée, cite l'échange automatique parmi les avancées, et précise que les critiques visent la portée, pas le principe.`},
+
+{passage:`La stratégie de l'Union en matière de matières premières critiques repose sur trois volets : diversifier les approvisionnements, développer les capacités d'extraction et de transformation sur le territoire européen, et augmenter la part issue du recyclage. Ces objectifs sont en tension. L'ouverture de sites d'extraction se heurte à des délais d'autorisation longs et à une opposition locale fréquente. Le recyclage suppose des volumes de déchets suffisants, qui n'existent pas encore pour les technologies déployées récemment. La diversification, enfin, dépend d'accords avec des pays tiers dont les intérêts ne coïncident pas nécessairement avec ceux de l'Union.`,
+opts:[
+`Les trois volets de la stratégie se renforcent mutuellement sans difficulté.`,
+`Le recyclage est limité par l'insuffisance actuelle des volumes de déchets pour certaines technologies.`,
+`L'ouverture de sites d'extraction bénéficie de procédures d'autorisation rapides.`,
+`La diversification ne dépend d'aucun accord avec des pays tiers.`],
+c:1,ex:`Cette limite est énoncée telle quelle. Le texte dit que les objectifs sont « en tension », que les délais d'autorisation sont longs, et que la diversification dépend d'accords avec des pays tiers.`},
+
+{passage:`Le principe de primauté du droit de l'Union n'est pas inscrit dans le corps des traités. Il résulte de la jurisprudence de la Cour de justice, qui l'a dégagé au début des années soixante en le déduisant de la nature même de l'ordre juridique institué par les traités. Une déclaration annexée au traité de Lisbonne en rappelle l'existence, sans lui conférer la valeur d'une disposition du traité. Plusieurs juridictions constitutionnelles nationales acceptent la primauté tout en réservant le contrôle du respect de leur identité constitutionnelle. Cette réserve n'a été mise en œuvre que dans un nombre limité de cas, mais son existence entretient une tension latente entre les ordres juridiques.`,
+opts:[
+`Le principe de primauté figure explicitement dans le corps des traités.`,
+`La primauté a été dégagée par la jurisprudence de la Cour de justice.`,
+`Aucune juridiction constitutionnelle nationale n'accepte la primauté.`,
+`La réserve d'identité constitutionnelle est invoquée dans la majorité des affaires.`],
+c:1,ex:`L'origine jurisprudentielle est affirmée dès la deuxième phrase. Le texte précise que le principe ne figure pas dans le corps des traités, que plusieurs juridictions l'acceptent, et que la réserve n'a joué que dans un nombre limité de cas.`},
+
+{passage:`La désinformation en ligne se distingue de l'erreur par l'intention de tromper. Sa diffusion ne repose pas seulement sur la crédulité des lecteurs : les contenus qui suscitent une réaction émotionnelle forte circulent plus vite, indépendamment de leur exactitude. Les réponses envisagées se répartissent en trois familles : la régulation des plateformes, l'éducation aux médias et le soutien à la vérification indépendante. Chacune a ses limites. La régulation soulève des questions de liberté d'expression, l'éducation produit des effets lents, et la vérification intervient souvent après que le contenu a atteint son audience maximale. Aucune évaluation ne conclut à la supériorité nette d'une approche sur les autres.`,
+opts:[
+`La vérification indépendante intervient généralement avant la diffusion maximale du contenu.`,
+`Les contenus suscitant une réaction émotionnelle forte circulent plus vite.`,
+`L'éducation aux médias produit des effets rapides.`,
+`Une des trois approches s'est révélée nettement supérieure aux autres.`],
+c:1,ex:`Le mécanisme de diffusion est décrit explicitement. Le texte dit que la vérification arrive souvent trop tard, que l'éducation produit des effets lents, et qu'aucune évaluation ne départage les approches.`},
+
+{passage:`La Banque centrale européenne poursuit un objectif principal de stabilité des prix. Sans préjudice de cet objectif, elle apporte son soutien aux politiques économiques générales de l'Union. Cette hiérarchie distingue son mandat de celui de certaines banques centrales dont les objectifs d'inflation et d'emploi sont placés sur le même plan. L'indépendance de l'institution est protégée par le traité : ni la Banque, ni les banques centrales nationales, ni les membres de leurs organes de décision ne peuvent solliciter ou accepter d'instructions des gouvernements. En contrepartie, des obligations de rendre compte existent, notamment devant le Parlement européen.`,
+opts:[
+`La stabilité des prix et le soutien aux politiques économiques sont placés sur le même plan.`,
+`Le mandat de la Banque centrale européenne hiérarchise ses objectifs.`,
+`La Banque centrale européenne peut accepter des instructions des gouvernements en période de crise.`,
+`L'indépendance de la Banque exclut toute obligation de rendre compte.`],
+c:1,ex:`La hiérarchie est marquée par la formule « sans préjudice de cet objectif ». Les deux objectifs ne sont donc pas sur le même plan, l'interdiction des instructions ne comporte pas d'exception dans le texte, et des obligations de rendre compte sont mentionnées.`},
+
+{passage:`L'économie circulaire propose de substituer aux flux linéaires, qui vont de l'extraction à l'élimination, des boucles de réemploi et de recyclage. Sa mise en œuvre se heurte à des obstacles de conception : un produit assemblé par collage se démonte mal, ce qui rend la réparation coûteuse et le tri des matériaux imprécis. Des exigences d'écoconception ont donc été introduites pour certaines catégories de produits, portant notamment sur la disponibilité des pièces détachées et sur l'accès à l'information technique. Les effets attendus sont progressifs, puisqu'ils ne concernent que les produits mis sur le marché après l'entrée en application des règles.`,
+opts:[
+`Les exigences d'écoconception s'appliquent rétroactivement aux produits déjà en circulation.`,
+`Les exigences d'écoconception portent notamment sur la disponibilité des pièces détachées.`,
+`L'assemblage par collage facilite le tri des matériaux.`,
+`L'économie circulaire est fondée sur un flux linéaire optimisé.`],
+c:1,ex:`Le texte l'indique littéralement. Les règles ne concernent que les produits mis sur le marché après leur entrée en application, le collage rend le tri imprécis, et le principe est de substituer des boucles au flux linéaire.`},
+
+{passage:`Le télescope spatial mis en service récemment observe principalement dans l'infrarouge, ce qui lui permet de détecter la lumière d'objets très lointains, décalée vers les grandes longueurs d'onde par l'expansion de l'univers. Pour fonctionner, ses instruments doivent être maintenus à très basse température, d'où un bouclier thermique déployé après le lancement. Cette configuration impose une position éloignée de la Terre, hors de portée d'une mission de réparation habitée. La durée de vie de l'instrument dépend donc largement de la quantité de carburant embarquée pour le maintien en position, ainsi que de la fiabilité de composants qui ne pourront pas être remplacés.`,
+opts:[
+`Le télescope observe principalement dans le domaine visible.`,
+`Sa position le place hors de portée d'une mission de réparation habitée.`,
+`Ses composants pourront être remplacés en cas de panne.`,
+`Le bouclier thermique a été déployé avant le lancement.`],
+c:1,ex:`Le texte le dit expressément et en tire la conséquence sur la durée de vie. Il précise que l'observation se fait dans l'infrarouge, que les composants ne pourront pas être remplacés, et que le bouclier est déployé après le lancement.`},
+
+{passage:`La procédure de déficit excessif peut être ouverte lorsque le déficit public d'un État membre dépasse une valeur de référence, ou lorsque sa dette excède un seuil sans diminuer à un rythme satisfaisant. Elle donne lieu à des recommandations assorties d'un calendrier de correction. Les sanctions financières prévues par les textes n'ont jamais été appliquées, ce qui a nourri le reproche d'une discipline à géométrie variable. La révision du cadre de gouvernance économique a cherché à répondre à cette critique en différenciant les trajectoires d'ajustement selon la situation de chaque État, tout en renforçant l'appropriation nationale des engagements pris.`,
+opts:[
+`Les sanctions financières prévues par la procédure ont été appliquées à plusieurs reprises.`,
+`La procédure peut être déclenchée par le niveau de la dette et non seulement par celui du déficit.`,
+`La révision du cadre impose une trajectoire d'ajustement identique à tous les États.`,
+`La procédure de déficit excessif a été supprimée.`],
+c:1,ex:`Les deux motifs d'ouverture sont indiqués dans la première phrase. Le texte affirme que les sanctions n'ont jamais été appliquées, que la révision différencie les trajectoires, et il ne parle à aucun moment de suppression.`},
+
+{passage:`Les langues officielles de l'Union sont celles que les États membres ont désignées lors de leur adhésion. Tout citoyen peut s'adresser aux institutions dans l'une d'elles et recevoir une réponse dans la même langue. Les actes législatifs sont publiés dans l'ensemble de ces langues, qui font toutes également foi. Le fonctionnement interne repose en pratique sur un nombre plus réduit de langues de travail, ce qui suscite des débats récurrents. Le régime linguistique du Conseil est fixé à l'unanimité, ce qui rend toute modification difficile. L'Irlande a longtemps accepté une dérogation limitant la traduction en irlandais avant que celle-ci ne prenne fin.`,
+opts:[
+`Une seule version linguistique d'un acte législatif fait foi.`,
+`Le régime linguistique du Conseil est fixé à l'unanimité.`,
+`Les institutions répondent uniquement dans les langues de travail internes.`,
+`Toutes les langues parlées dans l'Union sont des langues officielles.`],
+c:1,ex:`La règle de l'unanimité figure telle quelle. Le texte précise que toutes les versions font également foi, qu'une réponse est due dans la langue de la demande, et que les langues officielles sont celles désignées par les États.`},
+
+{passage:`La résistance des sols à l'érosion dépend de leur teneur en matière organique, de leur couverture végétale et des pratiques culturales. Le labour profond, longtemps généralisé, expose la terre nue aux pluies et accélère la minéralisation du carbone stocké. Des techniques alternatives, regroupées sous le terme d'agriculture de conservation, réduisent le travail du sol et maintiennent une couverture permanente. Les résultats observés varient selon les climats et les types de sol : les gains sont nets dans certaines régions et plus incertains dans d'autres. La transition suppose par ailleurs un investissement en matériel et une période d'apprentissage pendant laquelle les rendements peuvent baisser.`,
+opts:[
+`L'agriculture de conservation donne des résultats identiques quel que soit le climat.`,
+`La transition vers ces techniques peut s'accompagner d'une baisse temporaire des rendements.`,
+`Le labour profond protège la terre de l'érosion par les pluies.`,
+`La teneur en matière organique est sans effet sur la résistance des sols.`],
+c:1,ex:`La dernière phrase mentionne cette baisse pendant l'apprentissage. Le texte souligne au contraire une variabilité selon climats et sols, décrit le labour comme exposant la terre nue, et fait de la matière organique un facteur de résistance.`},
+
+{passage:`Le Médiateur européen instruit les plaintes relatives à des cas de mauvaise administration dans l'action des institutions et organes de l'Union. Il est élu par le Parlement européen après chaque élection, pour la durée de la législature. Ses pouvoirs sont ceux de la recommandation : il ne peut ni annuler un acte, ni infliger une sanction. Son efficacité repose donc sur la publicité donnée à ses conclusions et sur la disposition des institutions à s'y conformer. Les enquêtes qu'il ouvre de sa propre initiative portent fréquemment sur des questions transversales, comme la transparence des procédures ou les délais de traitement des demandes.`,
+opts:[
+`Le Médiateur peut annuler les actes qu'il juge irréguliers.`,
+`Le Médiateur dispose de pouvoirs de recommandation, non de sanction.`,
+`Le Médiateur est nommé par la Commission.`,
+`Le Médiateur n'instruit que les plaintes émanant d'États membres.`],
+c:1,ex:`Le texte énonce cette limite explicitement. Il exclut l'annulation et la sanction, indique que le Médiateur est élu par le Parlement, et ne réserve pas la saisine aux États membres.`},
+
+{passage:`Les jeux vidéo occupent désormais une part importante des pratiques culturelles, tous âges confondus. Les travaux sur leurs effets se sont longtemps concentrés sur l'agressivité, avec des résultats contestés en raison de protocoles hétérogènes et d'effets de taille modeste. Un déplacement s'est opéré vers l'étude des usages problématiques, caractérisés par une perte de contrôle et des conséquences fonctionnelles, plutôt que par le seul temps passé. Cette approche distingue l'engagement intense, fréquent et sans dommage, d'un trouble avéré, beaucoup plus rare. Les recommandations qui en découlent insistent moins sur des limites horaires uniformes que sur le repérage de signaux d'alerte.`,
+opts:[
+`Le temps de jeu est le critère central de l'usage problématique.`,
+`Les recherches distinguent l'engagement intense d'un trouble avéré, beaucoup plus rare.`,
+`Les travaux sur l'agressivité ont abouti à des conclusions unanimes.`,
+`Les recommandations privilégient des limites horaires uniformes.`],
+c:1,ex:`Cette distinction est au cœur du texte. Il écarte le seul temps passé comme critère, qualifie les résultats sur l'agressivité de contestés, et indique que les recommandations insistent sur les signaux d'alerte plutôt que sur des durées.`},
+
+{passage:`La coopération judiciaire en matière pénale repose largement sur le principe de reconnaissance mutuelle des décisions. Le mandat d'arrêt européen en constitue l'application la plus visible : la remise d'une personne recherchée s'effectue selon une procédure judiciaire, sans passer par une décision politique. Les motifs de refus sont énumérés de façon limitative. La Cour de justice a toutefois admis que l'exécution puisse être écartée lorsqu'il existe un risque réel de violation des droits fondamentaux, au terme d'un examen en deux étapes portant sur les défaillances systémiques puis sur la situation individuelle. Cette jurisprudence introduit une exception encadrée, sans remettre en cause le principe lui-même.`,
+opts:[
+`La remise dans le cadre du mandat d'arrêt européen suppose une décision politique.`,
+`La Cour de justice a admis une exception fondée sur un examen en deux étapes.`,
+`Les motifs de refus d'exécution sont laissés à l'appréciation libre des États.`,
+`La jurisprudence a remis en cause le principe de reconnaissance mutuelle.`],
+c:1,ex:`Le mécanisme en deux étapes est décrit précisément. Le texte souligne le caractère judiciaire et non politique de la procédure, l'énumération limitative des refus, et le maintien du principe.`},
+
+{passage:`L'accès aux documents des institutions de l'Union est un droit ouvert à toute personne physique ou morale résidant ou ayant son siège dans un État membre. Le refus doit être motivé et se fonder sur une exception prévue par le règlement applicable, par exemple la protection de la vie privée ou celle des procédures juridictionnelles. Certaines exceptions cèdent devant un intérêt public supérieur à la divulgation, que le demandeur peut invoquer. En cas de refus confirmé, un recours est ouvert devant le Tribunal, ainsi qu'une plainte auprès du Médiateur. La pratique montre que les délais de traitement constituent souvent un obstacle plus effectif que les refus eux-mêmes.`,
+opts:[
+`Un refus d'accès n'a pas à être motivé.`,
+`Certaines exceptions peuvent céder devant un intérêt public supérieur à la divulgation.`,
+`Le seul recours ouvert est la plainte auprès du Médiateur.`,
+`Les délais de traitement ne posent pas de difficulté en pratique.`],
+c:1,ex:`Cette possibilité est mentionnée explicitement. Le texte impose la motivation du refus, ouvre à la fois le recours au Tribunal et la plainte au Médiateur, et présente les délais comme un obstacle souvent plus effectif que les refus.`},
+
+{passage:`Le stockage de l'électricité conditionne l'intégration des sources renouvelables variables. Les batteries lithium-ion dominent aujourd'hui les installations nouvelles, en raison d'une baisse continue de leur coût. Leur usage reste toutefois adapté à des durées courtes, de l'ordre de quelques heures. Pour les besoins saisonniers, d'autres pistes sont explorées, notamment le stockage hydraulique par pompage, limité par la géographie, et la conversion de l'électricité en hydrogène, dont le rendement global demeure faible. Aucune de ces solutions ne couvre à elle seule l'ensemble des besoins, ce qui conduit les gestionnaires de réseau à raisonner en portefeuille de moyens complémentaires.`,
+opts:[
+`Les batteries lithium-ion conviennent au stockage saisonnier.`,
+`Aucune solution de stockage ne couvre à elle seule l'ensemble des besoins.`,
+`Le stockage hydraulique par pompage est déployable partout.`,
+`La conversion en hydrogène présente un rendement global élevé.`],
+c:1,ex:`La conclusion est énoncée dans la dernière phrase. Le texte limite les batteries à quelques heures, indique que le pompage est contraint par la géographie, et qualifie le rendement de l'hydrogène de faible.`},
+
+{passage:`Le Comité économique et social européen réunit des représentants des employeurs, des salariés et d'autres composantes de la société civile. Il rend des avis, obligatoirement consultés dans les cas prévus par les traités et facultativement dans les autres. Ces avis ne lient pas les institutions législatives. Le Comité européen des régions suit une logique comparable pour les collectivités territoriales, avec une particularité : il peut saisir la Cour de justice pour faire respecter le principe de subsidiarité dans les domaines où sa consultation est obligatoire. Ces deux organes sont souvent présentés comme un contrepoids consultatif, dont l'influence réelle est difficile à mesurer.`,
+opts:[
+`Les avis du Comité économique et social lient les institutions législatives.`,
+`Le Comité européen des régions peut saisir la Cour de justice au titre de la subsidiarité.`,
+`La consultation du Comité économique et social est toujours facultative.`,
+`Le Comité européen des régions réunit des représentants des employeurs et des salariés.`],
+c:1,ex:`Cette prérogative est présentée comme la particularité du Comité des régions. Le texte précise que les avis ne lient pas, que la consultation est obligatoire dans certains cas, et que le Comité des régions représente les collectivités territoriales.`},
+
+{passage:`Les zones humides figurent parmi les milieux dont la superficie a le plus reculé au cours du siècle passé, en raison du drainage agricole et de l'urbanisation. Leur rôle est pourtant multiple : elles retiennent l'eau lors des épisodes de crue, filtrent certains polluants et abritent une diversité biologique élevée. Elles constituent aussi un réservoir de carbone, dont le drainage libère une partie dans l'atmosphère. Des programmes de restauration ont été engagés, avec des résultats variables selon l'ancienneté de la dégradation. Les milieux détruits depuis longtemps se reconstituent plus difficilement, la structure du sol et les communautés associées ne se rétablissant pas au même rythme.`,
+opts:[
+`Le drainage des zones humides stocke davantage de carbone.`,
+`Les milieux dégradés de longue date se reconstituent plus difficilement.`,
+`Les zones humides ont gagné en superficie au cours du siècle passé.`,
+`La restauration produit partout les mêmes résultats.`],
+c:1,ex:`La dernière phrase l'affirme et l'explique. Le texte indique que le drainage libère du carbone, que la superficie a reculé, et que les résultats de la restauration sont variables.`},
+
+{passage:`La règle de l'unanimité en matière de politique étrangère et de sécurité commune est régulièrement mise en cause, au motif qu'elle permet à un seul État de bloquer une position commune. Ses défenseurs objectent qu'elle garantit que les engagements pris seront effectivement soutenus par tous, puisque chacun y a consenti. Les traités prévoient déjà des aménagements, comme l'abstention constructive, qui permet à un État de ne pas participer à une action sans en empêcher l'adoption. Une clause passerelle autorise en outre le passage à la majorité qualifiée pour certaines décisions, mais son activation requiert elle-même l'unanimité, ce qui en limite la portée pratique.`,
+opts:[
+`L'abstention constructive empêche l'adoption d'une action commune.`,
+`L'activation de la clause passerelle requiert elle-même l'unanimité.`,
+`La politique étrangère commune se décide déjà à la majorité qualifiée.`,
+`Les traités ne prévoient aucun aménagement à la règle de l'unanimité.`],
+c:1,ex:`Le texte souligne ce paradoxe et la limite pratique qui en découle. L'abstention constructive permet au contraire l'adoption, la règle reste l'unanimité, et des aménagements existent.`},
+
+{passage:`Les indicateurs de bien-être cherchent à compléter le produit intérieur brut, dont les limites sont documentées de longue date : il comptabilise des dépenses de réparation comme une richesse, ignore le travail domestique et ne dit rien de la répartition. Les tableaux de bord alternatifs juxtaposent plusieurs dimensions, ce qui préserve l'information mais complique la comparaison. Les indices synthétiques, à l'inverse, fournissent un chiffre unique au prix d'une pondération arbitraire entre des grandeurs hétérogènes. Aucune des deux voies ne s'est imposée. Les statisticiens soulignent que le choix relève moins de la technique que d'un arbitrage politique sur ce qui mérite d'être mesuré.`,
+opts:[
+`Le produit intérieur brut rend compte de la répartition des richesses.`,
+`Le choix entre tableau de bord et indice synthétique relève d'un arbitrage politique.`,
+`Les indices synthétiques évitent toute pondération arbitraire.`,
+`Les tableaux de bord facilitent la comparaison entre pays.`],
+c:1,ex:`La dernière phrase l'énonce. Le texte reproche au produit intérieur brut d'ignorer la répartition, dit que l'indice synthétique suppose une pondération arbitraire, et que le tableau de bord complique la comparaison.`},
+
+{passage:`Le contrôle des concentrations confié à la Commission porte sur les opérations dépassant certains seuils de chiffre d'affaires. L'examen vise à déterminer si l'opération entraverait de manière significative une concurrence effective, notamment par la création ou le renforcement d'une position dominante. La Commission peut autoriser l'opération, l'interdire, ou l'autoriser sous conditions, par exemple la cession d'activités. Les décisions d'interdiction sont rares rapportées au nombre de notifications. Les entreprises anticipent en effet les objections en proposant des engagements dès la phase préliminaire, ce qui déplace une part importante de la négociation en amont de la décision formelle.`,
+opts:[
+`La Commission ne peut qu'autoriser ou interdire une opération.`,
+`Les entreprises proposent souvent des engagements dès la phase préliminaire.`,
+`Toutes les concentrations doivent être notifiées, quels que soient les seuils.`,
+`Les décisions d'interdiction sont majoritaires.`],
+c:1,ex:`Le texte l'indique pour expliquer la rareté des interdictions. Il mentionne aussi l'autorisation sous conditions, l'existence de seuils de chiffre d'affaires, et le caractère rare des interdictions.`},
+
+{passage:`Le déploiement de la vaccination contre certains papillomavirus vise à prévenir des cancers survenant plusieurs décennies après l'infection. Cette temporalité longue rend la démonstration d'efficacité progressive : les premiers indicateurs portent sur la réduction des infections et des lésions précancéreuses, la baisse de l'incidence des cancers n'apparaissant que plus tard dans les données. Les couvertures vaccinales varient fortement selon les pays, en fonction notamment du caractère scolaire ou non de la campagne. Les stratégies incluant les garçons se sont généralisées, sur la base d'un raisonnement de protection collective et de la prise en compte des localisations non gynécologiques.`,
+opts:[
+`La baisse de l'incidence des cancers est le premier indicateur observable.`,
+`Les premiers indicateurs d'efficacité portent sur les infections et les lésions précancéreuses.`,
+`Les couvertures vaccinales sont homogènes entre les pays.`,
+`La vaccination des garçons a été abandonnée.`],
+c:1,ex:`L'ordre d'apparition des indicateurs est décrit précisément. La baisse des cancers vient plus tard, les couvertures varient fortement, et les stratégies incluant les garçons se sont généralisées.`},
+
+{passage:`Le régime d'asile commun repose sur un principe de responsabilité de l'État de première entrée, longtemps critiqué pour la charge qu'il fait peser sur les pays situés aux frontières extérieures. Les tentatives de réforme ont buté sur l'opposition entre États favorables à une répartition obligatoire des demandeurs et États refusant tout mécanisme contraignant. Le compromis finalement retenu combine une solidarité présentée comme obligatoire dans son principe et flexible dans ses modalités : un État peut s'acquitter de sa part par une relocalisation, par une contribution financière ou par un soutien opérationnel. Cette souplesse est jugée par certains comme la condition de l'accord et par d'autres comme sa principale faiblesse.`,
+opts:[
+`Le compromis impose la relocalisation comme unique forme de solidarité.`,
+`Un État peut s'acquitter de sa part par une contribution financière.`,
+`Tous les États membres étaient favorables à une répartition obligatoire.`,
+`Le principe de responsabilité de l'État de première entrée a été unanimement approuvé.`],
+c:1,ex:`Les trois modalités sont énumérées dans le texte. La relocalisation n'est donc pas la seule voie, les États étaient divisés, et le principe de première entrée est décrit comme « longtemps critiqué ».`},
 ];
 
-/* ================= BANQUE NUMÉRIQUE (16) ================= */
+/* ================= BANQUE NUMÉRIQUE ================= */
 const NUMERIC_BANK = [
 {q:`Un pays a exporté pour 240 millions d'euros de marchandises en 2023. Ses exportations ont augmenté de 20 % par rapport à 2022. Quel était le montant des exportations en 2022 ?`,
 opts:[`192 M€`,`200 M€`,`210 M€`,`220 M€`],c:1,ex:`240 ÷ 1,20 = 200. On divise par (1 + le taux). Erreur classique : retirer 20 % de 240 donne 192, ce qui est faux.`},
@@ -506,7 +826,7 @@ const NUMERIC_TEMPLATES = [
       `Le rapport totalise `+parts.reduce((a,b)=>a+b,0)+` parts. Le plus gros en prend `+Math.max(...parts)+`, soit `+Math.max(...parts)*10+` % du total (`+gros+` M€).`,` %`); },
 ];
 
-/* ================= BANQUE ABSTRAIT (12, générées) ================= */
+/* ================= BANQUE ABSTRAIT ================= */
 function regularPoly(cx,cy,r,sides,rotDeg){
   const pts=[]; const rot=(rotDeg-90)*Math.PI/180;
   for(let i=0;i<sides;i++){const a=rot+i*2*Math.PI/sides; pts.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1));}
