@@ -170,6 +170,14 @@ footer.reset-zone button{background:none;border:none;color:var(--ink-soft);font-
 <main class="wrap" id="app"></main>
 
 <script>
+/* ponytail: l'hote d'origine fournissait window.storage ; un navigateur normal
+   (GitHub Pages, file://) ne l'a pas, et sans ce relais la progression n'etait
+   jamais ecrite. Memes cles qu'avant : epso-progress et epso-eufte-draft. */
+window.storage = window.storage || {
+  async get(k){ try{ const v=localStorage.getItem(k); return v===null?null:{value:v}; }catch(e){ return null; } },
+  async set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+};
+
 /* ================= MODULES ================= */
 const MODULES = [
   {id:'dashboard', ep:'', label:'Accueil'},
@@ -436,6 +444,66 @@ const NUMERIC_TEMPLATES = [
     return mkNum(`Un capital de `+cap+` € est placé à `+r+` % d'intérêt annuel SIMPLE. Quel est le montant total après `+n+` ans ?`,
       tot,[cap+cap*r/100, Math.round(cap*Math.pow(1+r/100,n)), tot+cap*r/100],
       `Intérêt simple = `+cap+` × `+r+` % × `+n+` ans = `+int_+` €. Total = `+tot+` €.`,` €`); },
+  ()=>{ const total=ri(3,18)*100, p=[5,10,12,20,25,40,60,75][ri(0,7)], part=total*p/100;
+    return mkNum(`Une direction a traité `+total+` dossiers dans l'année, dont `+part+` relevaient de la concurrence. Quelle part du total cela représente-t-il ?`,
+      p,[100-p, Math.round(total/part), p+5],
+      `Part = `+part+` ÷ `+total+` × 100 = `+p+` %.`,` %`); },
+  ()=>{ const a=ri(2,9)*100, p=[10,20,25,50,-20,-25,-40][ri(0,6)], b=a*(100+p)/100;
+    return mkNum(`Le budget d'un programme passe de `+a+` M€ à `+b+` M€. Quelle est la variation en pourcentage ?`,
+      p,[-p, Math.round((b-a)*100/b), p+10],
+      `Variation = (`+b+` moins `+a+`) ÷ `+a+` × 100 = `+p+` %. Le dénominateur est toujours la valeur de DÉPART.`,` %`); },
+  ()=>{ let n1=ri(1,5)*10, n2=ri(1,5)*10; if(n1===n2) n2+=10;
+    const m1=ri(8,16), m2=ri(8,16);
+    const pond=+(((n1*m1+n2*m2)/(n1+n2)).toFixed(1)), simple=+(((m1+m2)/2).toFixed(1));
+    return mkNum(`Un jury note `+n1+` candidats avec une moyenne de `+m1+`/20 et `+n2+` candidats avec une moyenne de `+m2+`/20. Quelle est la moyenne générale des `+(n1+n2)+` candidats ?`,
+      pond,[simple, m1, m2],
+      `Moyenne pondérée : (`+n1+`×`+m1+` + `+n2+`×`+m2+`) ÷ `+(n1+n2)+` = `+String(pond).replace('.',',')+`. La moyenne des deux moyennes (`+String(simple).replace('.',',')+`) est le piège : les groupes n'ont pas la même taille.`,`/20`); },
+  ()=>{ const parAgent=ri(4,12), a1=ri(3,8), a2=a1+ri(2,6); const d1=parAgent*a1, d2=parAgent*a2;
+    return mkNum(a1+` agents traitent `+d1+` dossiers par semaine. Au même rythme individuel, combien `+a2+` agents en traitent-ils ?`,
+      d2,[d1+a2-a1, Math.round(d1*a1/a2), d2+parAgent],
+      `Rythme individuel = `+d1+` ÷ `+a1+` = `+parAgent+` dossiers. `+a2+` agents traitent `+a2+` × `+parAgent+` = `+d2+` dossiers.`); },
+  ()=>{ const m=ri(2,20)*100, t=[1.1,1.2,1.25,0.8,0.9][ri(0,4)]; const res=Math.round(m*t*100)/100;
+    return mkNum(`Une facture de `+m+` € doit être convertie au taux 1 € = `+String(t).replace('.',',')+` unité de devise. Quel est le montant converti ?`,
+      res,[Math.round(m/t*100)/100, m+t, res+m/10],
+      `On multiplie par le taux : `+m+` × `+String(t).replace('.',',')+` = `+String(res).replace('.',',')+`. Diviser au lieu de multiplier est l'erreur classique.`); },
+  ()=>{ const ht=ri(2,20)*100, t=[10,20][ri(0,1)]; const ttc=ht*(100+t)/100;
+    return mkNum(`Un prestataire facture `+ht+` € hors taxes. Avec une TVA de `+t+` %, quel est le montant toutes taxes comprises ?`,
+      ttc,[ht+t, ht*(100-t)/100, ttc+ht*t/100],
+      `TTC = `+ht+` × `+(100+t)+` ÷ 100 = `+ttc+` €.`,` €`); },
+  ()=>{ const ht=ri(2,20)*100, t=[10,20,25][ri(0,2)]; const ttc=ht*(100+t)/100;
+    return mkNum(`Un montant TTC s'élève à `+ttc+` € avec une TVA de `+t+` %. Quel est le montant hors taxes ?`,
+      ht,[Math.round(ttc*(100-t)/100), ttc-t, ht+t],
+      `On divise par (1 + taux) : `+ttc+` × 100 ÷ `+(100+t)+` = `+ht+` €. Retirer `+t+` % du montant TTC donne un résultat faux.`,` €`); },
+  ()=>{ const v=ri(6,15)*10, h=ri(2,6); const d=v*h;
+    return mkNum(`Un trajet de `+d+` km est parcouru en `+h+` heures. Quelle est la vitesse moyenne ?`,
+      v,[Math.round(d/(h+1)), d-h, v+10],
+      `Vitesse = distance ÷ temps = `+d+` ÷ `+h+` = `+v+` km/h.`,` km/h`); },
+  ()=>{ const parHab=ri(20,90), pop=ri(2,12); const dep=parHab*pop;
+    return mkNum(`Un État consacre `+dep+` millions d'euros à un programme pour une population de `+pop+` millions d'habitants. Quelle est la dépense par habitant ?`,
+      parHab,[Math.round(dep/(pop*10)), dep-pop, parHab+10],
+      `Dépense par habitant = `+dep+` ÷ `+pop+` = `+parHab+` €. Les deux grandeurs sont en millions, elles se simplifient.`,` €`); },
+  ()=>{ const p=ri(2,20)*100, r1=[10,20,25][ri(0,2)], r2=[10,20,50][ri(0,2)];
+    const res=Math.round(p*(100-r1)/100*(100-r2)/100), naif=Math.round(p*(100-r1-r2)/100);
+    return mkNum(`Un prix de `+p+` € subit une remise de `+r1+` %, puis une seconde remise de `+r2+` % sur le prix déjà réduit. Quel est le prix final ?`,
+      res,[naif, Math.round(p*(100-r1)/100), res+50],
+      `On applique les coefficients l'un après l'autre : `+p+` × `+((100-r1)/100).toString().replace('.',',')+` × `+((100-r2)/100).toString().replace('.',',')+` = `+res+` €. Additionner les deux taux (`+(r1+r2)+` %) donne `+naif+` € et c'est faux.`,` €`); },
+  ()=>{ const cap=ri(1,9)*1000, r=[5,10,20,25][ri(0,3)]; const c2=Math.round(cap*(100+r)/100*(100+r)/100), simple=cap+2*cap*r/100;
+    return mkNum(`Un capital de `+cap+` € est placé à `+r+` % par an avec intérêts COMPOSÉS. Quel est le montant après 2 ans ?`,
+      c2,[simple, cap+cap*r/100, c2+cap*r/100],
+      `Intérêts composés : `+cap+` × (1 + `+r+` %)² = `+c2+` €. L'intérêt simple donnerait `+simple+` €, la différence est l'intérêt sur l'intérêt.`,` €`); },
+  ()=>{ const v0=ri(2,10)*50, k=[110,120,125,80,90,150][ri(0,5)]; const v1=v0*k/100;
+    return mkNum(`Une valeur passe de `+v0+` en année de base à `+v1+`. Quel est l'indice de l'année courante, en base 100 ?`,
+      k,[k-100, Math.round(v0*100/v1), v1-v0],
+      `Indice = `+v1+` ÷ `+v0+` × 100 = `+k+`. Un indice de `+k+` correspond à une variation de `+(k-100)+` %, ne pas confondre les deux.`); },
+  ()=>{ const eff=ri(2,20)*500, p=[10,20,25,50][ri(0,3)];
+    const res=Math.round(eff*(100+p)/100*(100-p)/100);
+    return mkNum(`Un effectif de `+eff+` agents augmente de `+p+` %, puis diminue de `+p+` % l'année suivante. Quel est l'effectif final ?`,
+      res,[eff, eff*(100+p)/100, res-eff+res],
+      `Hausse puis baisse du même taux ne ramène pas au point de départ : `+eff+` × `+((100+p)/100).toString().replace('.',',')+` × `+((100-p)/100).toString().replace('.',',')+` = `+res+`. La baisse s'applique à une base plus grande.`,` agents`); },
+  ()=>{ const parts=[[2,3,5],[1,2,7],[3,3,4],[1,4,5]][ri(0,3)]; const u=ri(2,9)*10; const total=10*u; const gros=Math.max(...parts)*u;
+    return mkNum(`Un budget de `+total+` M€ est réparti entre trois programmes selon le rapport `+parts.join(':')+`. Quel pourcentage du total revient au programme le mieux doté ?`,
+      Math.max(...parts)*10,[Math.max(...parts), Math.round(gros), 100/3|0],
+      `Le rapport totalise `+parts.reduce((a,b)=>a+b,0)+` parts. Le plus gros en prend `+Math.max(...parts)+`, soit `+Math.max(...parts)*10+` % du total (`+gros+` M€).`,` %`); },
 ];
 
 /* ================= BANQUE ABSTRAIT (12, générées) ================= */
@@ -461,8 +529,8 @@ function shapeSVG(spec){
   return '<svg viewBox="0 0 64 64" width="100%" height="100%">'+inner+'</svg>';
 }
 const ABSTRACT_BANK = [
-{title:`Rotation régulière`, seq:[{sides:4,rot:0},{sides:4,rot:30},{sides:4,rot:60}],
- opts:[{sides:4,rot:60},{sides:4,rot:90},{sides:4,rot:120},{sides:4,rot:0}], c:1,
+{title:`Rotation régulière`, seq:[{sides:5,rot:0},{sides:5,rot:30},{sides:5,rot:60}],
+ opts:[{sides:5,rot:60},{sides:5,rot:90},{sides:5,rot:120},{sides:5,rot:0}], c:1,
  ex:`Rotation de +30° à chaque étape (0, 30, 60...). Suite logique : 90°.`},
 {title:`Côtés croissants`, seq:[{sides:3,rot:0},{sides:4,rot:0},{sides:5,rot:0}],
  opts:[{sides:5,rot:0},{sides:6,rot:0},{sides:7,rot:0},{sides:4,rot:0}], c:1,
@@ -470,9 +538,9 @@ const ABSTRACT_BANK = [
 {title:`Points croissants`, seq:[{dots:2},{dots:3},{dots:4}],
  opts:[{dots:4},{dots:5},{dots:6},{dots:3}], c:1,
  ex:`+1 point à chaque étape : 2, 3, 4, donc 5.`},
-{title:`Taille croissante`, seq:[{sides:0,scale:0.5},{sides:0,scale:0.75},{sides:0,scale:1.0}],
- opts:[{sides:0,scale:1.0},{sides:0,scale:1.25},{sides:0,scale:1.5},{sides:0,scale:0.75}], c:1,
- ex:`Le rayon augmente d'un pas constant (0,25). Suite : 1,25.`},
+{title:`Taille croissante`, seq:[{sides:0,scale:0.45},{sides:0,scale:0.7},{sides:0,scale:0.95}],
+ opts:[{sides:0,scale:0.95},{sides:0,scale:1.2},{sides:0,scale:0.45},{sides:0,scale:0.7}], c:1,
+ ex:`Le rayon augmente d'un pas constant (0,25). Suite : 1,20.`},
 {title:`Deux règles : côtés + rotation`, seq:[{sides:3,rot:0},{sides:4,rot:30},{sides:5,rot:60}],
  opts:[{sides:5,rot:60},{sides:6,rot:90},{sides:7,rot:90},{sides:6,rot:60}], c:1,
  ex:`Côtés +1 ET rotation +30° simultanément. Résultat : 6 côtés, 90°.`},
@@ -486,7 +554,7 @@ const ABSTRACT_BANK = [
  opts:[{dots:6,color:'#3A2A0D'},{dots:6,color:'#A9812F'},{dots:5,color:'#3A2A0D'},{dots:7,color:'#3A2A0D'}], c:0,
  ex:`Points +1 ET assombrissement combinés. Résultat : 6 points, teinte la plus sombre.`},
 {title:`Rotation décroissante`, seq:[{sides:3,rot:90},{sides:3,rot:60},{sides:3,rot:30}],
- opts:[{sides:3,rot:30},{sides:3,rot:0},{sides:3,rot:120},{sides:3,rot:60}], c:1,
+ opts:[{sides:3,rot:30},{sides:3,rot:0},{sides:3,rot:90},{sides:3,rot:60}], c:1,
  ex:`Rotation de −30° à chaque étape (90, 60, 30). Suite : 0°.`},
 {title:`Taille décroissante + vide`, seq:[{sides:6,scale:1.0,filled:false},{sides:6,scale:0.8,filled:false},{sides:6,scale:0.6,filled:false}],
  opts:[{sides:6,scale:0.6,filled:false},{sides:6,scale:0.4,filled:false},{sides:6,scale:1.0,filled:false},{sides:6,scale:0.4,filled:true}], c:1,
@@ -513,6 +581,194 @@ const ABSTRACT_BANK = [
  opts:[{sides:6},{sides:6,hline:true},{sides:5},{sides:7,hline:true}], c:0,
  ex:`Deux règles simultanées : +1 côté à chaque étape ET alternance du trait horizontal. Suite : hexagone sans trait.`},
 ];
+
+/* ponytail: 17 séries figées, c'est deux sessions avant de tout connaître par cœur.
+   Les séries sont donc générées à partir de familles de règles paramétrées, et la
+   banque écrite à la main sert de complément. Chaque session tire des séries inédites. */
+const ABS_COLORS = ['#1B2438','#7A1F3D','#2F6B4F','#B8860B'];
+
+/* Signature visuelle d'une figure : deux figures de même clé sont indiscernables
+   à l'écran. Sert à garantir 4 options réellement distinctes, notamment pour les
+   rotations (un carré tourné de 90° est identique à lui-même). */
+function absKey(s){
+  const lines = (s.hline?1:0)+''+(s.vline?1:0);
+  if(s.dots>0) return 'd'+s.dots+'|'+(s.color||ABS_COLORS[0])+'|'+lines;
+  const n = s.sides||0;
+  const period = n>2 ? 360/n : 360;
+  const rot = n>2 ? Math.round((((s.rot||0)%period)+period)%period) : 0;
+  return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines;
+}
+
+/* Variantes plausibles de la bonne réponse : on ne fausse qu'un attribut à la fois,
+   ce qui reproduit les distracteurs réels (juste sur l'attribut visible, faux sur un autre). */
+function absPerturb(s){
+  const c = [];
+  if(s.dots>0){
+    c.push({...s,dots:s.dots+1},{...s,dots:Math.max(1,s.dots-1)},{...s,dots:s.dots+2},
+           {...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]},
+           {...s,hline:!s.hline},{...s,vline:!s.vline});
+  } else {
+    const n = s.sides||0, half = n>2 ? Math.round(360/n/2) : 45;
+    c.push({...s,sides:n===0?3:n+1});
+    if(n>3) c.push({...s,sides:n-1});
+    c.push({...s,rot:(s.rot||0)+half});
+    c.push({...s,scale:absScale((s.scale||1)+0.2)});
+    c.push({...s,scale:absScale((s.scale||1)-0.2)});
+    c.push({...s,filled:!(s.filled!==false)});
+    c.push({...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]});
+    c.push({...s,hline:!s.hline},{...s,vline:!s.vline});
+  }
+  return shuffle(c);
+}
+
+const absPick = a => a[ri(0,a.length-1)];
+/* Le rayon dessiné vaut 24 x scale dans un cadre de 64 centré sur 32 : au-delà de
+   1,2 la figure est rognée, en dessous de 0,3 elle est illisible. */
+const absScale = v => Math.max(0.3, Math.min(1.2, +(+v).toFixed(2)));
+
+/* Un carré tourné de 90° est identique à lui-même : un pas de rotation qui reboucle
+   en moins de cinq étapes rend la séquence illisible. On ne garde que les pas dont
+   le cycle visuel couvre les cinq figures. */
+function absRotStep(sides){
+  const period = 360/sides;
+  const gcd = (a,b)=> b ? gcd(b, a%b) : a;
+  const ok = [15,20,25,30,36,40,45,50,60,72].filter(d=> period/gcd(d,period) >= 5);
+  return ok.length ? absPick(ok) : 15;
+}
+
+/* Attributs constants tirés au hasard sur ceux que la famille ne fait pas varier.
+   Ils rendent chaque série visuellement différente et jouent le rôle d'attributs
+   distracteurs, exactement ce contre quoi la méthode met en garde. */
+function absDecorate(s, varies){
+  const out = {...s};
+  const free = k => varies.indexOf(k) < 0;
+  if(!out.dots){
+    if(free('filled') && ri(0,1)) out.filled = !out.filled;
+    if(free('scale') && ri(0,2)===0) out.scale = absScale((out.scale||1) * (ri(0,1)?0.75:1.15));
+    if(free('lines') && ri(0,2)===0){ if(ri(0,1)) out.hline = true; else out.vline = true; }
+  } else if(free('lines') && ri(0,2)===0){ out.hline = true; }
+  if(free('color') && ri(0,2)===0) out.color = ABS_COLORS[ri(1,3)];
+  return out;
+}
+
+/* Une famille de règles produit un état initial, une transition et son explication.
+   `varies` liste les attributs que la règle pilote, pour ne pas les écraser au décor. */
+function absFamily(){
+  switch(ri(0,8)){
+    case 0: { // rotation seule
+      const sides = absPick([3,4,5,6,8]);
+      const d = absRotStep(sides) * (ri(0,1)?1:-1);
+      return {title:`Rotation régulière`, varies:['rot'],
+        s0:{sides, rot:ri(0,11)*15, scale:1, filled:false},
+        step:s=>({...s, rot:s.rot+d}),
+        ex:`La figure tourne de ${d>0?'+':''}${d}° à chaque étape, tout le reste est constant.`};
+    }
+    case 1: { // nombre de côtés
+      const d = ri(0,3)===0 ? -1 : 1, start = d>0 ? ri(3,5) : ri(7,9);
+      return {title:`Nombre de côtés`, varies:['sides'],
+        s0:{sides:start, rot:ri(0,3)*15, scale:1, filled:false},
+        step:s=>({...s, sides:s.sides+d}),
+        ex:`Le nombre de côtés ${d>0?'augmente':'diminue'} de 1 à chaque étape. Seul cet attribut varie.`};
+    }
+    case 2: { // points
+      const d = ri(0,2)===0 ? -1 : 1, start = d>0 ? ri(1,4) : ri(6,8);
+      return {title:`Nombre de points`, varies:['dots'],
+        s0:{dots:start, color:ABS_COLORS[0]},
+        step:s=>({...s, dots:s.dots+d}),
+        ex:`Le nombre de points ${d>0?'augmente':'diminue'} de 1 à chaque étape.`};
+    }
+    case 3: { // taille
+      const mag = absPick([0.15,0.2]);
+      const up = ri(0,1)===1, d = up ? mag : -mag;
+      const start = up ? absScale(1.2-4*mag) : 1.2;
+      return {title:`Taille`, varies:['scale'],
+        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:start, filled:false},
+        step:s=>({...s, scale:absScale(s.scale+d)}),
+        ex:`Le rayon ${up?'augmente':'diminue'} d'un pas constant de ${mag.toFixed(2).replace('.',',')}. La forme ne change pas.`};
+    }
+    case 4: { // remplissage alterné + rotation
+      const sides = absPick([3,4,5,6,8]);
+      const d = absRotStep(sides);
+      return {title:`Remplissage alterné + rotation`, varies:['rot','filled'],
+        s0:{sides, rot:ri(0,7)*15, scale:1, filled:ri(0,1)===1},
+        step:s=>({...s, filled:!s.filled, rot:s.rot+d}),
+        ex:`Deux règles simultanées : le remplissage alterne plein / vide ET la figure tourne de +${d}° à chaque étape.`};
+    }
+    case 5: { // couleur cyclique
+      const len = absPick([3,4]);
+      const off = ri(0,len-1);
+      return {title:`Cycle de couleurs`, varies:['color'],
+        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:1, filled:true, color:ABS_COLORS[off]},
+        step:s=>({...s, color:ABS_COLORS[(ABS_COLORS.indexOf(s.color)+1+len)%len]}),
+        ex:`La couleur suit un cycle de ${len===3?'trois':'quatre'} teintes qui se répète, la forme reste identique.`};
+    }
+    case 6: { // traits
+      const states = [{},{hline:true},{hline:true,vline:true},{vline:true}];
+      let i = ri(0,3);
+      const s0 = {sides:absPick([0,3,4,6]), rot:ri(0,3)*15, scale:1, filled:ri(0,1)===1, ...states[i]};
+      return {title:`Traits ajoutés puis retirés`, varies:['lines'], s0,
+        step:s=>{ i=(i+1)%4; return {sides:s.sides, rot:s.rot, scale:s.scale, filled:s.filled, color:s.color, ...states[i]}; },
+        ex:`Les traits suivent un cycle : aucun, horizontal, les deux, vertical, puis on recommence.`};
+    }
+    case 7: { // côtés + rotation
+      const d = absPick([20,30,36,45]);
+      const start = ri(3,4);
+      return {title:`Côtés et rotation combinés`, varies:['sides','rot'],
+        s0:{sides:start, rot:ri(0,3)*15, scale:1, filled:false},
+        step:s=>({...s, sides:s.sides+1, rot:s.rot+d}),
+        ex:`Deux règles simultanées : +1 côté ET rotation de +${d}° à chaque étape. Vérifier les deux attributs avant de valider.`};
+    }
+    default: { // taille + remplissage
+      const mag = absPick([0.15,0.2]);
+      return {title:`Taille et remplissage`, varies:['scale','filled'],
+        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:absScale(1.2-4*mag), filled:ri(0,1)===1},
+        step:s=>({...s, scale:absScale(s.scale+mag), filled:!s.filled}),
+        ex:`Deux règles simultanées : le rayon augmente de ${mag.toFixed(2).replace('.',',')} ET le remplissage alterne plein / vide.`};
+    }
+  }
+}
+
+/* Une série complète : 4 figures visibles, la 5e à trouver parmi 4 options distinctes. */
+function genAbstract(){
+  const f = absFamily();
+  f.s0 = absDecorate(f.s0, f.varies);
+  const seq = [f.s0];
+  for(let i=1;i<5;i++) seq.push(f.step(seq[i-1]));
+  const shown = seq.slice(0,4), answer = seq[4];
+  const keys = new Set([absKey(answer)]);
+  const opts = [answer];
+  // shown[3] en tête : "la figure ne change pas" est le distracteur le plus courant.
+  for(const cand of [shown[3], shown[2]].concat(absPerturb(answer))){
+    if(opts.length>=4) break;
+    const k = absKey(cand);
+    if(keys.has(k)) continue;
+    keys.add(k); opts.push(cand);
+  }
+  let g=1;
+  while(opts.length<4){
+    const cand = answer.dots>0 ? {...answer,dots:answer.dots+2+g} : {...answer,sides:(answer.sides||0)+g,rot:(answer.rot||0)+17*g};
+    const k = absKey(cand);
+    if(!keys.has(k)){ keys.add(k); opts.push(cand); }
+    if(++g>12) break;
+  }
+  const p = shuffle(opts.map((_,i)=>i));
+  return {title:f.title, seq:shown, opts:p.map(i=>opts[i]), c:p.indexOf(0), ex:f.ex};
+}
+
+/* Une session mélange quelques séries écrites à la main et des séries générées. */
+function mkAbsSeries(n){
+  const out = shuffle(ABSTRACT_BANK).slice(0, Math.min(3, n));
+  const seen = new Set();
+  let guard = 0;
+  while(out.length<n && guard++<500){
+    const g = genAbstract();
+    const k = g.title+'#'+absKey(g.opts[g.c]);
+    if(seen.has(k)) continue;
+    seen.add(k); out.push(g);
+  }
+  while(out.length<n) out.push(genAbstract());
+  return shuffle(out);
+}
 
 /* ================= COURS UE (9 sections) ================= */
 const EU_KNOWLEDGE = [
@@ -1653,7 +1909,7 @@ const DIGITAL_QUIZ = [
 {q:`Vérifier la fiabilité d'une source en ligne avant de la citer relève de quel domaine ?`,opts:[`Communication`,`Information et données`,`Création de contenu`,`Sécurité`],c:1,ex:`Évaluer les sources = domaine 1.`},
 {q:`Paramétrer la confidentialité de ses données personnelles relève de quel domaine ?`,opts:[`Résolution de problèmes`,`Création de contenu`,`Sécurité`,`Communication`],c:2,ex:`Protection des données personnelles = domaine 4.`},
 {q:`Collaborer sur un document partagé en ligne relève de quel domaine ?`,opts:[`Communication et collaboration`,`Sécurité`,`Information`,`Création de contenu`],c:0,ex:`Outils collaboratifs = domaine 2.`},
-{q:`Diagnostiquer un dysfonctionnement technique relève de quel domaine ?`,opts:[`Communication`,`Résolution de problèmes`,`Création de contenu`,`Sécurité`],c:1,ex:`Domaine 5.`},
+{q:`Diagnostiquer un dysfonctionnement technique relève de quel domaine ?`,opts:[`Communication`,`Résolution de problèmes`,`Création de contenu`,`Sécurité`],c:1,ex:`Domaine 5 : il couvre le diagnostic technique, le choix de l'outil adapté au besoin et l'identification de ses propres lacunes.`},
 {q:`Une licence Creative Commons « BY-NC » autorise :`,opts:[`Tout usage sans condition`,`L'usage avec attribution, hors usage commercial`,`Uniquement la lecture`,`L'usage commercial avec attribution`],c:1,ex:`BY = attribution obligatoire ; NC = pas d'usage commercial.`},
 {q:`Un email prétendant venir de ta banque et demandant tes identifiants via un lien est probablement :`,opts:[`Une notification légitime`,`Du phishing (hameçonnage)`,`Un rançongiciel`,`Un spam publicitaire inoffensif`],c:1,ex:`Hameçonnage : usurper une identité de confiance pour voler des identifiants. Ne jamais cliquer, vérifier l'expéditeur.`},
 {q:`Quelle mesure renforce le plus la sécurité d'un compte en ligne ?`,opts:[`Un mot de passe court mais mémorisable`,`Le même mot de passe partout`,`L'authentification à deux facteurs`,`Se connecter uniquement en wifi public`],c:2,ex:`La double authentification ajoute une couche indépendante du mot de passe.`},
@@ -1675,6 +1931,111 @@ const DIGITAL_QUIZ = [
 {q:`À quoi servent principalement les cookies tiers ?`,opts:[`À mémoriser la langue du site`,`Au suivi publicitaire entre plusieurs sites`,`À sécuriser la connexion`,`À compresser les pages`],c:1,ex:`Déposés par un domaine différent du site visité, ils permettent le traçage inter-sites à des fins publicitaires.`},
 {q:`L'authentification à deux facteurs combine deux éléments de nature différente. Lesquels par exemple ?`,opts:[`Deux mots de passe différents`,`Un mot de passe et un code reçu sur un appareil que l'on possède`,`Deux questions secrètes`,`Un mot de passe et sa confirmation`],c:1,ex:`Ce que l'on sait + ce que l'on possède (ou ce que l'on est). Deux éléments de même nature ne font pas deux facteurs.`},
 {q:`Au sens du RGPD, une donnée pseudonymisée est :`,opts:[`Une donnée anonyme, hors du champ du RGPD`,`Toujours une donnée personnelle, car la réidentification reste possible`,`Une donnée publique`,`Une donnée définitivement chiffrée`],c:1,ex:`Seule l'anonymisation irréversible fait sortir du champ du RGPD ; la pseudonymisation, réversible, n'y suffit pas.`},
+
+/* --- Cadre DigComp --- */
+{q:`Combien de compétences le cadre DigComp 2.2 recense-t-il au total ?`,opts:[`21`,`5`,`8`,`12`],c:0,ex:`21 compétences réparties en 5 domaines. Les 8 sont les niveaux de maîtrise, à ne pas confondre.`},
+{q:`Combien de niveaux de maîtrise DigComp définit-il ?`,opts:[`8, du fondamental au très spécialisé`,`3, débutant, intermédiaire, avancé`,`5, un par domaine`,`21, un par compétence`],c:0,ex:`Huit niveaux regroupés en quatre paliers : fondamental, intermédiaire, avancé, très spécialisé.`},
+{q:`Quel domaine DigComp couvre la création de contenu numérique et le droit d'auteur ?`,opts:[`Domaine 3`,`Domaine 1`,`Domaine 4`,`Domaine 5`],c:0,ex:`Domaine 3 : développement de contenus, intégration, droits d'auteur et licences, programmation.`},
+{q:`La version DigComp 2.2 publiée en 2022 a notamment ajouté des exemples portant sur :`,opts:[`L'intelligence artificielle et les données`,`La programmation en assembleur`,`La maintenance de serveurs`,`La comptabilité numérique`],c:0,ex:`DigComp 2.2 intègre des exemples liés à l'IA, aux données et au télétravail, sans changer la structure en 5 domaines.`},
+{q:`Reconnaître qu'un système de recommandation oriente ce que l'on voit en ligne relève de :`,opts:[`L'information et la littératie des données`,`La création de contenu`,`La sécurité`,`La résolution de problèmes`],c:0,ex:`Comprendre comment l'information est filtrée et hiérarchisée appartient au domaine 1.`},
+
+/* --- Tableur --- */
+{q:`Dans un tableur, que renvoie la fonction RECHERCHEV (VLOOKUP) ?`,opts:[`Une valeur d'une colonne donnée, sur la ligne où la clé est trouvée`,`La somme d'une plage`,`Le nombre de cellules non vides`,`La position d'une valeur dans une ligne`],c:0,ex:`Elle cherche une clé dans la première colonne d'une plage et renvoie la valeur d'une colonne indiquée sur la même ligne.`},
+{q:`Dans un tableur, la référence A$1 recopiée vers le bas :`,opts:[`Garde la ligne 1 mais laisse la colonne s'adapter`,`Se décale entièrement`,`Reste totalement figée`,`Provoque une erreur`],c:0,ex:`Le dollar fige ce qui le suit : ici la ligne. C'est une référence mixte.`},
+{q:`À quoi sert principalement un tableau croisé dynamique ?`,opts:[`À agréger et ventiler rapidement un grand tableau selon plusieurs critères`,`À vérifier l'orthographe`,`À protéger un classeur par mot de passe`,`À convertir un fichier en PDF`],c:0,ex:`Il regroupe les données par catégories et calcule des agrégats sans modifier la source.`},
+{q:`Une cellule affiche #DIV/0!. Que s'est-il passé ?`,opts:[`Une division par une cellule vide ou nulle`,`La colonne est trop étroite`,`Le format de la cellule est incorrect`,`Le fichier est corrompu`],c:0,ex:`La colonne trop étroite affiche des dièses en série, ce qui est un symptôme différent.`},
+{q:`Quelle fonction compte les cellules d'une plage remplissant une condition ?`,opts:[`NB.SI (COUNTIF)`,`SOMME (SUM)`,`NBVAL (COUNTA)`,`MOYENNE (AVERAGE)`],c:0,ex:`NBVAL compte toutes les cellules non vides sans condition ; NB.SI applique un critère.`},
+{q:`Trier un tableau en ne sélectionnant qu'une seule colonne risque :`,opts:[`De désolidariser les colonnes et de fausser toutes les lignes`,`De supprimer la colonne`,`De verrouiller le fichier`,`De convertir les nombres en texte`],c:0,ex:`Erreur classique et souvent irrattrapable : il faut étendre la sélection à toute la plage.`},
+{q:`Le format CSV se distingue du format XLSX parce qu'il :`,opts:[`Ne conserve ni formules, ni mise en forme, ni feuilles multiples`,`Compresse mieux les données`,`Gère les macros`,`Est propriétaire`],c:0,ex:`Le CSV est du texte brut avec un séparateur : il transporte des valeurs, rien d'autre.`},
+{q:`Pour empêcher qu'une plage de référence se décale quand on recopie une formule, on utilise :`,opts:[`Une référence absolue avec des dollars`,`Un commentaire de cellule`,`Un format conditionnel`,`Un filtre automatique`],c:0,ex:`$A$1:$B$20 reste identique quelle que soit la cellule de destination.`},
+{q:`Une mise en forme conditionnelle sert à :`,opts:[`Changer l'apparence des cellules selon la valeur qu'elles contiennent`,`Empêcher la saisie de données`,`Créer un graphique`,`Verrouiller une feuille`],c:0,ex:`Elle rend visible un seuil ou une anomalie sans modifier la donnée.`},
+{q:`Quel type de graphique convient le mieux pour montrer l'évolution d'une valeur dans le temps ?`,opts:[`Une courbe`,`Un camembert`,`Un nuage de points sans axe temporel`,`Un histogramme empilé à 100 %`],c:0,ex:`Le camembert montre une répartition à un instant donné, pas une évolution.`},
+
+/* --- Traitement de texte et documents --- */
+{q:`Pourquoi utiliser des styles de titre plutôt que de mettre le texte en gras à la main ?`,opts:[`Ils permettent la table des matières automatique, la navigation et l'accessibilité`,`Ils réduisent la taille du fichier`,`Ils empêchent la modification du document`,`Ils sont obligatoires en droit de l'Union`],c:0,ex:`Les styles portent la structure logique du document, exploitée par les sommaires et les lecteurs d'écran.`},
+{q:`Le suivi des modifications dans un traitement de texte permet surtout :`,opts:[`De voir qui a modifié quoi et d'accepter ou refuser chaque changement`,`De chiffrer le document`,`De compresser les images`,`De verrouiller la mise en page`],c:0,ex:`C'est l'outil de base du travail rédactionnel à plusieurs.`},
+{q:`Le format PDF/A se distingue d'un PDF ordinaire parce qu'il est conçu pour :`,opts:[`L'archivage à long terme, avec polices et ressources embarquées`,`L'impression haute définition uniquement`,`Les formulaires interactifs`,`La lecture sur mobile`],c:0,ex:`PDF/A interdit les dépendances externes pour que le document reste lisible dans plusieurs décennies.`},
+{q:`Le publipostage (mail merge) sert à :`,opts:[`Générer un document personnalisé par destinataire à partir d'une source de données`,`Envoyer un même email à une liste cachée`,`Fusionner deux fichiers PDF`,`Trier un carnet d'adresses`],c:0,ex:`Un modèle plus un tableau de données donne autant de documents que de lignes.`},
+{q:`Que sont les métadonnées d'un fichier bureautique ?`,opts:[`Des informations sur le fichier, comme l'auteur ou l'historique, souvent invisibles à l'écran`,`Le texte du document`,`Les images intégrées`,`Le format d'enregistrement`],c:0,ex:`Elles peuvent divulguer un nom d'auteur ou un commentaire oublié : il faut les nettoyer avant diffusion externe.`},
+{q:`Le format ODF (OpenDocument) présente l'avantage d'être :`,opts:[`Un standard ouvert, non lié à un éditeur unique`,`Plus compact que tous les autres formats`,`Réservé aux administrations`,`Illisible sans licence`],c:0,ex:`Les institutions européennes privilégient les formats ouverts pour l'interopérabilité et la pérennité.`},
+
+/* --- Recherche et web --- */
+{q:`Dans un moteur de recherche, mettre une expression entre guillemets permet de :`,opts:[`Chercher l'expression exacte`,`Exclure l'expression`,`Chercher un synonyme`,`Limiter à un site`],c:0,ex:`L'opérateur site: limite à un domaine, le tiret exclut un terme.`},
+{q:`Que fait l'opérateur site:europa.eu dans une recherche ?`,opts:[`Il restreint les résultats à ce domaine`,`Il exclut ce domaine`,`Il cherche le mot europa`,`Il trie par date`],c:0,ex:`Utile pour retrouver un document officiel sans passer par le moteur interne d'un site.`},
+{q:`Le protocole HTTPS garantit avant tout :`,opts:[`Le chiffrement de la communication entre le navigateur et le serveur`,`Que le contenu du site est véridique`,`Que le site respecte le RGPD`,`Que le site n'utilise pas de cookies`],c:0,ex:`Le cadenas dit que la liaison est chiffrée, pas que le site est honnête. Un site de hameçonnage peut être en HTTPS.`},
+{q:`Dans l'adresse https://ec.europa.eu/info/index_fr.htm, quel élément est le nom de domaine ?`,opts:[`ec.europa.eu`,`https`,`/info/`,`index_fr.htm`],c:0,ex:`Vérifier le domaine, et surtout sa fin, est le premier réflexe contre le hameçonnage.`},
+{q:`À quoi sert le DNS ?`,opts:[`À traduire un nom de domaine en adresse IP`,`À chiffrer le trafic`,`À bloquer les publicités`,`À stocker les cookies`],c:0,ex:`C'est l'annuaire de l'internet : sans lui, il faudrait retenir les adresses numériques.`},
+{q:`Une bulle de filtre désigne :`,opts:[`L'enfermement progressif dans des contenus conformes à ses opinions, par personnalisation algorithmique`,`Un filtre antispam`,`Un pare-feu applicatif`,`Un cache de navigateur`],c:0,ex:`Notion centrale du domaine 1 : la personnalisation réduit l'exposition aux points de vue divergents.`},
+{q:`Face à une information virale non sourcée, la première démarche est :`,opts:[`De remonter à la source primaire et de la recouper`,`De la partager en demandant confirmation`,`De vérifier le nombre de partages`,`De consulter les commentaires`],c:0,ex:`Partager pour vérifier amplifie l'information avant de l'avoir validée.`},
+{q:`La recherche d'image inversée sert principalement à :`,opts:[`Retrouver l'origine et les usages antérieurs d'une image`,`Améliorer la résolution d'une image`,`Convertir une image en texte`,`Supprimer les métadonnées`],c:0,ex:`Outil de base pour détecter une photo ancienne recyclée dans un contexte trompeur.`},
+
+/* --- Sécurité --- */
+{q:`La règle de sauvegarde dite 3-2-1 recommande :`,opts:[`3 copies, sur 2 supports différents, dont 1 hors site`,`3 mots de passe, 2 comptes, 1 sauvegarde`,`3 sauvegardes par jour pendant 2 semaines`,`3 utilisateurs, 2 serveurs, 1 pare-feu`],c:0,ex:`La copie hors site protège contre l'incendie, le vol et le rançongiciel qui chiffre le réseau local.`},
+{q:`Quel est l'intérêt principal d'un gestionnaire de mots de passe ?`,opts:[`Permettre un mot de passe unique et long par service, sans les mémoriser`,`Rendre les mots de passe plus courts`,`Supprimer le besoin d'authentification`,`Partager ses accès plus facilement`],c:0,ex:`Il casse la réutilisation du même mot de passe, qui transforme une fuite en compromission généralisée.`},
+{q:`Qu'est-ce qu'une vulnérabilité de type « zero-day » ?`,opts:[`Une faille exploitée avant qu'un correctif ne soit disponible`,`Une faille vieille de moins d'un an`,`Un virus qui se déclenche à minuit`,`Une panne matérielle`],c:0,ex:`L'éditeur a zéro jour d'avance : d'où l'importance des mesures qui ne dépendent pas d'un correctif.`},
+{q:`L'ingénierie sociale consiste à :`,opts:[`Manipuler une personne pour obtenir un accès ou une information`,`Analyser les réseaux sociaux`,`Concevoir une interface utilisateur`,`Cartographier un réseau informatique`],c:0,ex:`Elle vise l'humain, pas la machine : aucune mise à jour ne corrige cette faille.`},
+{q:`Brancher une clé USB trouvée sur un parking est risqué parce que :`,opts:[`Elle peut contenir un logiciel malveillant ou se faire passer pour un clavier`,`Elle peut être trop lente`,`Elle risque d'être formatée`,`Elle consomme de la batterie`],c:0,ex:`Certaines clés piégées émulent un clavier et tapent des commandes dès le branchement.`},
+{q:`Le chiffrement du disque d'un ordinateur portable protège surtout contre :`,opts:[`La lecture des données en cas de vol de la machine`,`Les virus`,`Le hameçonnage`,`La panne du disque`],c:0,ex:`Il protège les données au repos ; il ne remplace ni l'antivirus ni la sauvegarde.`},
+{q:`Un pare-feu (firewall) a pour fonction de :`,opts:[`Filtrer les connexions entrantes et sortantes selon des règles`,`Détecter et supprimer les virus`,`Chiffrer les fichiers`,`Sauvegarder les données`],c:0,ex:`Il contrôle le trafic réseau ; c'est l'antivirus qui analyse les fichiers.`},
+{q:`Que doit-on faire en premier si l'on soupçonne avoir cliqué sur un lien de hameçonnage au travail ?`,opts:[`Signaler immédiatement l'incident au service informatique`,`Supprimer l'email et ne rien dire`,`Changer seulement son fond d'écran`,`Attendre de voir si un problème survient`],c:0,ex:`Le délai de signalement conditionne la capacité à limiter la propagation. Le silence est le pire choix.`},
+{q:`Un rançongiciel se distingue d'un logiciel espion parce qu'il :`,opts:[`Rend les données inaccessibles et exige un paiement`,`Copie discrètement les frappes clavier`,`Affiche des publicités`,`Ralentit le processeur`],c:0,ex:`Le premier bloque, le second observe sans se faire remarquer.`},
+{q:`Pourquoi ne faut-il pas réutiliser le même mot de passe sur plusieurs sites ?`,opts:[`Une seule fuite permet alors d'accéder à tous les comptes`,`Cela ralentit la connexion`,`Les sites l'interdisent`,`Cela sature le gestionnaire de mots de passe`],c:0,ex:`Les listes d'identifiants fuités sont rejouées automatiquement sur d'autres services.`},
+{q:`Le sigle ENISA désigne :`,opts:[`L'Agence de l'Union européenne pour la cybersécurité`,`L'autorité européenne de protection des données`,`Le régulateur européen des télécoms`,`Un standard de chiffrement`],c:0,ex:`Basée en Grèce, elle appuie les États membres et la Commission en matière de cybersécurité.`},
+{q:`Un certificat de site expiré signifie que :`,opts:[`L'identité du serveur n'est plus vérifiée par une autorité, la prudence s'impose`,`Le site a été piraté`,`Le site est illégal`,`Le contenu est erroné`],c:0,ex:`Souvent une négligence administrative, mais impossible à distinguer d'une interception : on ne saisit rien de sensible.`},
+
+/* --- RGPD et protection des données --- */
+{q:`Le RGPD s'applique depuis quelle date ?`,opts:[`Le 25 mai 2018`,`Le 1er janvier 2016`,`Le 25 mai 2016`,`Le 1er janvier 2020`],c:0,ex:`Adopté en 2016 (règlement 2016/679), il est devenu applicable après deux ans de transition, le 25 mai 2018.`},
+{q:`En cas de violation de données personnelles, sous quel délai le responsable de traitement doit-il notifier l'autorité de contrôle ?`,opts:[`72 heures`,`24 heures`,`7 jours`,`1 mois`],c:0,ex:`72 heures après en avoir pris connaissance, sauf si la violation est peu susceptible d'engendrer un risque.`},
+{q:`Combien de bases légales le RGPD prévoit-il pour un traitement de données ?`,opts:[`Six`,`Deux`,`Quatre`,`Dix`],c:0,ex:`Consentement, contrat, obligation légale, intérêts vitaux, mission d'intérêt public, intérêt légitime.`},
+{q:`Quelle est la différence entre responsable de traitement et sous-traitant au sens du RGPD ?`,opts:[`Le premier détermine les finalités et les moyens, le second agit pour son compte`,`Le premier est public, le second privé`,`Le premier collecte, le second héberge`,`Il n'y a aucune différence juridique`],c:0,ex:`La qualification dépend du pouvoir de décision sur le traitement, pas de la nature de l'organisme.`},
+{q:`Une analyse d'impact relative à la protection des données (AIPD) est obligatoire :`,opts:[`Quand le traitement est susceptible d'engendrer un risque élevé pour les droits et libertés`,`Pour tout traitement, sans exception`,`Uniquement dans le secteur public`,`Uniquement en cas de transfert hors UE`],c:0,ex:`Article 35 : le critère est le risque élevé, apprécié notamment pour la surveillance systématique ou les données sensibles.`},
+{q:`Le principe de minimisation des données impose :`,opts:[`De ne collecter que les données adéquates et nécessaires à la finalité`,`De supprimer les données tous les ans`,`De chiffrer toutes les données`,`De limiter le nombre d'utilisateurs`],c:0,ex:`Collecter au cas où est contraire au RGPD : la finalité détermine le périmètre.`},
+{q:`Quel organe supervise le traitement des données personnelles par les institutions de l'Union elles-mêmes ?`,opts:[`Le Contrôleur européen de la protection des données`,`Le Comité européen de la protection des données`,`La Cour des comptes européenne`,`Le Médiateur européen`],c:0,ex:`Le CEPD contrôle les institutions ; le Comité (CEPD au sens de l'article 68) réunit les autorités nationales.`},
+{q:`Le montant maximal des amendes prévues par le RGPD peut atteindre :`,opts:[`20 millions d'euros ou 4 % du chiffre d'affaires annuel mondial, le montant le plus élevé étant retenu`,`1 million d'euros`,`10 % du chiffre d'affaires national`,`Un montant fixé par chaque État membre`],c:0,ex:`Deux plafonds existent : 10 M€ ou 2 % pour certains manquements, 20 M€ ou 4 % pour les plus graves.`},
+{q:`Le consentement au sens du RGPD doit notamment être :`,opts:[`Libre, spécifique, éclairé et univoque`,`Écrit et signé`,`Renouvelé chaque mois`,`Donné devant témoin`],c:0,ex:`Une case pré-cochée ou un consentement groupé pour des finalités multiples ne remplit pas ces conditions.`},
+{q:`Le droit à l'effacement au sens du RGPD :`,opts:[`N'est pas absolu et cède notamment devant une obligation légale de conservation`,`S'applique en toutes circonstances`,`Ne concerne que les moteurs de recherche`,`Suppose l'accord du sous-traitant`],c:0,ex:`Article 17 : plusieurs exceptions existent, dont l'obligation légale et la liberté d'expression.`},
+{q:`La désignation d'un délégué à la protection des données est obligatoire notamment :`,opts:[`Pour les autorités et organismes publics`,`Pour toute entreprise de plus de dix salariés`,`Pour tout site internet`,`Uniquement sur demande de l'autorité de contrôle`],c:0,ex:`Également en cas de suivi systématique à grande échelle ou de traitement à grande échelle de données sensibles.`},
+
+/* --- Acquis numérique de l'Union --- */
+{q:`Le règlement sur les services numériques (DSA) qualifie de très grande plateforme un service atteignant :`,opts:[`45 millions d'utilisateurs actifs mensuels dans l'Union`,`10 millions d'utilisateurs`,`100 millions d'utilisateurs`,`1 million d'utilisateurs`],c:0,ex:`45 millions, soit environ 10 % de la population de l'Union. Ce seuil déclenche des obligations renforcées.`},
+{q:`Le règlement sur les marchés numériques (DMA) vise :`,opts:[`Les grandes plateformes qualifiées de contrôleurs d'accès`,`Tous les commerçants en ligne`,`Les seuls réseaux sociaux`,`Les fournisseurs d'accès à internet`],c:0,ex:`Il impose des obligations ex ante aux gatekeepers pour rétablir la contestabilité des marchés numériques.`},
+{q:`Parmi les seuils quantitatifs de désignation d'un contrôleur d'accès au titre du DMA figure :`,opts:[`45 millions d'utilisateurs finaux actifs par mois et 10 000 entreprises utilisatrices par an dans l'Union`,`1 million d'utilisateurs et 100 entreprises`,`Un chiffre d'affaires mondial supérieur à 500 millions d'euros`,`Une présence dans au moins cinq États membres`],c:0,ex:`S'y ajoute un critère financier : 7,5 milliards d'euros de chiffre d'affaires dans l'EEE ou 75 milliards de capitalisation.`},
+{q:`Le règlement sur l'intelligence artificielle repose sur :`,opts:[`Une approche par les risques, du risque inacceptable au risque minimal`,`Une interdiction générale de l'IA générative`,`Une autorisation préalable pour tout système d'IA`,`Un régime purement volontaire`],c:0,ex:`Quatre niveaux : inacceptable (interdit), élevé (encadré), limité (transparence), minimal (libre).`},
+{q:`Le règlement sur l'intelligence artificielle est entré en vigueur :`,opts:[`Le 1er août 2024, avec une application échelonnée`,`Le 1er janvier 2023, d'un seul bloc`,`Le 25 mai 2018`,`Il n'est pas encore adopté`],c:0,ex:`Interdictions applicables depuis février 2025, obligations sur les modèles à usage général depuis août 2025, gros du texte en août 2026.`},
+{q:`Parmi les pratiques interdites par le règlement sur l'intelligence artificielle figure :`,opts:[`La notation sociale des personnes par les autorités publiques`,`Tout usage de la reconnaissance vocale`,`Les systèmes de recommandation`,`Les assistants de rédaction`],c:0,ex:`Sont aussi visées la manipulation exploitant des vulnérabilités et, sous réserve d'exceptions, l'identification biométrique à distance en temps réel à des fins répressives.`},
+{q:`La directive NIS2 porte sur :`,opts:[`Un niveau élevé commun de cybersécurité pour les entités essentielles et importantes`,`La protection des données personnelles`,`Le commerce électronique`,`Les droits d'auteur`],c:0,ex:`Elle élargit fortement le champ sectoriel par rapport à NIS1 et renforce les obligations de gestion du risque et de notification.`},
+{q:`Le portefeuille européen d'identité numérique est issu de la révision de quel cadre ?`,opts:[`eIDAS`,`Le RGPD`,`Le DSA`,`Le code des communications électroniques`],c:0,ex:`Le règlement eIDAS 2 prévoit que chaque État membre propose un portefeuille d'identité numérique à ses citoyens.`},
+{q:`Le règlement sur les données (Data Act) porte principalement sur :`,opts:[`L'accès et le partage des données générées par les objets connectés`,`La protection des données personnelles`,`Le contenu illicite en ligne`,`Le droit d'auteur`],c:0,ex:`Il facilite aussi le changement de fournisseur de services de traitement de données, donc la portabilité dans le nuage.`},
+{q:`La directive sur l'accessibilité des sites internet du secteur public impose :`,opts:[`Des sites et applications perceptibles, utilisables, compréhensibles et robustes`,`Un site en 24 langues`,`Un hébergement dans l'Union`,`Une version imprimable de chaque page`],c:0,ex:`Ces quatre principes sont ceux des règles WCAG, référence technique de l'accessibilité numérique.`},
+{q:`Parmi les objectifs de la décennie numérique à l'horizon 2030 figure :`,opts:[`80 % des adultes dotés de compétences numériques de base`,`100 % des adultes titulaires d'un diplôme informatique`,`La fin des services publics en présentiel`,`Un fournisseur de cloud européen unique`],c:0,ex:`S'y ajoutent 20 millions de spécialistes des TIC, la couverture gigabit de tous les foyers et l'usage du nuage, des données massives ou de l'IA par 75 % des entreprises.`},
+{q:`Le règlement sur la cyberrésilience impose des exigences de sécurité :`,opts:[`Aux produits comportant des éléments numériques, tout au long de leur cycle de vie`,`Aux seuls sites gouvernementaux`,`Aux réseaux sociaux`,`Aux fournisseurs d'accès uniquement`],c:0,ex:`Il vise le matériel et le logiciel mis sur le marché, avec des obligations de correctifs pendant une durée déterminée.`},
+{q:`Que garantit une licence de données ouvertes appliquée à une base publique ?`,opts:[`Sa réutilisation libre, y compris commerciale, sous conditions d'attribution`,`Sa gratuité pour les seuls chercheurs`,`Son caractère anonyme`,`Son exactitude`],c:0,ex:`L'ouverture porte sur les conditions juridiques de réutilisation, pas sur la qualité de la donnée.`},
+
+/* --- Collaboration et communication --- */
+{q:`Envoyer un message à une longue liste externe en mettant les adresses en copie visible :`,opts:[`Divulgue les adresses de tous les destinataires entre eux`,`Accélère l'envoi`,`Améliore la délivrabilité`,`Est requis par le RGPD`],c:0,ex:`Il faut utiliser la copie cachée : c'est une violation de données courante et facilement évitable.`},
+{q:`Dans un espace de travail partagé, accorder à un collègue un droit de commentaire plutôt que d'édition permet :`,opts:[`Qu'il puisse suggérer sans modifier le document lui-même`,`Qu'il puisse seulement lire`,`Qu'il devienne propriétaire du fichier`,`De verrouiller le document`],c:0,ex:`La gradation lecture, commentaire, édition, propriété est le principe du moindre privilège appliqué aux documents.`},
+{q:`Le principe du moindre privilège consiste à :`,opts:[`N'accorder que les droits strictement nécessaires à la tâche`,`Donner tous les droits aux cadres`,`Restreindre l'accès aux seuls informaticiens`,`Supprimer les comptes inactifs`],c:0,ex:`Il limite l'ampleur des dégâts quand un compte est compromis.`},
+{q:`Travailler simultanément à plusieurs sur un même document en ligne évite surtout :`,opts:[`La prolifération de versions divergentes envoyées par pièce jointe`,`Les fautes d'orthographe`,`Les pannes réseau`,`Le besoin de sauvegarde`],c:0,ex:`Une source unique de vérité remplace le ballet des versions finale, finale2, finale_corrigee.`},
+{q:`Un calendrier partagé indiquant la disponibilité sans le détail des rendez-vous illustre :`,opts:[`Un compromis entre coopération et protection de la vie privée`,`Une faille de sécurité`,`Une obligation du RGPD`,`Une limite technique`],c:0,ex:`Le partage gradué de l'information est une compétence du domaine communication et collaboration.`},
+{q:`La netiquette recommande, dans un courriel professionnel :`,opts:[`Un objet explicite et un message adapté au destinataire`,`Des majuscules pour insister`,`Une réponse à tous systématique`,`Des pièces jointes volumineuses plutôt qu'un lien`],c:0,ex:`Les majuscules équivalent à crier ; le lien vers un espace partagé évite de saturer les boîtes.`},
+{q:`Une signature électronique qualifiée au sens du droit de l'Union :`,opts:[`A un effet juridique équivalent à celui d'une signature manuscrite`,`N'a aucune valeur probante`,`Vaut uniquement entre entreprises`,`Est réservée aux administrations`],c:0,ex:`C'est le niveau le plus élevé prévu par eIDAS, au-dessus de la signature simple et de la signature avancée.`},
+
+/* --- Contenu, droit d'auteur, accessibilité --- */
+{q:`Une licence Creative Commons « ND » (No Derivatives) interdit :`,opts:[`La diffusion d'une version modifiée de l'œuvre`,`Toute reproduction`,`L'usage commercial`,`La citation`],c:0,ex:`ND autorise le partage à l'identique de l'œuvre entière, mais pas la publication d'adaptations.`},
+{q:`Le domaine public en droit d'auteur désigne :`,opts:[`Les œuvres dont les droits patrimoniaux ont expiré`,`Tout contenu accessible gratuitement en ligne`,`Les contenus publiés par une administration`,`Les images sans filigrane`],c:0,ex:`Accessible ne veut pas dire libre de droits : la gratuité d'accès ne dit rien du statut juridique.`},
+{q:`Ajouter un texte alternatif à une image sert d'abord à :`,opts:[`Permettre aux lecteurs d'écran de décrire l'image aux personnes déficientes visuelles`,`Améliorer la qualité de l'image`,`Réduire le poids du fichier`,`Protéger le droit d'auteur`],c:0,ex:`Effet secondaire utile : le texte alternatif est aussi lu par les moteurs de recherche.`},
+{q:`Un contraste insuffisant entre le texte et le fond d'une page pose surtout un problème :`,opts:[`D'accessibilité pour les personnes malvoyantes`,`De temps de chargement`,`De compatibilité navigateur`,`De référencement`],c:0,ex:`Les règles WCAG fixent des ratios de contraste minimaux selon la taille du texte.`},
+{q:`Un fichier PDF constitué d'images scannées sans couche texte :`,opts:[`N'est ni cherchable ni lisible par un lecteur d'écran sans reconnaissance de caractères`,`Est plus léger qu'un PDF texte`,`Est automatiquement accessible`,`Ne peut pas être imprimé`],c:0,ex:`La reconnaissance optique de caractères ajoute la couche texte qui rend le document exploitable.`},
+{q:`Comparé au format JPEG, le format PNG est préférable pour :`,opts:[`Les captures d'écran et les images comportant du texte ou de la transparence`,`Les photographies`,`Les vidéos`,`Les fichiers audio`],c:0,ex:`Le PNG est sans perte ; le JPEG compresse en dégradant, ce qui rend le texte flou.`},
+
+/* --- Résolution de problèmes --- */
+{q:`Face à un logiciel qui ne répond plus, la démarche méthodique consiste à :`,opts:[`Isoler le problème en testant une hypothèse à la fois`,`Réinstaller le système d'exploitation`,`Changer d'ordinateur`,`Attendre la prochaine mise à jour`],c:0,ex:`Reproduire, isoler, tester, documenter : c'est le cœur du domaine résolution de problèmes.`},
+{q:`Une capture d'écran accompagnant une demande d'assistance sert surtout à :`,opts:[`Transmettre le message d'erreur exact et le contexte`,`Prouver sa bonne foi`,`Accélérer le ticket automatiquement`,`Contourner le support de premier niveau`],c:0,ex:`Un message d'erreur reformulé de mémoire fait perdre du temps au diagnostic.`},
+{q:`Le stockage dans le nuage dispense-t-il de sauvegarder ?`,opts:[`Non, car une suppression ou un chiffrement malveillant se synchronise aussi`,`Oui, la redondance suffit`,`Oui, si le fournisseur est européen`,`Oui, au-delà d'un certain volume`],c:0,ex:`La synchronisation n'est pas une sauvegarde : elle propage l'erreur au lieu de la conserver.`},
+{q:`Face au résultat d'un outil d'IA générative sur un point de droit, il faut :`,opts:[`Vérifier chaque référence dans une source primaire`,`Le reprendre tel quel s'il est bien rédigé`,`Le rejeter systématiquement`,`Demander une seconde réponse au même outil`],c:0,ex:`Ces modèles produisent des références plausibles mais inexistantes ; la fluidité du texte ne dit rien de son exactitude.`},
+{q:`Un biais algorithmique désigne :`,opts:[`Un résultat systématiquement défavorable à un groupe, souvent hérité des données d'entraînement`,`Une erreur de programmation aléatoire`,`Un ralentissement du traitement`,`Une faille de sécurité`],c:0,ex:`Le système reproduit et amplifie les régularités des données, y compris les discriminations qu'elles contiennent.`},
+{q:`Choisir un format ouvert plutôt qu'un format propriétaire pour archiver un document répond au risque :`,opts:[`De dépendance à un éditeur et d'illisibilité à long terme`,`De perte de qualité graphique`,`De taille de fichier excessive`,`De cyberattaque`],c:0,ex:`L'enfermement propriétaire fait dépendre l'accès aux archives de la survie commerciale d'un logiciel.`},
+{q:`Identifier soi-même une compétence numérique qui manque et suivre une formation relève :`,opts:[`De la résolution de problèmes, au titre de l'identification des besoins`,`De la sécurité`,`De la communication`,`De la création de contenu`],c:0,ex:`Le domaine 5 inclut explicitement l'identification des lacunes et le développement de ses propres compétences.`},
 ];
 
 /* ================= EUFTE ================= */
@@ -1746,6 +2107,10 @@ function updateStreak(){
 function renderStreak(){ document.getElementById('streakN').textContent = PROGRESS.streak.count; }
 function acc(m){ const s=PROGRESS[m]; return s.att>0 ? Math.round(100*s.cor/s.att) : null; }
 function shuffle(a){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+/* ponytail: les banques ecrites a la main placaient la bonne reponse en B dans la
+   grande majorite des cas. On permute les options a l'affichage plutot que de
+   reecrire chaque entree : la position de la bonne reponse change a chaque session. */
+function shuffleOpts(item){ const p=shuffle(item.opts.map((_,i)=>i)); return {opts:p.map(i=>item.opts[i]), c:p.indexOf(item.c)}; }
 function fmtTime(s){ if(s<0) s=0; const m=Math.floor(s/60), r=s%60; return m+':'+(r<10?'0':'')+r; }
 
 /* ================= NAVIGATION ================= */
@@ -1844,7 +2209,7 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
   const app = document.getElementById('app');
   const count = Math.min(maxQ || bank.length, bank.length);
   let order = shuffle(bank.map((_,i)=>i)).slice(0, count);
-  let idx=0, score=0, answered=false, timer=null, timeLeft=order.length*secPerQ, ended=false;
+  let idx=0, score=0, answered=false, timer=null, timeLeft=order.length*secPerQ, ended=false, view=null;
 
   // ponytail: one countdown for the whole session, like the real exam. Paused while the
   // correction is on screen (the real test has no correction to read, so reading it
@@ -1860,11 +2225,12 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
   function renderQ(){
     answered=false;
     const item = bank[order[idx]];
+    view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">'+ep+' · '+title+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">'+(idx+1)+' / '+order.length+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">Score session : '+score+'/'+idx+'</span></div>'
       +'<div class="qcm-question">'+item.q+'</div>'
-      +'<div id="opts">'+item.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
+      +'<div id="opts">'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
@@ -1878,13 +2244,13 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
     const item = bank[order[idx]];
-    const ok = choice===item.c;
+    const ok = choice===view.c;
     if(ok) score++;
     PROGRESS[statKey].att++; if(ok) PROGRESS[statKey].cor++;
     saveProgress(); renderStreak();
     app.querySelectorAll('.qcm-opt').forEach((b,i)=>{
       b.disabled=true;
-      if(i===item.c) b.classList.add('correct');
+      if(i===view.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
     document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+(item.ex||'')+'</div>';
@@ -1976,7 +2342,7 @@ function runVerbalSession(){
   const app = document.getElementById('app');
   const count = Math.min(VERB_COUNT, VERBAL_BANK.length);
   let order = shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0, count);
-  let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, answered=false, ended=false;
+  let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, answered=false, ended=false, view=null;
   function startClock(){
     clearInterval(timer);
     timer=ACTIVE_TIMER=setInterval(()=>{
@@ -1988,12 +2354,13 @@ function runVerbalSession(){
   function renderP(){
     answered=false;
     const item = VERBAL_BANK[order[idx]];
+    view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'/'+idx+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">temps global pour '+order.length+' textes</span></div>'
       +'<div class="passage-box">'+item.passage+'</div>'
       +'<p style="font-size:13.5px;font-weight:600;margin:2px 0 10px;">Quelle affirmation est correcte, uniquement d\'après le texte ?</p>'
-      +'<div id="opts">'+item.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'"><b>'+String.fromCharCode(65+i)+'.</b> '+o+'</button>').join('')+'</div>'
+      +'<div id="opts">'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'"><b>'+String.fromCharCode(65+i)+'.</b> '+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Texte suivant →</button></div>'
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
@@ -2007,16 +2374,16 @@ function runVerbalSession(){
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
     const item = VERBAL_BANK[order[idx]];
-    const ok = choice===item.c;
+    const ok = choice===view.c;
     if(ok) score++;
     PROGRESS.verbal.att++; if(ok) PROGRESS.verbal.cor++;
     saveProgress(); renderStreak();
     app.querySelectorAll('.qcm-opt').forEach((b,i)=>{
       b.disabled=true;
-      if(i===item.c) b.classList.add('correct');
+      if(i===view.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
-    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+item.c)+'. '+item.ex+'</div>';
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+view.c)+'. '+item.ex+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
   function endSession(timedOut){
@@ -2096,9 +2463,10 @@ function renderNumAbs(){
 }
 function runAbstractSession(){
   const app = document.getElementById('app');
-  const count = Math.min(ABS_COUNT, ABSTRACT_BANK.length);
-  let order = shuffle(ABSTRACT_BANK.map((_,i)=>i)).slice(0, count);
-  let idx=0, score=0, timeLeft=count*ABS_SEC, timer=null, answered=false, ended=false;
+  const count = ABS_COUNT;
+  let series = mkAbsSeries(count);
+  let order = series.map((_,i)=>i);
+  let idx=0, score=0, timeLeft=count*ABS_SEC, timer=null, answered=false, ended=false, view=null;
   function startClock(){
     clearInterval(timer);
     timer=ACTIVE_TIMER=setInterval(()=>{
@@ -2109,7 +2477,8 @@ function runAbstractSession(){
   }
   function renderQ(){
     answered=false;
-    const item = ABSTRACT_BANK[order[idx]];
+    const item = series[order[idx]];
+    view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Abstrait · '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span></div>'
@@ -2118,7 +2487,7 @@ function runAbstractSession(){
       + item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
       +'<span class="abs-arrow">→</span><div class="abs-q">?</div></div>'
       +'<div class="abs-options" id="absOpts">'
-      + item.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'">'+shapeSVG(o)+'</button>').join('')
+      + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'">'+shapeSVG(o)+'</button>').join('')
       +'</div><div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
@@ -2131,14 +2500,14 @@ function runAbstractSession(){
   }
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
-    const item = ABSTRACT_BANK[order[idx]];
-    const ok = choice===item.c;
+    const item = series[order[idx]];
+    const ok = choice===view.c;
     if(ok) score++;
     PROGRESS.abstract.att++; if(ok) PROGRESS.abstract.cor++;
     saveProgress(); renderStreak();
     app.querySelectorAll('.abs-opt').forEach((b,i)=>{
       b.disabled=true;
-      if(i===item.c) b.classList.add('correct');
+      if(i===view.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
     document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+item.ex+'</div>';
@@ -2152,7 +2521,7 @@ function runAbstractSession(){
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
     document.getElementById('againBtn').addEventListener('click',()=>{
-      order=shuffle(ABSTRACT_BANK.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=count*ABS_SEC; ended=false;
+      series=mkAbsSeries(count); order=series.map((_,i)=>i); idx=0; score=0; timeLeft=count*ABS_SEC; ended=false;
       renderQ(); startClock();
     });
     document.getElementById('backBtn').addEventListener('click',()=>goTo('numabs'));
