@@ -1131,6 +1131,7 @@ const NUMERIC_TEMPLATES = [
    deux ou trois opérations enchaînées, cinq options dont « Aucune de ces
    réponses ». Le tableau contient toujours des colonnes inutiles : savoir
    ignorer une colonne fait partie de l'exercice. */
+const absPick2 = a => a[ri(0,a.length-1)];
 const PAYS = ['Belgique','Danemark','Espagne','Finlande','France','Grèce','Irlande','Italie','Pays-Bas','Pologne','Portugal','Suède','Tchéquie','Autriche','Allemagne','Hongrie'];
 function pickN(arr,n){ return shuffle(arr).slice(0,n); }
 
@@ -1257,6 +1258,182 @@ const NUMERIC_TABLE_TEMPLATES = [
       pts, [rel, +(x.a+x.b).toFixed(1), +(-pts).toFixed(1)],
       `Une variation en points de pourcentage est une simple soustraction : `+fmtN(x.b,1)+` moins `+fmtN(x.a,1)+` = `+String(pts).replace('.',',')+` point(s). La variation relative, elle, vaut `+String(rel).replace('.',',')+` % : les deux réponses sont proposées, il faut lire la question.`,
       ' points', table);
+  },
+
+  /* Reconstituer une case manquante à partir d'un total. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const vals = p.map(()=>ri(20,180)*10);
+    const tot = vals.reduce((a,b)=>a+b,0);
+    const k = ri(0,4);
+    const rows = p.map((n,i)=>[n, i===k?'?':fmtN(vals[i]), fmtN(ri(200,900)/10,1)]);
+    const table = dataTable('Contributions au programme, total connu : '+fmtN(tot)+' M€',
+      ['Pays','Contribution (M€)','Part dans le PIB national (‰)'], rows);
+    return mkNum(`Quelle est la contribution manquante, celle de `+p[k]+` ?`,
+      vals[k], [tot-vals[k], Math.round(tot/5), vals[k]+100],
+      `La somme des quatre contributions connues vaut `+fmtN(tot-vals[k])+` M€. La case manquante est donc `+fmtN(tot)+` moins `+fmtN(tot-vals[k])+` = `+fmtN(vals[k])+` M€.`,
+      ' M€', table);
+  },
+  /* Part d'une ligne dans le total d'une colonne. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const base = p.map(()=>ri(4,40)*25);
+    const tot = base.reduce((a,b)=>a+b,0);
+    const k = ri(0,4);
+    const pct = +(100*base[k]/tot).toFixed(1);
+    const table = dataTable('Effectifs par pays',
+      ['Pays','Agents en poste','Postes vacants','Ancienneté moyenne (ans)'],
+      p.map((n,i)=>[n, fmtN(base[i]), fmtN(ri(5,90)), fmtN(ri(30,180)/10,1)]));
+    return mkNum(`Quelle part des agents en poste `+p[k]+` représente-t-il ?`,
+      pct, [+(100*base[k]/(tot-base[k])).toFixed(1), 20, +(pct*2).toFixed(1)],
+      `Il faut d'abord totaliser la colonne : `+fmtN(tot)+` agents. La part vaut ensuite `+fmtN(base[k])+` ÷ `+fmtN(tot)+` × 100 = `+String(pct).replace('.',',')+` %. Diviser par le total des AUTRES pays est l'erreur classique.`,
+      ' %', table);
+  },
+  /* Croissance annuelle moyenne sur une période. */
+  ()=>{
+    const p = pickN(PAYS,5), n = absPick2([2,3,4]);
+    const rows = p.map(x=>{ const v0=ri(10,90)*100, t=absPick2([5,10,20,25]); return {x, v0, t, v1:Math.round(v0*Math.pow(1+t/100,n))}; });
+    const r = rows[ri(0,4)];
+    const totale = +(100*(r.v1/r.v0-1)).toFixed(1);
+    const naif = +(totale/n).toFixed(1);
+    const table = dataTable('Dépenses de formation, début et fin de période ('+n+' ans)',
+      ['Pays','Début (k€)','Fin (k€)','Nombre de bénéficiaires'],
+      rows.map(z=>[z.x, fmtN(z.v0), fmtN(z.v1), fmtN(ri(200,4000))]));
+    return mkNum(`De combien les dépenses de formation ont-elles augmenté au total en `+r.x+` sur la période ?`,
+      totale, [naif, r.t, +(totale+n).toFixed(1)],
+      `Variation totale = (`+fmtN(r.v1)+` ÷ `+fmtN(r.v0)+` moins 1) × 100 = `+String(totale).replace('.',',')+` %. Diviser par le nombre d'années donne `+String(naif).replace('.',',')+` % et ne correspond ni à la hausse totale ni au taux annuel composé.`,
+      ' %', table);
+  },
+  /* Passer d'un montant total à un montant par habitant, puis comparer. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>{ const pop=ri(3,60), par=ri(50,400); return {x, pop, par, tot:pop*par}; });
+    const best = rows.reduce((a,b)=>b.par>a.par?b:a);
+    const gros = rows.reduce((a,b)=>b.tot>a.tot?b:a);
+    const table = dataTable('Dépenses culturelles',
+      ['Pays','Dépense totale (M€)','Population (millions)','Part du budget national (%)'],
+      rows.map(z=>[z.x, fmtN(z.tot), fmtN(z.pop), fmtN(ri(5,45)/10,1)]));
+    const distr = rows.filter(z=>z!==best).slice(0,3).map(z=>z.x);
+    return mkNum(`Quel pays dépense le plus par habitant ?`,
+      best.x, distr,
+      `Il faut diviser chaque dépense totale par la population : `+best.x+` atteint `+fmtN(best.par)+` € par habitant, le plus haut du tableau. `+(gros!==best? gros.x+` a la dépense totale la plus élevée, mais rapportée à sa population elle ne l'est plus : c'est exactement le piège.` : `La dépense totale la plus élevée est ici aussi la plus élevée par habitant, ce qui n'est pas la règle générale.`),
+      '', table);
+  },
+  /* Combien manque-t-il pour atteindre une cible exprimée en pourcentage. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>{ const pib=ri(2,20)*100, act=+(ri(80,250)/100).toFixed(2); return {x, pib, act, dep:+(pib*act/100).toFixed(1)}; });
+    const r = rows[ri(0,4)];
+    const cible = absPick2([3,3.5,4]);
+    const manque = +(r.pib*(cible-r.act)/100).toFixed(1);
+    const table = dataTable('Dépense de recherche',
+      ['Pays','PIB (Md€)','Dépense R&D (% du PIB)','Chercheurs (milliers)'],
+      rows.map(z=>[z.x, fmtN(z.pib), fmtN(z.act,2), fmtN(ri(20,400))]));
+    return mkNum(`Combien `+r.x+` devrait-il dépenser en plus chaque année pour atteindre une cible de `+String(cible).replace('.',',')+` % du PIB ?`,
+      manque, [+(r.pib*cible/100).toFixed(1), +(cible-r.act).toFixed(2), +(manque*2).toFixed(1)],
+      `L'écart de taux vaut `+String(+(cible-r.act).toFixed(2)).replace('.',',')+` point(s) de PIB. Appliqué à un PIB de `+fmtN(r.pib)+` Md€, cela donne `+String(manque).replace('.',',')+` Md€. La dépense cible totale, elle, serait de `+String(+(r.pib*cible/100).toFixed(1)).replace('.',',')+` Md€.`,
+      ' Md€', table);
+  },
+  /* Rapport entre deux colonnes, à comparer entre lignes. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>{ const d=ri(20,90), e=ri(2,9); return {x, dossiers:d*e*10, agents:e*10, ratio:d}; });
+    const best = rows.reduce((a,b)=>b.ratio>a.ratio?b:a);
+    const table = dataTable('Charge de travail par service',
+      ['Pays','Dossiers traités','Agents affectés','Délai moyen (jours)'],
+      rows.map(z=>[z.x, fmtN(z.dossiers), fmtN(z.agents), fmtN(ri(10,90))]));
+    return mkNum(`Combien de dossiers par agent le service le plus productif traite-t-il ?`,
+      best.ratio, [Math.round(rows.reduce((s,z)=>s+z.ratio,0)/5), best.agents, best.ratio+10],
+      `Il faut calculer le rapport dossiers sur agents pour chaque ligne. Le maximum est atteint par `+best.x+` : `+fmtN(best.dossiers)+` ÷ `+fmtN(best.agents)+` = `+fmtN(best.ratio)+` dossiers par agent. Le service qui traite le plus de dossiers n'est pas forcément le plus productif.`,
+      '', table);
+  },
+  /* Appliquer une prévision de croissance à une valeur du tableau. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>({x, v:ri(15,90)*100, t:absPick2([-4,-2,2,3,5,8])}));
+    const r = rows[ri(0,4)];
+    const prev = Math.round(r.v*(100+r.t)/100);
+    const table = dataTable('Trafic de fret et prévision de croissance',
+      ['Pays','Trafic actuel (milliers de tonnes)','Croissance prévue (%)','Part ferroviaire (%)'],
+      rows.map(z=>[z.x, fmtN(z.v), fmtN(z.t), fmtN(ri(50,350)/10,1)]));
+    return mkNum(`Quel sera le trafic de fret en `+r.x+` si la prévision de croissance se réalise ?`,
+      prev, [r.v+r.t, Math.round(r.v*(100-r.t)/100), prev+r.v],
+      `On applique le taux à la valeur actuelle : `+fmtN(r.v)+` × `+((100+r.t)/100).toString().replace('.',',')+` = `+fmtN(prev)+`. Ajouter le taux au lieu de l'appliquer donne `+fmtN(r.v+r.t)+` et n'a aucun sens dimensionnel.`,
+      ' milliers de tonnes', table);
+  },
+  /* Deux colonnes en pourcentage : écart en points contre rapport. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>({x, h:+(ri(400,850)/10).toFixed(1), f:+(ri(350,800)/10).toFixed(1)}));
+    const r = rows[ri(0,4)];
+    const pts = +(r.h-r.f).toFixed(1);
+    const rel = +(100*(r.h-r.f)/r.f).toFixed(1);
+    const table = dataTable('Taux d\'emploi par sexe',
+      ['Pays','Hommes (%)','Femmes (%)','Population active (millions)'],
+      rows.map(z=>[z.x, fmtN(z.h,1), fmtN(z.f,1), fmtN(ri(10,250)/10,1)]));
+    return mkNum(`Quel est l'écart de taux d'emploi entre hommes et femmes en `+r.x+`, en points de pourcentage ?`,
+      pts, [rel, +(r.h+r.f).toFixed(1), +(-pts).toFixed(1)],
+      `Écart en points = soustraction directe : `+fmtN(r.h,1)+` moins `+fmtN(r.f,1)+` = `+String(pts).replace('.',',')+`. L'écart relatif, lui, vaut `+String(rel).replace('.',',')+` % : les deux figurent parmi les options.`,
+      ' points', table);
+  },
+  /* Indice base 100 appliqué à plusieurs lignes. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const base = ri(80,140)*10;
+    const rows = p.map(x=>{ const idx=absPick2([85,90,100,110,120,125,140,150]); return {x, idx, v:Math.round(base*idx/100)}; });
+    const r = rows[ri(0,4)];
+    const table = dataTable('Prix de l\'immobilier, indice base 100 en année de référence (valeur de référence : '+fmtN(base)+' €/m²)',
+      ['Pays','Indice année courante','Prix courant (€/m²)','Loyers (indice)'],
+      rows.map(z=>[z.x, fmtN(z.idx), fmtN(z.v), fmtN(ri(90,160))]));
+    return mkNum(`De quel pourcentage le prix a-t-il varié en `+r.x+` par rapport à l'année de référence ?`,
+      r.idx-100, [r.idx, Math.round(100*base/r.v-100), (r.idx-100)*2],
+      `Un indice de `+fmtN(r.idx)+` en base 100 signifie une variation de `+fmtN(r.idx-100)+` % par rapport à la référence. Confondre l'indice et la variation est l'erreur la plus fréquente sur ce type de tableau.`,
+      ' %', table);
+  },
+  /* Deux remises ou deux hausses successives lues dans le tableau. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>({x, prix:ri(2,20)*100, r1:absPick2([10,15,20,25]), r2:absPick2([5,10,20])}));
+    const r = rows[ri(0,4)];
+    const fin = Math.round(r.prix*(100-r.r1)/100*(100-r.r2)/100);
+    const naif = Math.round(r.prix*(100-r.r1-r.r2)/100);
+    const table = dataTable('Tarifs et remises négociées',
+      ['Pays','Tarif catalogue (€)','Première remise (%)','Seconde remise (%)','Volume annuel'],
+      rows.map(z=>[z.x, fmtN(z.prix), fmtN(z.r1), fmtN(z.r2), fmtN(ri(50,900))]));
+    return mkNum(`Quel est le tarif final en `+r.x+`, la seconde remise s'appliquant au prix déjà réduit ?`,
+      fin, [naif, Math.round(r.prix*(100-r.r1)/100), fin-50],
+      `Deux coefficients successifs : `+fmtN(r.prix)+` × `+((100-r.r1)/100).toString().replace('.',',')+` × `+((100-r.r2)/100).toString().replace('.',',')+` = `+fmtN(fin)+` €. Additionner les taux (`+fmtN(r.r1+r.r2)+` %) donne `+fmtN(naif)+` € et surestime la remise.`,
+      ' €', table);
+  },
+  /* Somme d'une sous-population définie par deux colonnes. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(x=>{ const t=ri(10,90)*100, s=absPick2([10,20,25,40,50]); return {x, t, s, n:t*s/100}; });
+    const cible = rows.filter((_,i)=>i<3);
+    const somme = cible.reduce((a,z)=>a+z.n,0);
+    const table = dataTable('Bénéficiaires par pays',
+      ['Pays','Bénéficiaires totaux','Part de moins de 30 ans (%)','Durée moyenne (mois)'],
+      rows.map(z=>[z.x, fmtN(z.t), fmtN(z.s), fmtN(ri(3,36))]));
+    return mkNum(`Combien de bénéficiaires de moins de 30 ans comptent ensemble `+cible.map(z=>z.x).join(', ')+` ?`,
+      somme, [cible.reduce((a,z)=>a+z.t,0), Math.round(somme/3), somme*2],
+      `Il faut appliquer le pourcentage ligne par ligne AVANT d'additionner : `+cible.map(z=>fmtN(z.t)+' × '+fmtN(z.s)+' %').join(' + ')+` = `+fmtN(somme)+`. Additionner d'abord les totaux puis appliquer une part moyenne donne un résultat faux dès que les parts diffèrent.`,
+      '', table);
+  },
+  /* Répartition d'un total selon des parts données en pourcentage. */
+  ()=>{
+    const total = ri(4,30)*500;
+    const parts = shuffle([10,15,20,25,30]).slice(0,4);
+    const reste = 100-parts.reduce((a,b)=>a+b,0);
+    const noms = pickN(['Cohésion','Agriculture','Recherche','Voisinage','Administration','Migration','Défense'],4);
+    const k = ri(0,3);
+    const val = total*parts[k]/100;
+    const table = dataTable('Répartition d\'une enveloppe de '+fmtN(total)+' M€',
+      ['Rubrique','Part (%)','Nombre de programmes'],
+      noms.map((n,i)=>[n, fmtN(parts[i]), fmtN(ri(2,25))]).concat([['Autres', fmtN(reste), fmtN(ri(2,25))]]));
+    return mkNum(`Quel montant revient à la rubrique « `+noms[k]+` » ?`,
+      val, [parts[k], Math.round(total/5), val*2],
+      fmtN(parts[k])+` % de `+fmtN(total)+` M€ = `+fmtN(val)+` M€. Le tableau donne des parts, pas des montants : la question suppose de revenir au total indiqué en titre.`,
+      ' M€', table);
   },
 ];
 
@@ -3214,6 +3391,112 @@ const DIGITAL_QUIZ = [
 {q:`Un biais algorithmique désigne :`,opts:[`Un résultat systématiquement défavorable à un groupe, souvent hérité des données d'entraînement`,`Une erreur de programmation aléatoire`,`Un ralentissement du traitement`,`Une faille de sécurité`],c:0,ex:`Le système reproduit et amplifie les régularités des données, y compris les discriminations qu'elles contiennent.`},
 {q:`Choisir un format ouvert plutôt qu'un format propriétaire pour archiver un document répond au risque :`,opts:[`De dépendance à un éditeur et d'illisibilité à long terme`,`De perte de qualité graphique`,`De taille de fichier excessive`,`De cyberattaque`],c:0,ex:`L'enfermement propriétaire fait dépendre l'accès aux archives de la survie commerciale d'un logiciel.`},
 {q:`Identifier soi-même une compétence numérique qui manque et suivre une formation relève :`,opts:[`De la résolution de problèmes, au titre de l'identification des besoins`,`De la sécurité`,`De la communication`,`De la création de contenu`],c:0,ex:`Le domaine 5 inclut explicitement l'identification des lacunes et le développement de ses propres compétences.`},
+
+/* --- Fichiers, formats et organisation --- */
+{q:`Quel est l'intérêt principal d'une convention de nommage des fichiers du type AAAA-MM-JJ_sujet_version ?`,opts:[`Le tri alphabétique produit automatiquement un tri chronologique`,`Elle réduit la taille des fichiers`,`Elle chiffre le contenu`,`Elle empêche la suppression accidentelle`],c:0,ex:`La date en tête et au format inversé est ce qui fait fonctionner le tri. Écrire 12-03-2026 casse la propriété.`},
+{q:`Que fait la compression d'un dossier au format ZIP ?`,opts:[`Elle regroupe plusieurs fichiers en un seul et réduit leur taille sans perte`,`Elle supprime les fichiers en double`,`Elle chiffre systématiquement le contenu`,`Elle convertit les fichiers en PDF`],c:0,ex:`Le chiffrement est une option distincte, pas une propriété du format. Un ZIP non protégé se lit par n'importe qui.`},
+{q:`Que signifie l'extension d'un fichier ?`,opts:[`Elle indique le format attendu, sans garantir le contenu réel`,`Elle détermine la taille maximale du fichier`,`Elle protège le fichier contre la modification`,`Elle identifie l'auteur`],c:0,ex:`Renommer un fichier exécutable en .txt ne le rend pas inoffensif : c'est un vecteur d'attaque courant.`},
+{q:`Pourquoi éviter les caractères accentués et les espaces dans un nom de fichier destiné à être partagé largement ?`,opts:[`Ils peuvent être mal interprétés selon les systèmes et compliquer les liens`,`Ils augmentent la taille du fichier`,`Ils empêchent l'impression`,`Ils sont interdits par le RGPD`],c:0,ex:`Le tiret bas et le tiret simple sont les séparateurs sûrs. C'est particulièrement vrai pour des fichiers publiés sur le web.`},
+{q:`Quelle est la différence entre enregistrer et exporter un document ?`,opts:[`L'export produit une copie dans un autre format, sans lier le document d'origine à ce format`,`Il n'y a aucune différence`,`L'export supprime l'original`,`L'enregistrement change toujours de format`],c:0,ex:`Exporter en PDF ne remplace pas le fichier source : il faut continuer de travailler sur l'original.`},
+{q:`Qu'est-ce qu'un format ouvert ?`,opts:[`Un format dont la spécification est publique et implémentable par n'importe quel éditeur`,`Un format gratuit`,`Un format non compressé`,`Un format sans droits d'auteur sur le contenu`],c:0,ex:`Gratuit et ouvert sont deux choses distinctes : un format peut être gratuit à lire mais fermé dans sa spécification.`},
+
+/* --- Tableur, approfondissement --- */
+{q:`Dans un tableur, à quoi sert la fonction SI (IF) ?`,opts:[`À renvoyer une valeur différente selon qu'une condition est vraie ou fausse`,`À compter les cellules`,`À trier une plage`,`À figer une référence`],c:0,ex:`Elle s'imbrique, mais au-delà de trois niveaux une table de correspondance et une recherche sont plus lisibles.`},
+{q:`Qu'est-ce qu'une plage nommée dans un tableur ?`,opts:[`Un nom donné à un ensemble de cellules, réutilisable dans les formules`,`Une cellule verrouillée`,`Un filtre enregistré`,`Un onglet masqué`],c:0,ex:`Une formule qui utilise « TauxTVA » plutôt que $F$2 reste compréhensible six mois plus tard.`},
+{q:`Que fait la validation des données appliquée à une colonne ?`,opts:[`Elle restreint les valeurs saisissables, par exemple à une liste ou à un intervalle`,`Elle corrige les erreurs automatiquement`,`Elle verrouille la feuille`,`Elle vérifie l'orthographe`],c:0,ex:`C'est le moyen le plus simple d'éviter qu'un tableau collectif se remplisse de variantes d'écriture d'une même valeur.`},
+{q:`Pourquoi une date saisie peut-elle s'afficher comme un nombre à cinq chiffres dans un tableur ?`,opts:[`Les dates sont stockées comme des nombres de jours depuis une date d'origine, seul l'affichage change`,`Le fichier est corrompu`,`La cellule contient une formule`,`La langue du document est incorrecte`],c:0,ex:`C'est ce qui permet de soustraire deux dates pour obtenir un nombre de jours.`},
+{q:`Dans un tableur, à quoi sert le figeage des volets ?`,opts:[`À garder visibles les en-têtes de lignes ou de colonnes lors du défilement`,`À empêcher la modification des cellules`,`À masquer des colonnes`,`À protéger le classeur`],c:0,ex:`À ne pas confondre avec la protection de la feuille, qui empêche la saisie.`},
+{q:`Que se passe-t-il si l'on supprime une colonne référencée par des formules ailleurs dans le classeur ?`,opts:[`Les formules concernées renvoient une erreur de référence`,`Les formules s'ajustent automatiquement sans erreur`,`Le classeur se ferme`,`Les valeurs sont conservées telles quelles`],c:0,ex:`Le message d'erreur commence par un dièse suivi de REF. Vérifier les dépendances avant de supprimer est le réflexe attendu.`},
+{q:`Un graphique dont l'axe des ordonnées commence à 90 plutôt qu'à zéro :`,opts:[`Amplifie visuellement des écarts faibles et peut induire en erreur`,`Est toujours incorrect`,`Réduit la lisibilité sans changer l'interprétation`,`Est obligatoire pour les pourcentages`],c:0,ex:`Ce n'est pas systématiquement malhonnête, mais cela doit être signalé. C'est le biais graphique le plus fréquent.`},
+{q:`Pour comparer la répartition d'un total entre six catégories, quel graphique est le plus lisible ?`,opts:[`Un diagramme à barres`,`Un camembert à six parts`,`Un nuage de points`,`Une courbe`],c:0,ex:`L'œil compare mal des angles. Au-delà de trois ou quatre parts, le camembert devient difficile à lire.`},
+
+/* --- Bases de données --- */
+{q:`Qu'est-ce qu'une clé primaire dans une base de données ?`,opts:[`Un champ dont la valeur identifie de façon unique chaque enregistrement`,`Le premier champ de la table`,`Le mot de passe d'accès à la base`,`Le champ le plus souvent consulté`],c:0,ex:`Sans clé primaire, rien ne garantit qu'un enregistrement ne soit pas dupliqué.`},
+{q:`À quoi sert une clé étrangère ?`,opts:[`À relier un enregistrement d'une table à un enregistrement d'une autre table`,`À chiffrer une colonne`,`À trier automatiquement les données`,`À importer des données extérieures`],c:0,ex:`C'est ce qui rend une base relationnelle : les données ne sont saisies qu'une fois et reliées ensuite.`},
+{q:`Quand une base de données est-elle préférable à un tableur ?`,opts:[`Quand plusieurs personnes saisissent simultanément un volume important de données structurées et reliées`,`Quand il faut faire des calculs complexes`,`Quand il faut produire des graphiques`,`Quand les données sont confidentielles`],c:0,ex:`Le critère est la structure et la concurrence d'accès, pas le volume seul ni la sensibilité.`},
+{q:`Que fait une requête SELECT assortie d'une clause WHERE ?`,opts:[`Elle extrait les seuls enregistrements satisfaisant une condition`,`Elle supprime des enregistrements`,`Elle crée une table`,`Elle modifie la structure de la base`],c:0,ex:`SELECT lit sans modifier. Ce sont DELETE et UPDATE qui écrivent.`},
+{q:`Que désigne la redondance des données ?`,opts:[`La même information stockée à plusieurs endroits, au risque d'incohérences`,`Une sauvegarde supplémentaire`,`Un champ obligatoire`,`Un index de recherche`],c:0,ex:`Corriger une adresse à un endroit et pas à l'autre produit deux vérités contradictoires dans la même base.`},
+
+/* --- Réseaux et matériel --- */
+{q:`Que désigne une adresse IP ?`,opts:[`L'identifiant numérique d'un appareil sur un réseau`,`Le nom du fabricant de l'appareil`,`Le mot de passe du réseau`,`Le protocole de chiffrement utilisé`],c:0,ex:`Elle peut être publique ou privée, fixe ou attribuée dynamiquement.`},
+{q:`Quelle différence sépare le débit de la latence ?`,opts:[`Le débit est la quantité de données par seconde, la latence le délai avant la première réponse`,`Ce sont deux noms pour la même grandeur`,`La latence se mesure en mégabits`,`Le débit ne concerne que le sans-fil`],c:0,ex:`Une visioconférence saccadée sur une connexion très rapide est en général un problème de latence, pas de débit.`},
+{q:`À quoi sert un réseau privé virtuel dans un contexte professionnel ?`,opts:[`À créer un tunnel chiffré vers le réseau de l'organisation depuis l'extérieur`,`À accélérer la connexion`,`À masquer l'activité vis-à-vis de l'employeur`,`À supprimer les publicités`],c:0,ex:`L'usage professionnel vise l'accès sécurisé aux ressources internes, pas l'anonymat.`},
+{q:`Quelle différence sépare la mémoire vive du stockage ?`,opts:[`La mémoire vive est temporaire et perdue à l'extinction, le stockage est persistant`,`La mémoire vive est plus lente`,`Le stockage ne sert qu'aux systèmes d'exploitation`,`Il n'y a aucune différence fonctionnelle`],c:0,ex:`Un travail non enregistré vit en mémoire vive : c'est pourquoi une coupure de courant le fait disparaître.`},
+{q:`Que provoque la saturation de l'espace de stockage d'un poste de travail ?`,opts:[`Un ralentissement général et l'impossibilité d'enregistrer ou de mettre à jour`,`Une perte immédiate des données existantes`,`Une déconnexion du réseau`,`Un chiffrement automatique`],c:0,ex:`Les mises à jour de sécurité échouent souvent en premier, ce qui transforme un problème de confort en problème de sécurité.`},
+{q:`Qu'est-ce qu'un pilote (driver) ?`,opts:[`Un logiciel permettant au système d'exploitation de communiquer avec un matériel`,`Un utilisateur disposant de droits étendus`,`Un programme antivirus`,`Un navigateur intégré`],c:0,ex:`Un pilote obsolète est une source classique de dysfonctionnement d'imprimante ou de périphérique de visioconférence.`},
+{q:`Que permet la virtualisation ?`,opts:[`Faire fonctionner plusieurs systèmes indépendants sur une même machine physique`,`Augmenter la puissance du processeur`,`Se passer de sauvegardes`,`Chiffrer le disque`],c:0,ex:`C'est le fondement technique de l'informatique en nuage.`},
+
+/* --- Web et navigateur --- */
+{q:`Quelle est la différence entre un cookie interne et un cookie tiers ?`,opts:[`Le premier est déposé par le site visité, le second par un autre domaine`,`Le premier est chiffré, le second non`,`Le premier expire toujours à la fermeture`,`Le second est interdit dans l'Union`],c:0,ex:`C'est le cookie tiers qui permet le suivi entre sites et qui concentre l'essentiel des exigences de consentement.`},
+{q:`Que fait réellement la navigation privée d'un navigateur ?`,opts:[`Elle n'enregistre pas l'historique local, mais ne rend pas anonyme vis-à-vis des sites ou du réseau`,`Elle chiffre tout le trafic`,`Elle bloque les publicités`,`Elle masque l'adresse IP`],c:0,ex:`Malentendu très répandu. Le fournisseur d'accès, l'employeur et le site visité voient la même chose qu'en navigation normale.`},
+{q:`Pourquoi une extension de navigateur peut-elle représenter un risque ?`,opts:[`Elle peut lire et modifier le contenu des pages, y compris les données saisies`,`Elle ralentit toujours la machine`,`Elle empêche les mises à jour`,`Elle désactive le pare-feu`],c:0,ex:`Une extension légitime rachetée par un tiers peut devenir malveillante par simple mise à jour.`},
+{q:`Que contient le cache d'un navigateur ?`,opts:[`Des copies locales d'éléments de pages, conservées pour accélérer les visites suivantes`,`Les mots de passe enregistrés`,`L'historique de navigation`,`Les signets`],c:0,ex:`Vider le cache est le premier réflexe quand une page affiche une version périmée.`},
+{q:`Que signale un navigateur qui affiche « connexion non sécurisée » ?`,opts:[`La liaison n'est pas chiffrée ou le certificat pose problème`,`Le site contient un virus`,`Le site est bloqué par l'employeur`,`La connexion est lente`],c:0,ex:`Il ne faut saisir aucun identifiant sur une telle page, même si son apparence est familière.`},
+{q:`À quoi sert un flux de syndication ?`,opts:[`À suivre les nouvelles publications de plusieurs sources dans un seul outil`,`À sauvegarder des pages web`,`À traduire automatiquement des pages`,`À bloquer le pistage`],c:0,ex:`Il permet une veille sans passer par les recommandations d'une plateforme, donc sans effet de bulle.`},
+
+/* --- Messagerie --- */
+{q:`Pourquoi préférer un lien vers un espace partagé à une pièce jointe volumineuse ?`,opts:[`Le destinataire accède toujours à la version à jour et les boîtes ne sont pas saturées`,`Le lien est plus sécurisé par nature`,`La pièce jointe est interdite au-delà d'une taille`,`Le lien évite le RGPD`],c:0,ex:`Il faut en revanche vérifier les droits d'accès du lien, sans quoi le destinataire recevra une demande d'autorisation.`},
+{q:`Qu'est-ce que l'usurpation d'adresse d'expéditeur dans un courriel ?`,opts:[`L'affichage d'un expéditeur qui n'est pas le véritable émetteur du message`,`Le vol d'une boîte aux lettres`,`Le remplissage automatique du destinataire`,`Une erreur de carnet d'adresses`],c:0,ex:`Le nom affiché est déclaratif. Il faut regarder l'adresse complète, et surtout le domaine.`},
+{q:`Que fait un filtre antipourriel trop agressif ?`,opts:[`Il classe en indésirable des messages légitimes, qu'il faut donc contrôler régulièrement`,`Il supprime définitivement tous les messages suspects`,`Il chiffre les messages entrants`,`Il ralentit l'envoi`],c:0,ex:`Un message professionnel important perdu dans les indésirables est un incident opérationnel courant.`},
+{q:`À quoi sert une liste de diffusion institutionnelle plutôt qu'une liste de destinataires saisie à la main ?`,opts:[`Elle garantit que la composition reste à jour et évite les oublis`,`Elle chiffre les messages`,`Elle accélère l'envoi`,`Elle contourne les quotas`],c:0,ex:`Elle centralise aussi la gestion des départs et arrivées, ce qui est un enjeu de protection des données.`},
+{q:`Un message qui crée un sentiment d'urgence et demande une action financière immédiate doit :`,opts:[`Être vérifié par un canal indépendant avant toute action`,`Être exécuté rapidement si l'expéditeur est un supérieur`,`Être transféré à toute l'équipe`,`Être supprimé sans signalement`],c:0,ex:`La fraude au président repose entièrement sur l'urgence et l'autorité. La vérification par un autre canal est la seule parade.`},
+
+/* --- Sécurité, approfondissement --- */
+{q:`Qu'est-ce que le bourrage d'identifiants (credential stuffing) ?`,opts:[`Le test automatisé, sur de nombreux sites, de couples identifiant et mot de passe issus de fuites`,`La saisie répétée d'un mot de passe oublié`,`Le remplissage automatique des formulaires`,`Le vol d'un badge d'accès`],c:0,ex:`Il ne fonctionne que grâce à la réutilisation des mots de passe : un mot de passe unique par service le neutralise.`},
+{q:`Qu'est-ce qu'une attaque de l'homme du milieu ?`,opts:[`L'interception de la communication entre deux parties qui se croient en liaison directe`,`Une attaque menée depuis l'intérieur de l'organisation`,`La saturation d'un serveur`,`Le chiffrement forcé des fichiers`],c:0,ex:`Le chiffrement de bout en bout et la vérification du certificat sont les protections principales.`},
+{q:`Qu'est-ce qu'une attaque par déni de service distribué ?`,opts:[`La saturation d'un service par un volume de requêtes venant de très nombreuses machines`,`Le vol de données clients`,`La suppression d'une base de données`,`Le chiffrement d'un poste de travail`],c:0,ex:`Elle vise la disponibilité, pas la confidentialité : aucune donnée n'est nécessairement dérobée.`},
+{q:`Pourquoi une sauvegarde doit-elle être testée régulièrement ?`,opts:[`Une sauvegarde qui ne se restaure pas n'est pas une sauvegarde`,`Pour libérer de l'espace`,`Pour respecter le RGPD`,`Pour accélérer le système`],c:0,ex:`Découvrir qu'une sauvegarde est illisible au moment de l'incident est un scénario documenté et fréquent.`},
+{q:`Qu'appelle-t-on attaque de la chaîne d'approvisionnement logicielle ?`,opts:[`La compromission d'un fournisseur ou d'un composant utilisé par de nombreuses organisations`,`Le vol de matériel en transit`,`Une rupture d'approvisionnement en composants`,`Une fraude à la facturation`],c:0,ex:`Une seule mise à jour piégée d'un logiciel largement déployé atteint simultanément des milliers d'organisations.`},
+{q:`Que signifie le principe de sécurité en profondeur ?`,opts:[`Superposer plusieurs mesures indépendantes, aucune n'étant supposée infaillible`,`Investir massivement dans un seul dispositif`,`Chiffrer tous les fichiers`,`Restreindre l'accès à un seul administrateur`],c:0,ex:`Si le pare-feu, l'antivirus et l'authentification sont indépendants, la défaillance de l'un ne compromet pas l'ensemble.`},
+{q:`Quels sont les trois facteurs d'authentification possibles ?`,opts:[`Ce que l'on sait, ce que l'on possède, ce que l'on est`,`Le mot de passe, le code PIN et la question secrète`,`L'identifiant, le mot de passe et l'adresse électronique`,`Le nom, le prénom et la date de naissance`],c:0,ex:`Une authentification est à deux facteurs seulement si les éléments relèvent de deux catégories différentes.`},
+{q:`Pourquoi un mot de passe long composé de mots courants est-il souvent meilleur qu'un mot court avec des symboles ?`,opts:[`La longueur augmente le nombre de combinaisons bien plus vite que la complexité des caractères`,`Il est plus difficile à taper`,`Il est chiffré différemment`,`Les symboles sont mal gérés par les serveurs`],c:0,ex:`Une phrase de passe de quatre mots aléatoires est à la fois plus robuste et plus mémorisable que huit caractères tordus.`},
+{q:`Que faire d'un compte d'un agent qui quitte l'organisation ?`,opts:[`Le désactiver sans délai selon une procédure établie`,`Le laisser actif au cas où`,`Le partager avec son remplaçant`,`Le convertir en compte générique`],c:0,ex:`Les comptes dormants sont une porte d'entrée privilégiée, car personne ne remarque leur utilisation.`},
+{q:`Qu'est-ce qu'un correctif de sécurité de type « jour zéro » corrige-t-il ?`,opts:[`Une faille déjà exploitée avant que le correctif n'existe`,`Une faille théorique jamais exploitée`,`Un défaut de performance`,`Une incompatibilité matérielle`],c:0,ex:`D'où l'urgence particulière de son déploiement, souvent hors du cycle habituel de mise à jour.`},
+{q:`Pourquoi ne pas travailler quotidiennement avec un compte disposant de droits d'administration ?`,opts:[`Un logiciel malveillant exécuté hérite des droits du compte utilisé`,`Le compte administrateur est plus lent`,`C'est interdit par le RGPD`,`Les mises à jour sont bloquées`],c:0,ex:`Application directe du principe du moindre privilège au poste de travail.`},
+
+/* --- Protection des données, approfondissement --- */
+{q:`Sous quel délai un responsable de traitement doit-il répondre à une demande d'accès d'une personne concernée ?`,opts:[`Un mois, prolongeable de deux mois en cas de complexité`,`Soixante-douze heures`,`Une semaine`,`Six mois`],c:0,ex:`À ne pas confondre avec les 72 heures de notification d'une violation à l'autorité de contrôle.`},
+{q:`Qu'est-ce que le registre des activités de traitement ?`,opts:[`Un document interne recensant les traitements, leurs finalités et leurs destinataires`,`Un fichier public des personnes concernées`,`Le journal des connexions au système`,`La liste des sous-traitants agréés`],c:0,ex:`Il est le premier document demandé lors d'un contrôle : son absence est un manquement en soi.`},
+{q:`Que signifie la protection des données dès la conception ?`,opts:[`Intégrer les exigences de protection dès la définition du projet, et non après coup`,`Chiffrer les données après leur collecte`,`Anonymiser les données avant archivage`,`Faire valider le projet par l'autorité de contrôle`],c:0,ex:`Elle se double de la protection par défaut : les réglages les plus protecteurs doivent être ceux d'origine.`},
+{q:`Sur quelle base un transfert de données personnelles vers un pays tiers peut-il notamment reposer ?`,opts:[`Une décision d'adéquation de la Commission ou des clauses contractuelles types`,`Le seul consentement du sous-traitant`,`Une simple mention dans la politique de confidentialité`,`L'accord de l'autorité fiscale`],c:0,ex:`L'arrêt Schrems II a rappelé qu'il faut en outre vérifier l'effectivité de la protection dans le pays de destination.`},
+{q:`Que prévoit le RGPD pour les décisions entièrement automatisées produisant des effets juridiques ?`,opts:[`La personne peut demander une intervention humaine et contester la décision`,`Elles sont interdites sans exception`,`Elles sont libres si l'algorithme est publié`,`Elles ne concernent que le secteur bancaire`],c:0,ex:`C'est la charnière entre le RGPD et le règlement sur l'intelligence artificielle en matière de décisions algorithmiques.`},
+{q:`Que sont des données à caractère personnel sensibles au sens du RGPD ?`,opts:[`Des catégories particulières comme la santé, les opinions politiques ou les données biométriques d'identification`,`Toutes les données financières`,`Les données des mineurs uniquement`,`Les données conservées plus de cinq ans`],c:0,ex:`Leur traitement est en principe interdit, sauf exceptions énumérées, ce qui en fait un régime plus strict et non simplement renforcé.`},
+{q:`Que désigne un responsable conjoint de traitement ?`,opts:[`Deux organismes qui déterminent ensemble les finalités et les moyens d'un traitement`,`Un sous-traitant et son client`,`Le délégué à la protection des données et son suppléant`,`Deux autorités de contrôle nationales`],c:0,ex:`Ils doivent définir par accord la répartition de leurs obligations, notamment vis-à-vis des personnes concernées.`},
+{q:`Le principe de limitation de la conservation impose :`,opts:[`De fixer une durée de conservation par finalité et de l'appliquer`,`De conserver les données au moins cinq ans`,`De supprimer les données chaque année`,`De les archiver hors ligne`],c:0,ex:`Conserver « au cas où », sans durée définie, est l'un des manquements les plus fréquemment relevés.`},
+
+/* --- Acquis numérique de l'Union, approfondissement --- */
+{q:`Qu'est-ce qu'un signaleur de confiance au sens du règlement sur les services numériques ?`,opts:[`Une entité dont les signalements de contenus illicites sont traités en priorité par les plateformes`,`Un modérateur employé par la plateforme`,`Un utilisateur vérifié`,`Un organisme de certification des algorithmes`],c:0,ex:`Le statut est attribué par le coordinateur national pour les services numériques, sur critères d'expertise et d'indépendance.`},
+{q:`Quelle obligation particulière pèse sur les très grandes plateformes au titre du règlement sur les services numériques ?`,opts:[`Évaluer chaque année les risques systémiques qu'elles génèrent et prendre des mesures d'atténuation`,`Supprimer tout contenu signalé sous une heure`,`Publier leur code source`,`Héberger leurs données dans l'Union`],c:0,ex:`S'y ajoutent un audit indépendant annuel et l'accès des chercheurs agréés aux données.`},
+{q:`Qui est chargé, dans chaque État membre, de la surveillance du règlement sur les services numériques ?`,opts:[`Un coordinateur pour les services numériques`,`L'autorité de protection des données`,`Le ministère de la justice`,`La banque centrale nationale`],c:0,ex:`La Commission conserve toutefois une compétence exclusive sur les très grandes plateformes.`},
+{q:`Que prévoit le règlement sur l'intelligence artificielle en matière de transparence pour les contenus générés artificiellement ?`,opts:[`Ils doivent être identifiables comme tels, notamment pour les hypertrucages`,`Ils sont interdits`,`Ils doivent être approuvés par une autorité nationale`,`Ils ne peuvent pas être diffusés en ligne`],c:0,ex:`L'obligation vise l'information de l'utilisateur, non l'interdiction du procédé.`},
+{q:`Qu'est-ce qu'un bac à sable réglementaire prévu par le règlement sur l'intelligence artificielle ?`,opts:[`Un cadre encadré permettant de développer et tester un système sous supervision d'une autorité`,`Un environnement de test isolé sur un serveur`,`Une exemption générale pour les jeunes entreprises`,`Un fonds de soutien à l'innovation`],c:0,ex:`Chaque État membre doit en établir au moins un, l'objectif étant de ne pas réserver la conformité aux grandes entreprises.`},
+{q:`Que vise la directive sur les données ouvertes en instituant des ensembles de données de forte valeur ?`,opts:[`Rendre disponibles gratuitement et en format lisible par machine certaines données publiques à fort potentiel`,`Créer un marché payant des données publiques`,`Obliger les entreprises à publier leurs données`,`Restreindre l'accès aux données géographiques`],c:0,ex:`Les catégories couvrent notamment les données géospatiales, météorologiques, statistiques et de mobilité.`},
+{q:`Que permet le portefeuille européen d'identité numérique à son utilisateur ?`,opts:[`Prouver son identité et partager sélectivement des attributs sans divulguer l'ensemble de ses données`,`Stocker ses mots de passe`,`Payer sans carte bancaire dans toute l'Union`,`Voter en ligne aux élections européennes`],c:0,ex:`La divulgation sélective, par exemple prouver que l'on est majeur sans révéler sa date de naissance, en est la caractéristique la plus notable.`},
+{q:`Que régit la directive dite ePrivacy en matière de traceurs ?`,opts:[`Le consentement préalable au dépôt de traceurs non strictement nécessaires sur un terminal`,`La durée de conservation des données personnelles`,`Le transfert de données hors de l'Union`,`La sécurité des réseaux d'entreprise`],c:0,ex:`Elle est distincte du RGPD et lui est antérieure : c'est elle, et non le RGPD, qui fonde l'obligation de bandeau de consentement.`},
+
+/* --- Accessibilité --- */
+{q:`Que garantit la navigation au clavier d'un site web ?`,opts:[`L'accès aux fonctions du site sans souris, indispensable à plusieurs types de handicap`,`Une navigation plus rapide pour tous`,`La compatibilité avec les téléphones`,`Le respect du RGPD`],c:0,ex:`Un menu qui ne s'ouvre qu'au survol de la souris est un cas typique d'inaccessibilité.`},
+{q:`À quoi servent les sous-titres d'une vidéo institutionnelle ?`,opts:[`À rendre le contenu accessible aux personnes sourdes et exploitable sans le son`,`À améliorer la qualité de l'image`,`À réduire le poids du fichier`,`À protéger les droits d'auteur`],c:0,ex:`Ils bénéficient aussi aux personnes qui regardent sans le son, ce qui est le cas dominant sur mobile.`},
+{q:`Qu'est-ce qu'un document accessible au sens des règles applicables au secteur public ?`,opts:[`Un document perceptible, utilisable, compréhensible et robuste, y compris par des technologies d'assistance`,`Un document au format PDF`,`Un document traduit dans plusieurs langues`,`Un document publié en libre accès`],c:0,ex:`Ces quatre principes sont ceux des règles internationales d'accessibilité des contenus web.`},
+{q:`Pourquoi une information ne doit-elle jamais reposer uniquement sur la couleur ?`,opts:[`Une part importante de la population perçoit mal certaines distinctions de couleur`,`Les couleurs s'impriment mal`,`Cela alourdit la page`,`Les navigateurs ne les affichent pas tous`],c:0,ex:`Un graphique doit donc doubler la couleur par un motif, une étiquette ou une forme.`},
+
+/* --- Données, information, esprit critique --- */
+{q:`Qu'est-ce qu'une corrélation ne démontre pas ?`,opts:[`Un lien de causalité entre les deux variables`,`Une relation statistique`,`Une tendance commune`,`Une association mesurable`],c:0,ex:`Une variable tierce peut expliquer les deux évolutions simultanément : c'est le cas le plus fréquent.`},
+{q:`Que faut-il vérifier en priorité devant un pourcentage cité sans contexte ?`,opts:[`La base sur laquelle il est calculé et la taille de l'échantillon`,`La source du graphique`,`La date de publication`,`Le nombre de décimales`],c:0,ex:`Une hausse de 100 % sur deux cas signalés ne dit rien. La base est ce que les communications omettent le plus souvent.`},
+{q:`Que sont les métadonnées d'un jeu de données ouvert ?`,opts:[`Les informations décrivant son origine, sa méthode de production, sa périodicité et sa licence`,`Les données elles-mêmes`,`Le nombre de téléchargements`,`Le format de fichier uniquement`],c:0,ex:`Sans elles, un jeu de données est inexploitable : on ne sait ni ce qu'il mesure ni comment.`},
+{q:`Quelle dimension de la qualité des données désigne le fait qu'une donnée soit disponible assez tôt pour être utile ?`,opts:[`L'actualité`,`L'exactitude`,`La complétude`,`La cohérence`],c:0,ex:`Une statistique exacte publiée deux ans trop tard n'aide aucune décision : les dimensions de qualité ne se compensent pas.`},
+{q:`Qu'est-ce qu'un hypertrucage (deepfake) ?`,opts:[`Un contenu audio ou vidéo synthétique imitant une personne réelle de façon convaincante`,`Une image retouchée`,`Une fausse information écrite`,`Un site web frauduleux`],c:0,ex:`Le repérage visuel devient peu fiable : la vérification passe désormais par la source et le recoupement, pas par l'examen de l'image.`},
+{q:`Quelle précaution s'impose avant d'introduire un document interne dans un outil d'intelligence artificielle en ligne ?`,opts:[`Vérifier ce que le fournisseur fait des données transmises et si le document peut sortir de l'organisation`,`Convertir le document en PDF`,`Anonymiser les noms de fichiers`,`Réduire la taille du document`],c:0,ex:`Un document confidentiel transmis à un service extérieur est une divulgation, indépendamment de l'intention.`},
+{q:`Pourquoi un modèle de langage peut-il produire une réponse fausse avec assurance ?`,opts:[`Il produit la suite la plus plausible d'un texte, sans mécanisme de vérification des faits`,`Il consulte des sources non fiables`,`Il est mal configuré`,`Il manque de puissance de calcul`],c:0,ex:`La fluidité du texte ne renseigne en rien sur son exactitude : c'est ce découplage qui rend la vérification indispensable.`},
+
+/* --- Résolution de problèmes et environnement de travail --- */
+{q:`Quelle est la première question à se poser devant un problème technique récurrent ?`,opts:[`Dans quelles conditions exactes se reproduit-il`,`Faut-il changer de matériel`,`Qui est responsable`,`Combien cela coûtera-t-il`],c:0,ex:`Un problème que l'on sait reproduire est à moitié résolu ; un problème intermittent non caractérisé ne peut pas être traité.`},
+{q:`Que faut-il faire avant d'installer un logiciel sur un poste professionnel ?`,opts:[`Vérifier qu'il est autorisé par la politique de l'organisation`,`Le tester sur une clé USB`,`Désactiver l'antivirus`,`Créer un compte administrateur`],c:0,ex:`L'informatique parallèle, installée hors de tout contrôle, échappe aux mises à jour et aux sauvegardes.`},
+{q:`Quel est l'intérêt de documenter la solution d'un problème résolu ?`,opts:[`La prochaine occurrence, par soi-même ou par un collègue, est traitée immédiatement`,`Cela justifie le temps passé`,`Cela évite les mises à jour`,`Cela satisfait une obligation légale`],c:0,ex:`Sans documentation, chaque incident identique coûte le même temps de diagnostic.`},
+{q:`Que désigne l'empreinte environnementale du numérique dans un contexte professionnel ?`,opts:[`La consommation d'énergie et de ressources liée aux équipements, aux réseaux et aux centres de données`,`Le volume de papier économisé`,`Le nombre d'appareils par agent`,`La durée de connexion quotidienne`],c:0,ex:`Prolonger la durée de vie du matériel pèse davantage que les gestes portant sur les usages quotidiens.`},
+{q:`Quelle mesure ergonomique est recommandée pour le travail prolongé sur écran ?`,opts:[`Des pauses régulières avec regard porté au loin`,`Une luminosité maximale`,`Un écran placé au-dessus du niveau des yeux`,`Un éclairage direct derrière l'écran`],c:0,ex:`Le bien-être numérique fait explicitement partie du cadre de compétences, au même titre que la sécurité.`},
+{q:`Que recouvre la notion de droit à la déconnexion ?`,opts:[`La possibilité de ne pas être joignable en dehors du temps de travail`,`Le droit de refuser un outil numérique`,`Le droit de supprimer son compte professionnel`,`Le droit de travailler hors ligne`],c:0,ex:`Sa mise en œuvre concrète passe souvent par des règles d'envoi différé plutôt que par des interdictions.`},
+{q:`Quel est l'intérêt principal d'un espace de travail partagé structuré par rapport à des envois de fichiers par courriel ?`,opts:[`Une source unique de vérité, avec droits et historique`,`Un gain de place sur les serveurs`,`Une conformité automatique au RGPD`,`Une meilleure qualité d'impression`],c:0,ex:`Le coût caché des pièces jointes est la multiplication des versions divergentes, impossible à réconcilier ensuite.`},
 ];
 
 /* ================= EUFTE =================
