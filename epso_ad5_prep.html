@@ -1288,6 +1288,11 @@ function regularPoly(cx,cy,r,sides,rotDeg){
   for(let i=0;i<sides;i++){const a=rot+i*2*Math.PI/sides; pts.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1));}
   return pts.join(' ');
 }
+/* Deux règles de lisibilité, apprises d'items qui étaient insolubles à l'œil :
+   1. un trait tracé par-dessus une figure pleine dans la même couleur est invisible,
+      il est donc tracé en clair sur fond plein ;
+   2. une rotation n'est perceptible que si la figure porte un repère qui tourne
+      avec elle, sans quoi un carré à 0° et à 90° sont le même dessin. */
 function shapeSVG(spec){
   const {sides,rot=0,scale=1,color='#1B2438',filled=true,dots=0} = spec;
   let inner='';
@@ -1300,14 +1305,19 @@ function shapeSVG(spec){
     const pts=regularPoly(32,32,24*scale,sides,rot);
     inner='<polygon points="'+pts+'" fill="'+(filled?color:'none')+'" stroke="'+color+'" stroke-width="2.5"/>';
   }
-  if(spec.hline) inner+='<line x1="10" y1="32" x2="54" y2="32" stroke="'+color+'" stroke-width="2.5"/>';
-  if(spec.vline) inner+='<line x1="32" y1="10" x2="32" y2="54" stroke="'+color+'" stroke-width="2.5"/>';
+  const overColor = (!dots && filled) ? '#F7F4EE' : color;
+  if(spec.hline) inner+='<line x1="10" y1="32" x2="54" y2="32" stroke="'+overColor+'" stroke-width="2.5"/>';
+  if(spec.vline) inner+='<line x1="32" y1="10" x2="32" y2="54" stroke="'+overColor+'" stroke-width="2.5"/>';
+  if(spec.marker && !dots){
+    const a=(rot-90)*Math.PI/180, rr=24*scale;
+    inner+='<circle cx="'+(32+rr*Math.cos(a)).toFixed(1)+'" cy="'+(32+rr*Math.sin(a)).toFixed(1)+'" r="5.5" fill="'+(filled?'#F7F4EE':color)+'" stroke="'+color+'" stroke-width="2"/>';
+  }
   return '<svg viewBox="0 0 64 64" width="100%" height="100%">'+inner+'</svg>';
 }
 const ABSTRACT_BANK = [
-{title:`Rotation régulière`, seq:[{sides:5,rot:0},{sides:5,rot:30},{sides:5,rot:60}],
- opts:[{sides:5,rot:60},{sides:5,rot:90},{sides:5,rot:120},{sides:5,rot:0}], c:1,
- ex:`Rotation de +30° à chaque étape (0, 30, 60...). Suite logique : 90°.`},
+{title:`Rotation régulière`, seq:[{sides:5,rot:0,marker:true},{sides:5,rot:45,marker:true},{sides:5,rot:90,marker:true}],
+ opts:[{sides:5,rot:90,marker:true},{sides:5,rot:135,marker:true},{sides:5,rot:180,marker:true},{sides:5,rot:0,marker:true}], c:1,
+ ex:`Le repère tourne de +45° à chaque étape (0, 45, 90...). Suite logique : 135°. Sans le repère, un pentagone tourné de 72° serait identique à lui-même.`},
 {title:`Côtés croissants`, seq:[{sides:3,rot:0},{sides:4,rot:0},{sides:5,rot:0}],
  opts:[{sides:5,rot:0},{sides:6,rot:0},{sides:7,rot:0},{sides:4,rot:0}], c:1,
  ex:`Le nombre de côtés augmente de 1 : triangle, carré, pentagone, donc hexagone.`},
@@ -1317,9 +1327,9 @@ const ABSTRACT_BANK = [
 {title:`Taille croissante`, seq:[{sides:0,scale:0.45},{sides:0,scale:0.7},{sides:0,scale:0.95}],
  opts:[{sides:0,scale:0.95},{sides:0,scale:1.2},{sides:0,scale:0.45},{sides:0,scale:0.7}], c:1,
  ex:`Le rayon augmente d'un pas constant (0,25). Suite : 1,20.`},
-{title:`Deux règles : côtés + rotation`, seq:[{sides:3,rot:0},{sides:4,rot:30},{sides:5,rot:60}],
- opts:[{sides:5,rot:60},{sides:6,rot:90},{sides:7,rot:90},{sides:6,rot:60}], c:1,
- ex:`Côtés +1 ET rotation +30° simultanément. Résultat : 6 côtés, 90°.`},
+{title:`Deux règles : côtés + rotation`, seq:[{sides:3,rot:0,marker:true},{sides:4,rot:45,marker:true},{sides:5,rot:90,marker:true}],
+ opts:[{sides:5,rot:90,marker:true},{sides:6,rot:135,marker:true},{sides:7,rot:135,marker:true},{sides:6,rot:90,marker:true}], c:1,
+ ex:`Côtés +1 ET rotation du repère +45° simultanément. Résultat : 6 côtés, 135°.`},
 {title:`Alternance plein / vide`, seq:[{sides:4,rot:0,filled:true},{sides:4,rot:0,filled:false},{sides:4,rot:0,filled:true}],
  opts:[{sides:4,rot:0,filled:true},{sides:4,rot:0,filled:false},{sides:0,filled:true},{sides:3,filled:false}], c:1,
  ex:`Alternance stricte plein/vide/plein, donc vide ensuite. La forme reste constante.`},
@@ -1329,13 +1339,13 @@ const ABSTRACT_BANK = [
 {title:`Points + couleur`, seq:[{dots:3,color:'#D8CBA0'},{dots:4,color:'#A9812F'},{dots:5,color:'#6B4F1A'}],
  opts:[{dots:6,color:'#3A2A0D'},{dots:6,color:'#A9812F'},{dots:5,color:'#3A2A0D'},{dots:7,color:'#3A2A0D'}], c:0,
  ex:`Points +1 ET assombrissement combinés. Résultat : 6 points, teinte la plus sombre.`},
-{title:`Rotation décroissante`, seq:[{sides:3,rot:90},{sides:3,rot:60},{sides:3,rot:30}],
- opts:[{sides:3,rot:30},{sides:3,rot:0},{sides:3,rot:90},{sides:3,rot:60}], c:1,
- ex:`Rotation de −30° à chaque étape (90, 60, 30). Suite : 0°.`},
+{title:`Rotation décroissante`, seq:[{sides:3,rot:180,marker:true},{sides:3,rot:135,marker:true},{sides:3,rot:90,marker:true}],
+ opts:[{sides:3,rot:90,marker:true},{sides:3,rot:45,marker:true},{sides:3,rot:180,marker:true},{sides:3,rot:135,marker:true}], c:1,
+ ex:`Rotation du repère de −45° à chaque étape (180, 135, 90). Suite : 45°.`},
 {title:`Taille décroissante + vide`, seq:[{sides:6,scale:1.0,filled:false},{sides:6,scale:0.8,filled:false},{sides:6,scale:0.6,filled:false}],
  opts:[{sides:6,scale:0.6,filled:false},{sides:6,scale:0.4,filled:false},{sides:6,scale:1.0,filled:false},{sides:6,scale:0.4,filled:true}], c:1,
  ex:`L'hexagone rétrécit d'un pas constant (0,2) en restant vide. Suite : 0,4 vide. L'option pleine est un piège.`},
-{title:`Côtés décroissants + rotation`, seq:[{sides:6,rot:0},{sides:5,rot:45},{sides:4,rot:90}],
+{title:`Côtés décroissants + rotation`, seq:[{sides:6,rot:0,marker:true},{sides:5,rot:45,marker:true},{sides:4,rot:90,marker:true}],
  opts:[{sides:3,rot:135},{sides:3,rot:90},{sides:4,rot:135},{sides:5,rot:135}], c:0,
  ex:`Côtés −1 ET rotation +45°. Résultat : triangle (3 côtés) à 135°.`},
 {title:`Alternance de deux formes`, seq:[{sides:0,scale:0.8},{sides:4,rot:0,scale:0.8},{sides:0,scale:0.8}],
@@ -1344,9 +1354,9 @@ const ABSTRACT_BANK = [
 {title:`Trait horizontal alterné`, seq:[{sides:4,hline:true},{sides:4},{sides:4,hline:true}],
  opts:[{sides:4,hline:true},{sides:4},{sides:4,vline:true},{sides:4,hline:true,vline:true}], c:1,
  ex:`Alternance stricte avec/sans trait horizontal : la suite est sans trait. La forme ne change jamais.`},
-{title:`Trait constant + rotation`, seq:[{sides:3,rot:0,hline:true},{sides:3,rot:30,hline:true},{sides:3,rot:60,hline:true}],
+{title:`Trait constant + rotation`, seq:[{sides:3,rot:0,hline:true,filled:false,marker:true},{sides:3,rot:45,hline:true,filled:false,marker:true},{sides:3,rot:90,hline:true,filled:false,marker:true}],
  opts:[{sides:3,rot:60,hline:true},{sides:3,rot:90,hline:true},{sides:3,rot:90},{sides:3,rot:120,hline:true}], c:1,
- ex:`Rotation de +30° à chaque étape, le trait horizontal est un attribut stable. Résultat : 90° avec trait.`},
+ ex:`Rotation du repère de +45° à chaque étape, le trait horizontal est un attribut stable qui ne sert qu'à distraire. Résultat : 135° avec trait.`},
 {title:`Alternance de traits`, seq:[{sides:0,hline:true},{sides:0,vline:true},{sides:0,hline:true}],
  opts:[{sides:0,hline:true},{sides:0,vline:true},{sides:0,hline:true,vline:true},{sides:0}], c:1,
  ex:`Le trait alterne entre horizontal et vertical sur un cercle constant : la suite est un trait vertical.`},
@@ -1372,9 +1382,11 @@ function absKey(s){
   const lines = (s.hline?1:0)+''+(s.vline?1:0);
   if(s.dots>0) return 'd'+s.dots+'|'+(s.color||ABS_COLORS[0])+'|'+lines;
   const n = s.sides||0;
-  const period = n>2 ? 360/n : 360;
-  const rot = n>2 ? Math.round((((s.rot||0)%period)+period)%period) : 0;
-  return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines;
+  // Avec un repère, la rotation est lisible sur 360° ; sans repère, un polygone
+  // régulier se répète tous les 360/n degrés et un cercle ne montre rien.
+  const period = s.marker ? 360 : (n>2 ? 360/n : 360);
+  const rot = (s.marker || n>2) ? Math.round((((s.rot||0)%period)+period)%period) : 0;
+  return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines+'|'+(s.marker?'m':'');
 }
 
 /* Variantes plausibles de la bonne réponse : on ne fausse qu'un attribut à la fois,
@@ -1404,104 +1416,117 @@ const absPick = a => a[ri(0,a.length-1)];
    1,2 la figure est rognée, en dessous de 0,3 elle est illisible. */
 const absScale = v => Math.max(0.3, Math.min(1.2, +(+v).toFixed(2)));
 
-/* Un carré tourné de 90° est identique à lui-même : un pas de rotation qui reboucle
-   en moins de cinq étapes rend la séquence illisible. On ne garde que les pas dont
-   le cycle visuel couvre les cinq figures. */
-function absRotStep(sides){
-  const period = 360/sides;
-  const gcd = (a,b)=> b ? gcd(b, a%b) : a;
-  const ok = [15,20,25,30,36,40,45,50,60,72].filter(d=> period/gcd(d,period) >= 5);
-  return ok.length ? absPick(ok) : 15;
-}
+/* Pas de rotation admissibles : au moins 40 degrés pour être vus à l'œil, et un
+   cycle d'au moins cinq positions pour que les cinq figures de la série soient
+   toutes différentes. Le repère rendant la rotation lisible sur 360 degrés, le
+   nombre de côtés n'entre plus dans le calcul. */
+function absRotStep(){ return absPick([40,45,60,72,80,100,135,144]); }
 
 /* Attributs constants tirés au hasard sur ceux que la famille ne fait pas varier.
-   Ils rendent chaque série visuellement différente et jouent le rôle d'attributs
-   distracteurs, exactement ce contre quoi la méthode met en garde. */
+   Volontairement limité : un attribut décoratif ne doit jamais gêner la lecture de
+   la règle, donc pas de trait ajouté sur une figure pleine ni de taille modifiée. */
 function absDecorate(s, varies){
   const out = {...s};
   const free = k => varies.indexOf(k) < 0;
-  if(!out.dots){
-    if(free('filled') && ri(0,1)) out.filled = !out.filled;
-    if(free('scale') && ri(0,2)===0) out.scale = absScale((out.scale||1) * (ri(0,1)?0.75:1.15));
-    if(free('lines') && ri(0,2)===0){ if(ri(0,1)) out.hline = true; else out.vline = true; }
-  } else if(free('lines') && ri(0,2)===0){ out.hline = true; }
   if(free('color') && ri(0,2)===0) out.color = ABS_COLORS[ri(1,3)];
+  if(!out.dots && free('filled') && !out.hline && !out.vline && ri(0,1)) out.filled = !out.filled;
   return out;
 }
 
-/* Une famille de règles produit un état initial, une transition et son explication.
-   `varies` liste les attributs que la règle pilote, pour ne pas les écraser au décor. */
+/* Variantes plausibles de la bonne réponse : un seul attribut fauté à la fois, et
+   toujours d'une quantité visible. */
+function absPerturb(s){
+  const c = [];
+  if(s.dots>0){
+    c.push({...s,dots:s.dots+1},{...s,dots:Math.max(1,s.dots-1)},{...s,dots:s.dots+2},
+           {...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]},
+           {...s,hline:!s.hline});
+  } else {
+    const n = s.sides||0;
+    c.push({...s,sides:n===0?3:n+1});
+    if(n>3) c.push({...s,sides:n-1});
+    if(s.marker){ c.push({...s,rot:(s.rot||0)+180}, {...s,rot:(s.rot||0)+90}); }
+    // Sans repère, la rotation apparente vaut au mieux la moitié de 360/n : au-delà
+    // de six côtés elle descend sous 30° et devient indécelable. On s'en abstient.
+    else if(n>2 && n<=6){ c.push({...s,rot:(s.rot||0)+Math.round(360/n/2)}); }
+    c.push({...s,scale:absScale((s.scale||1)+0.25)});
+    c.push({...s,scale:absScale((s.scale||1)-0.25)});
+    c.push({...s,filled:!(s.filled!==false)});
+    c.push({...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]});
+    if(s.filled===false) c.push({...s,hline:!s.hline},{...s,vline:!s.vline});
+  }
+  return shuffle(c);
+}
+
+/* Familles de règles. Elles reprennent la taxonomie classique du raisonnement
+   abstrait (forme, remplissage, taille, traits, nombre d'éléments, rotation) en
+   n'en gardant que les variations franchement perceptibles. */
 function absFamily(){
   switch(ri(0,8)){
-    case 0: { // rotation seule
-      const sides = absPick([3,4,5,6,8]);
-      const d = absRotStep(sides) * (ri(0,1)?1:-1);
+    case 0: { // rotation d'une figure repérée
+      const d = absRotStep() * (ri(0,1)?1:-1);
       return {title:`Rotation régulière`, varies:['rot'],
-        s0:{sides, rot:ri(0,11)*15, scale:1, filled:false},
+        s0:{sides:absPick([3,4,5,6]), rot:ri(0,7)*45, scale:1, filled:false, marker:true},
         step:s=>({...s, rot:s.rot+d}),
-        ex:`La figure tourne de ${d>0?'+':''}${d}° à chaque étape, tout le reste est constant.`};
+        ex:`Le repère tourne de ${d>0?'+':''}${d}° à chaque étape, tout le reste est constant. Sans ce repère, une rotation serait indécelable sur une figure régulière.`};
     }
     case 1: { // nombre de côtés
-      const d = ri(0,3)===0 ? -1 : 1, start = d>0 ? ri(3,5) : ri(7,9);
+      const d = ri(0,3)===0 ? -1 : 1, start = d>0 ? ri(3,4) : ri(7,8);
       return {title:`Nombre de côtés`, varies:['sides'],
-        s0:{sides:start, rot:ri(0,3)*15, scale:1, filled:false},
+        s0:{sides:start, rot:0, scale:1, filled:false},
         step:s=>({...s, sides:s.sides+d}),
         ex:`Le nombre de côtés ${d>0?'augmente':'diminue'} de 1 à chaque étape. Seul cet attribut varie.`};
     }
-    case 2: { // points
-      const d = ri(0,2)===0 ? -1 : 1, start = d>0 ? ri(1,4) : ri(6,8);
+    case 2: { // nombre de points
+      const d = ri(0,2)===0 ? -1 : 1, start = d>0 ? ri(1,3) : ri(6,8);
       return {title:`Nombre de points`, varies:['dots'],
         s0:{dots:start, color:ABS_COLORS[0]},
         step:s=>({...s, dots:s.dots+d}),
         ex:`Le nombre de points ${d>0?'augmente':'diminue'} de 1 à chaque étape.`};
     }
     case 3: { // taille
-      const mag = absPick([0.15,0.2]);
-      const up = ri(0,1)===1, d = up ? mag : -mag;
-      const start = up ? absScale(1.2-4*mag) : 1.2;
+      const up = ri(0,1)===1, d = up ? 0.2 : -0.2;
+      const start = up ? 0.35 : 1.15;
       return {title:`Taille`, varies:['scale'],
-        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:start, filled:false},
+        s0:{sides:absPick([0,3,4,6]), rot:0, scale:start, filled:false},
         step:s=>({...s, scale:absScale(s.scale+d)}),
-        ex:`Le rayon ${up?'augmente':'diminue'} d'un pas constant de ${mag.toFixed(2).replace('.',',')}. La forme ne change pas.`};
+        ex:`Le rayon ${up?'augmente':'diminue'} d'un pas constant de 0,20. La forme ne change pas.`};
     }
-    case 4: { // remplissage alterné + rotation
-      const sides = absPick([3,4,5,6,8]);
-      const d = absRotStep(sides);
-      return {title:`Remplissage alterné + rotation`, varies:['rot','filled'],
-        s0:{sides, rot:ri(0,7)*15, scale:1, filled:ri(0,1)===1},
-        step:s=>({...s, filled:!s.filled, rot:s.rot+d}),
-        ex:`Deux règles simultanées : le remplissage alterne plein / vide ET la figure tourne de +${d}° à chaque étape.`};
+    case 4: { // remplissage alterné + nombre de côtés
+      const start = ri(3,4);
+      return {title:`Remplissage alterné et côtés`, varies:['sides','filled'],
+        s0:{sides:start, rot:0, scale:1, filled:ri(0,1)===1},
+        step:s=>({...s, sides:s.sides+1, filled:!s.filled}),
+        ex:`Deux règles simultanées : un côté de plus à chaque étape ET le remplissage qui alterne plein / vide. Vérifier les deux avant de valider.`};
     }
-    case 5: { // couleur cyclique
+    case 5: { // cycle de couleurs
       const len = absPick([3,4]);
       const off = ri(0,len-1);
       return {title:`Cycle de couleurs`, varies:['color'],
-        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:1, filled:true, color:ABS_COLORS[off]},
+        s0:{sides:absPick([0,3,4,5,6]), rot:0, scale:1, filled:true, color:ABS_COLORS[off]},
         step:s=>({...s, color:ABS_COLORS[(ABS_COLORS.indexOf(s.color)+1+len)%len]}),
         ex:`La couleur suit un cycle de ${len===3?'trois':'quatre'} teintes qui se répète, la forme reste identique.`};
     }
-    case 6: { // traits
+    case 6: { // traits, toujours sur une figure vide pour rester lisibles
       const states = [{},{hline:true},{hline:true,vline:true},{vline:true}];
       let i = ri(0,3);
-      const s0 = {sides:absPick([0,3,4,6]), rot:ri(0,3)*15, scale:1, filled:ri(0,1)===1, ...states[i]};
+      const s0 = {sides:absPick([0,4,6]), rot:0, scale:1, filled:false, ...states[i]};
       return {title:`Traits ajoutés puis retirés`, varies:['lines'], s0,
-        step:s=>{ i=(i+1)%4; return {sides:s.sides, rot:s.rot, scale:s.scale, filled:s.filled, color:s.color, ...states[i]}; },
+        step:s=>{ i=(i+1)%4; return {sides:s.sides, rot:s.rot, scale:s.scale, filled:false, color:s.color, ...states[i]}; },
         ex:`Les traits suivent un cycle : aucun, horizontal, les deux, vertical, puis on recommence.`};
     }
-    case 7: { // côtés + rotation
-      const d = absPick([20,30,36,45]);
-      const start = ri(3,4);
+    case 7: { // côtés + rotation repérée
+      const d = absRotStep();
       return {title:`Côtés et rotation combinés`, varies:['sides','rot'],
-        s0:{sides:start, rot:ri(0,3)*15, scale:1, filled:false},
+        s0:{sides:3, rot:ri(0,7)*45, scale:1, filled:false, marker:true},
         step:s=>({...s, sides:s.sides+1, rot:s.rot+d}),
-        ex:`Deux règles simultanées : +1 côté ET rotation de +${d}° à chaque étape. Vérifier les deux attributs avant de valider.`};
+        ex:`Deux règles simultanées : un côté de plus ET une rotation du repère de +${d}° à chaque étape.`};
     }
     default: { // taille + remplissage
-      const mag = absPick([0.15,0.2]);
       return {title:`Taille et remplissage`, varies:['scale','filled'],
-        s0:{sides:absPick([0,3,4,5,6]), rot:ri(0,3)*15, scale:absScale(1.2-4*mag), filled:ri(0,1)===1},
-        step:s=>({...s, scale:absScale(s.scale+mag), filled:!s.filled}),
-        ex:`Deux règles simultanées : le rayon augmente de ${mag.toFixed(2).replace('.',',')} ET le remplissage alterne plein / vide.`};
+        s0:{sides:absPick([0,3,4,5,6]), rot:0, scale:0.4, filled:ri(0,1)===1},
+        step:s=>({...s, scale:absScale(s.scale+0.2), filled:!s.filled}),
+        ex:`Deux règles simultanées : le rayon augmente de 0,20 ET le remplissage alterne plein / vide.`};
     }
   }
 }
