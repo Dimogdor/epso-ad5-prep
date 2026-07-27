@@ -1192,30 +1192,38 @@ function mkNum(q,correct,distractors,ex,unit,table){
   const num = typeof correct==='number';
   const d = num ? decOf(correct) : 0;
   const round = v => num ? +(+v).toFixed(d) : v;
+  // Le concours propose cinq options. Contrairement a ce que laissait croire une
+  // premiere lecture de l'epreuve blanche, la cinquieme n'est PAS toujours
+  // « Aucune de ces reponses » : beaucoup de questions alignent cinq valeurs
+  // numeriques. On tire donc au sort la presence de la sentinelle.
+  const useNone = num ? ri(0,1)===1 : true;
+  const nVals = useNone ? 4 : 5;
   const vals=[correct];
   distractors.forEach(x=>{ const v=round(x); if(vals.indexOf(v)===-1) vals.push(v); });
-  // Filet de sécurité quand le générateur fournit trop peu de distracteurs distincts.
-  // D'abord des variantes proportionnelles, puis un décalage d'un cran de précision,
-  // ce qui garantit des valeurs différentes même pour une réponse nulle ou négative.
+  // Filet de securite quand le generateur fournit trop peu de distracteurs distincts.
+  // D'abord des variantes proportionnelles, puis un decalage d'un cran de precision,
+  // ce qui garantit des valeurs differentes meme pour une reponse nulle ou negative.
   const step = d>0 ? Math.pow(10,-d) : 1;
-  for(let pad=1; num && vals.length<4 && pad<=40; pad++){
+  for(let pad=1; num && vals.length<nVals && pad<=40; pad++){
     const v = round(correct*(1 + (pad%2?1:-1)*0.06*Math.ceil(pad/2)));
     if(isFinite(v) && vals.indexOf(v)===-1) vals.push(v);
   }
-  for(let k=1; vals.length<4 && k<=500; k++){
+  for(let k=1; vals.length<nVals && k<=500; k++){
     const cands = num ? [round(correct+k*step), round(correct-k*step)] : [correct+' ('+k+')'];
-    cands.forEach(v=>{ if(vals.length<4 && vals.indexOf(v)===-1) vals.push(v); });
+    cands.forEach(v=>{ if(vals.length<nVals && vals.indexOf(v)===-1) vals.push(v); });
   }
-  let four = vals.slice(0,4);
-  // Le cas « aucune de ces réponses » n'est activé que pour une valeur numérique :
-  // fabriquer un substitut plausible d'un nom de pays ou d'un rapport n'a pas de sens.
-  const noneIsRight = num && ri(1,6)===1;
+  let picked = vals.slice(0,nVals);
+  // La sentinelle n'est la bonne reponse que lorsqu'elle est presente : on retire
+  // alors la valeur exacte des propositions chiffrees.
+  const noneIsRight = useNone && num && ri(1,6)===1;
   if(noneIsRight){
     let sub = correct, k=1;
-    while(four.indexOf(sub)!==-1 && k<=20){ sub = round(correct*(1+0.11*k)); k++; }
-    four = four.map(v=>v===correct ? sub : v);
+    while(picked.indexOf(sub)!==-1 && k<=20){ sub = round(correct*(1+0.11*k)); k++; }
+    picked = picked.map(v=>v===correct ? sub : v);
   }
-  const item = {q:q, opts:four.map(v=>frNum(v)+u).concat([NONE_OPT]), c: noneIsRight ? 4 : four.indexOf(correct), ex:ex};
+  const opts = picked.map(v=>frNum(v)+u);
+  if(useNone) opts.push(NONE_OPT);
+  const item = {q:q, opts:opts, c: noneIsRight ? 4 : picked.indexOf(correct), ex:ex};
   if(noneIsRight) item.ex = ex+` Ici la valeur exacte (`+frNum(correct)+u+`) ne figure pas parmi les propositions : la bonne réponse est « `+NONE_OPT+` ».`;
   if(table) item.table = table;
   return item;
@@ -1681,6 +1689,7 @@ function shapeSVG(spec){
   const overColor = (!dots && filled) ? '#F7F4EE' : color;
   if(spec.hline) inner+='<line x1="10" y1="32" x2="54" y2="32" stroke="'+overColor+'" stroke-width="2.5"/>';
   if(spec.vline) inner+='<line x1="32" y1="10" x2="32" y2="54" stroke="'+overColor+'" stroke-width="2.5"/>';
+  if(spec.arrow) inner+=arrowSVG(spec.arrow);
   if(spec.marker && !dots){
     const a=(rot-90)*Math.PI/180, rr=24*scale;
     inner+='<circle cx="'+(32+rr*Math.cos(a)).toFixed(1)+'" cy="'+(32+rr*Math.sin(a)).toFixed(1)+'" r="5.5" fill="'+(filled?'#F7F4EE':color)+'" stroke="'+color+'" stroke-width="2"/>';
@@ -1753,13 +1762,14 @@ const ABS_COLORS = ['#1B2438','#7A1F3D','#2F6B4F','#B8860B'];
    rotations (un carré tourné de 90° est identique à lui-même). */
 function absKey(s){
   const lines = (s.hline?1:0)+''+(s.vline?1:0);
-  if(s.dots>0) return 'd'+s.dots+'|'+(s.color||ABS_COLORS[0])+'|'+lines;
+  const arr = s.arrow||'';
+  if(s.dots>0) return 'd'+s.dots+'|'+(s.color||ABS_COLORS[0])+'|'+lines+'|'+arr;
   const n = s.sides||0;
   // Avec un repère, la rotation est lisible sur 360° ; sans repère, un polygone
   // régulier se répète tous les 360/n degrés et un cercle ne montre rien.
   const period = s.marker ? 360 : (n>2 ? 360/n : 360);
   const rot = (s.marker || n>2) ? Math.round((((s.rot||0)%period)+period)%period) : 0;
-  return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines+'|'+(s.marker?'m':'');
+  return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines+'|'+(s.marker?'m':'')+'|'+arr;
 }
 
 /* Variantes plausibles de la bonne réponse : on ne fausse qu'un attribut à la fois,
@@ -1904,6 +1914,122 @@ function absFamily(){
   }
 }
 
+/* ================= ABSTRAIT : « QUELLE FIGURE APPARTIENT AU MÊME ENSEMBLE » =========
+   Second type d'item du concours, distinct de la suite à compléter. Les cinq figures
+   de l'énoncé partagent une règle qui LIE DEUX ATTRIBUTS entre eux ; il faut inférer
+   cette règle puis désigner la seule proposition qui la respecte. Il n'y a aucune
+   progression à chercher : le piège est justement d'en chercher une. */
+
+/* Une flèche tracée le long d'un bord, comme dans les items officiels. Toujours
+   dessinée dans la teinte d'encre par défaut, pour qu'elle ne renseigne jamais sur
+   une règle portant sur la couleur de la figure. */
+function arrowSVG(dir){
+  const c = ABS_COLORS[0];
+  const L = {right:[6,59,58,59], left:[58,5,6,5], up:[59,58,59,6], down:[5,6,5,58]}[dir];
+  const H = {right:'58,59 50,55 50,63', left:'6,5 14,1 14,9', up:'59,6 55,14 63,14', down:'5,58 1,50 9,50'}[dir];
+  return '<line x1="'+L[0]+'" y1="'+L[1]+'" x2="'+L[2]+'" y2="'+L[3]+'" stroke="'+c+'" stroke-width="2"/>'
+       + '<polygon points="'+H+'" fill="'+c+'"/>';
+}
+
+const ABS_HORIZ = f => f.arrow==='left' || f.arrow==='right';
+
+/* Chaque famille fournit : de quoi tirer une figure au hasard, un test de conformité,
+   et le moyen de forcer la conformité ou la violation. */
+function absSetFamily(){
+  const inv = ri(0,1)===1;             // le sens de la règle est tiré au sort
+  const oui = b => inv ? !b : b;
+  const C = ABS_COLORS;
+  switch(ri(0,5)){
+    case 0: return {
+      title:`Orientation et remplissage`,
+      rand:()=>({sides:absPick([3,4,5,6]), scale:0.72, rot:0, color:C[ri(0,3)], arrow:absPick(['left','right','up','down'])}),
+      test:f=>f.filled === oui(ABS_HORIZ(f)),
+      apply:(f,ok)=>({...f, filled: ok ? oui(ABS_HORIZ(f)) : !oui(ABS_HORIZ(f))}),
+      ex:`La règle lie l'ORIENTATION de la flèche au remplissage : flèche horizontale ⟹ figure ${inv?'vide':'pleine'}, flèche verticale ⟹ figure ${inv?'pleine':'vide'}. Le sens précis de la flèche, le nombre de côtés et la couleur varient librement : ce sont des attributs distracteurs.`};
+    case 1: return {
+      title:`Parité du nombre de côtés et remplissage`,
+      rand:()=>({sides:ri(3,8), scale:1, rot:0, color:C[ri(0,3)]}),
+      test:f=>f.filled === oui(f.sides%2===0),
+      apply:(f,ok)=>({...f, filled: ok ? oui(f.sides%2===0) : !oui(f.sides%2===0)}),
+      ex:`La règle lie la PARITÉ du nombre de côtés au remplissage : nombre pair de côtés ⟹ figure ${inv?'vide':'pleine'}, nombre impair ⟹ figure ${inv?'pleine':'vide'}. Compter les côtés est le seul geste utile ; la couleur ne sert à rien.`};
+    case 2: return {
+      title:`Trait et couleur`,
+      rand:()=>({sides:absPick([0,3,4,6]), scale:1, rot:0, filled:false, hline:ri(0,1)===1, color:C[0]}),
+      test:f=>(f.color===C[1]) === oui(!!f.hline),
+      apply:(f,ok)=>({...f, color: (ok ? oui(!!f.hline) : !oui(!!f.hline)) ? C[1] : C[0]}),
+      ex:`La règle lie la PRÉSENCE DU TRAIT à la couleur : ${inv?'absence':'présence'} de trait ⟹ figure bordeaux, ${inv?'présence':'absence'} ⟹ figure bleu nuit. Le nombre de côtés varie librement.`};
+    case 3: return {
+      title:`Parité du nombre de points et couleur`,
+      rand:()=>({dots:ri(2,8), color:C[0]}),
+      test:f=>(f.color===C[2]) === oui(f.dots%2===0),
+      apply:(f,ok)=>({...f, color: (ok ? oui(f.dots%2===0) : !oui(f.dots%2===0)) ? C[2] : C[0]}),
+      ex:`La règle lie la PARITÉ du nombre de points à la couleur : nombre pair ⟹ points verts, nombre impair ⟹ points bleu nuit${inv?', la correspondance étant inversée ici':''}. Il faut compter, pas estimer.`};
+    case 4: return {
+      title:`Taille et remplissage`,
+      rand:()=>({sides:absPick([0,3,4,5,6]), scale:absPick([0.5,1.1]), rot:0, color:C[ri(0,3)]}),
+      test:f=>f.filled === oui(f.scale>0.9),
+      apply:(f,ok)=>({...f, filled: ok ? oui(f.scale>0.9) : !oui(f.scale>0.9)}),
+      ex:`La règle lie la TAILLE au remplissage : grande figure ⟹ ${inv?'vide':'pleine'}, petite figure ⟹ ${inv?'pleine':'vide'}. La forme et la couleur sont des distracteurs.`};
+    default: {
+      const inv2 = ri(0,1)===1, oui2 = b => inv2 ? !b : b;
+      return {
+        title:`Deux règles simultanées`, deux:true,
+        rand:()=>({sides:ri(3,6), scale:0.72, rot:ri(0,3)*30, color:C[ri(0,3)], arrow:absPick(['left','right','up','down'])}),
+        test:f=>f.filled===oui(ABS_HORIZ(f)) && !!f.marker===oui2(f.sides%2===0),
+        apply:(f,ok)=>{
+          const g = {...f, filled: oui(ABS_HORIZ(f)), marker: oui2(f.sides%2===0)};
+          if(ok) return g;
+          return ri(0,1) ? {...g, filled:!g.filled} : {...g, marker:!g.marker};
+        },
+        ex:`Deux règles s'appliquent en même temps. La première lie l'orientation de la flèche au remplissage : flèche horizontale ⟹ figure ${inv?'vide':'pleine'}. La seconde lie la parité du nombre de côtés à la présence du repère : nombre pair de côtés ⟹ repère ${inv2?'absent':'présent'}. Une proposition qui ne respecte qu'une des deux règles est fausse : c'est le piège de ce type d'item.`};
+    }
+  }
+}
+
+/* Un attribut constant dans tout l'ensemble devient une règle implicite : si la bonne
+   réponse s'en écarte, l'item devient contestable. On rejette alors le tirage. */
+function absSetSafe(set, ans){
+  const keys = ['sides','filled','color','arrow','dots','hline','vline','marker','scale'];
+  for(const k of keys){
+    const vals = new Set(set.map(f=>String(f[k])));
+    if(vals.size===1 && String(ans[k])!==[...vals][0]) return false;
+  }
+  return true;
+}
+
+function genAbstractSet(){
+  for(let essai=0; essai<60; essai++){
+    const f = absSetFamily();
+    const vus = new Set(), set = [];
+    for(let g=0; g<400 && set.length<5; g++){
+      const x = f.apply(f.rand(), true);
+      const k = absKey(x);
+      if(vus.has(k)) continue;
+      vus.add(k); set.push(x);
+    }
+    if(set.length<5) continue;
+    let ans = null;
+    for(let g=0; g<400 && !ans; g++){
+      const x = f.apply(f.rand(), true);
+      if(!vus.has(absKey(x))) ans = x;
+    }
+    if(!ans || !absSetSafe(set, ans)) continue;
+    const opts = [ans], pris = new Set([absKey(ans)]);
+    for(let g=0; g<600 && opts.length<ABS_OPTS; g++){
+      const x = f.apply(f.rand(), false);
+      const k = absKey(x);
+      if(pris.has(k) || f.test(x)) continue;
+      pris.add(k); opts.push(x);
+    }
+    if(opts.length<ABS_OPTS) continue;
+    if(opts.filter(f.test).length!==1) continue;      // invariant : une seule conforme
+    const p = shuffle(opts.map((_,i)=>i));
+    return {kind:'set', title:f.title, seq:set, opts:p.map(i=>opts[i]), c:p.indexOf(0), ex:f.ex,
+            _conform:p.map(i=>f.test(opts[i]))};
+  }
+  return genAbstract();   // repli, jamais atteint en pratique
+}
+
 /* Une série complète : 4 figures visibles, la 5e à trouver parmi 4 options distinctes. */
 function genAbstract(){
   const f = absFamily();
@@ -1951,8 +2077,10 @@ function mkAbsSeries(n){
   const out = shuffle(ABSTRACT_BANK).slice(0, Math.min(3, n)).map(absTopUp);
   const seen = new Set();
   let guard = 0;
+  // Deux types d'items coexistent au concours : la suite a completer et l'ensemble
+  // regi par une regle. On tire environ deux items sur cinq du second type.
   while(out.length<n && guard++<500){
-    const g = genAbstract();
+    const g = ri(1,5)<=2 ? genAbstractSet() : genAbstract();
     const k = g.title+'#'+absKey(g.opts[g.c]);
     if(seen.has(k)) continue;
     seen.add(k); out.push(g);
@@ -4332,6 +4460,26 @@ function renderNumAbs(){
     <div class="info-box"><b>Numérique :</b> pourcentages, ratios, moyennes, taux de croissance, lecture de tableaux et graphiques. Pas de maths avancées, mais de la vitesse. Une partie des questions est générée avec des chiffres différents à chaque session. <b>Abstrait :</b> séquences de formes suivant une ou plusieurs règles simultanées.</div>
 
     <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">MÉTHODE DÉTAILLÉE · ABSTRAIT</p>
+    <details class="mth"><summary>Les deux types d'items, à ne pas confondre</summary>
+      <p>Le test alterne deux exercices qui n'appellent pas du tout le même raisonnement. Se tromper de type coûte plus cher que se tromper de règle.</p>
+      <ul>
+        <li><b>La suite à compléter.</b> Quatre figures évoluent selon une transformation régulière, il faut produire la cinquième. On cherche une <b>progression</b> : que fait chaque étape par rapport à la précédente.</li>
+        <li><b>L'ensemble régi par une règle.</b> Cinq figures partagent une propriété, il faut désigner la proposition qui la partage aussi. Il n'y a <b>aucune progression</b> : les figures ne sont pas ordonnées. La règle lie deux attributs entre eux, par exemple « flèche horizontale donc figure pleine, flèche verticale donc figure vide ». Chercher une évolution dans un item de ce type est le piège principal.</li>
+      </ul>
+      <p>Le réflexe qui distingue les deux : dans une suite, la première et la dernière figure diffèrent nettement. Dans un ensemble, les figures se ressemblent sans ordre apparent.</p>
+    </details>
+
+    <details class="mth"><summary>Méthode pour les items « même ensemble »</summary>
+      <ul>
+        <li>1. Dresse la liste des attributs présents : forme, remplissage, couleur, taille, traits, flèche, repère, nombre d'éléments.</li>
+        <li>2. Écarte ceux qui prennent la même valeur partout : ils ne portent aucune règle.</li>
+        <li>3. Parmi ceux qui varient, cherche <b>deux attributs qui varient ensemble</b>. C'est presque toujours une correspondance binaire : horizontal ou vertical, pair ou impair, grand ou petit, présent ou absent.</li>
+        <li>4. Formule la règle en une phrase, puis teste-la sur les cinq figures de l'énoncé. Elle doit tenir sur les cinq, sans exception.</li>
+        <li>5. Applique-la aux propositions. Une seule survit.</li>
+      </ul>
+      <p>Quand deux règles s'appliquent en même temps, une proposition qui n'en respecte qu'une est fausse. Vérifie systématiquement les deux avant de valider : c'est là que se perdent les points sur les items difficiles.</p>
+    </details>
+
     <details class="mth"><summary>Les six familles de transformation</summary>
       <p>Quasiment toute question de raisonnement abstrait se ramène à une combinaison de six transformations élémentaires. Les connaître par cœur transforme la recherche en vérification.</p>
       <ul>
@@ -4391,10 +4539,15 @@ function runAbstractSession(){
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Abstrait · '+(idx+1)+'/'+order.length+'</span><span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">Score : '+score+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span></div>'
-      +'<p style="font-size:13.5px;color:var(--ink-soft);">Quelle forme complète la séquence ?</p>'
+      +'<p style="font-size:13.5px;color:var(--ink-soft);">'+(item.kind==='set'
+          ? 'Ces cinq figures respectent toutes une même règle. Laquelle des propositions respecte la même règle ?'
+          : 'Quelle forme complète la séquence ?')+'</p>'
       +'<div class="abs-sequence">'
-      + item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
-      +'<span class="abs-arrow">→</span><div class="abs-q">?</div></div>'
+      + (item.kind==='set'
+          ? item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('')
+          : item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
+            +'<span class="abs-arrow">→</span><div class="abs-q">?</div>')
+      +'</div>'
       +'<div class="abs-options" id="absOpts">'
       + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'"><span class="abs-letter">'+String.fromCharCode(65+i)+'</span>'+shapeSVG(o)+'</button>').join('')
       +'</div><div id="fb"></div>'
