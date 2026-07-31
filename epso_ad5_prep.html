@@ -116,6 +116,12 @@ main{padding-top:20px;}
 .abs-opt.correct{border-color:var(--green);background:var(--green-bg);}
 .abs-opt.incorrect{border-color:var(--wine);background:var(--wine-bg);}
 .kb-section{border:1px solid var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;background:var(--paper-raised);}
+.kb-headrow{display:flex;align-items:stretch;background:var(--paper);}
+.kb-headrow .kb-head{flex:1;width:auto;min-width:0;}
+.kb-headrow .kb-head>span:first-child{min-width:0;padding-right:10px;}
+.kb-play{flex-shrink:0;background:transparent;border:none;border-left:1px dashed var(--line);color:var(--gold);font-family:var(--mono);font-size:12px;padding:0 14px;letter-spacing:.06em;}
+.kb-play:hover{background:var(--gold-bg);color:var(--ink);}
+.kb-play.on{background:var(--gold);color:#fff;}
 .kb-head{width:100%;text-align:left;background:var(--paper);border:none;padding:13px 16px;font-family:var(--serif);font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
 .kb-head .car{font-family:var(--mono);color:var(--gold);transition:transform .15s;}
 .kb-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .25s ease;}
@@ -154,8 +160,60 @@ textarea.essay-area{width:100%;min-height:280px;border:1px solid var(--line);bor
 .plan-week .pw{font-family:var(--mono);font-size:11.5px;color:var(--gold);width:70px;flex-shrink:0;font-weight:600;padding-top:2px;}
 footer.reset-zone{text-align:center;padding:26px 0 10px;}
 footer.reset-zone button{background:none;border:none;color:var(--ink-soft);font-size:12px;text-decoration:underline;}
+/* ---- Lecture audio ---- */
+.aud-ctl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;}
+.aud-ctl-row label{font-size:13px;color:var(--ink-soft);flex-shrink:0;}
+select.aud-select{flex:1;min-width:180px;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-family:var(--sans);font-size:13.5px;background:var(--paper);color:var(--ink);}
+input.aud-range{flex:1;min-width:150px;accent-color:var(--gold);}
+.aud-rate-val{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--gold);width:52px;text-align:right;}
+.aud-presets{display:flex;gap:5px;flex-wrap:wrap;}
+.aud-presets button{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:4px 9px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);}
+.aud-presets button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.aud-toggle{display:flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer;}
+.aud-toggle input{width:15px;height:15px;accent-color:var(--gold);}
+.aud-search{width:100%;border:1px solid var(--line);border-radius:3px;padding:9px 11px;font-family:var(--sans);font-size:14px;background:var(--paper);color:var(--ink);}
+.aud-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px;}
+.aud-chip{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 11px;font-size:12px;color:var(--ink-soft);}
+.aud-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+.aud-group{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 2px;text-transform:uppercase;}
+.aud-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);}
+.aud-row:last-child{border-bottom:none;}
+.aud-row .at{flex:1;min-width:0;font-size:14px;line-height:1.35;}
+.aud-row .at small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:.03em;margin-top:2px;}
+.aud-row.cur>.at{color:var(--gold);font-weight:600;}
+.aud-row button{flex-shrink:0;border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:5px 9px;font-family:var(--mono);font-size:11.5px;color:var(--ink);}
+.aud-row button:hover{border-color:var(--ink);}
+.aud-pct{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);flex-shrink:0;width:40px;text-align:right;}
+.aud-pct.done{color:var(--green);}
+.aud-empty{font-size:13.5px;color:var(--ink-soft);font-style:italic;padding:6px 0;}
+.tts-reader{max-height:400px;overflow-y:auto;border:1px solid var(--line);border-radius:3px;padding:15px 16px;background:var(--paper);}
+.tts-reader p{font-size:14.5px;line-height:1.75;margin:0 0 11px;}
+.tts-reader p:last-child{margin-bottom:0;}
+.tts-reader p.li{padding-left:15px;text-indent:-15px;}
+.tts-reader p.li::before{content:"— ";color:var(--gold);}
+.tts-reader p.ttl{font-family:var(--serif);font-size:16px;font-weight:600;}
+.tts-chunk{cursor:pointer;border-radius:2px;}
+.tts-chunk:hover{background:var(--gold-bg);}
+.tts-chunk.on{background:var(--gold-bg);color:var(--ink);box-shadow:0 0 0 3px var(--gold-bg);}
+/* Barre de lecture persistante : elle survit aux changements d'onglet. */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--ink);border-top:2px solid var(--gold);box-shadow:0 -4px 18px rgba(27,36,56,.22);}
+.player .pw{max-width:760px;margin:0 auto;padding:9px 18px 11px;}
+.player-top{display:flex;align-items:baseline;gap:9px;}
+.player-eyebrow{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-bright);flex-shrink:0;}
+.player-title{font-family:var(--serif);font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+.player-count{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;}
+.player-prog{height:3px;background:rgba(255,255,255,.16);border-radius:2px;margin:7px 0 9px;overflow:hidden;}
+.player-prog i{display:block;height:100%;background:var(--gold-bright);width:0;transition:width .3s;}
+.player-ctl{display:flex;align-items:center;gap:5px;}
+.player-ctl button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--paper-raised);border-radius:3px;padding:6px 9px;font-family:var(--mono);font-size:12.5px;line-height:1;}
+.player-ctl button:hover{background:rgba(255,255,255,.2);}
+.player-ctl button.big{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;padding:7px 15px;font-size:13.5px;}
+.player-ctl .sp{margin-left:auto;display:flex;align-items:center;gap:5px;}
+.player-ctl .sp b{font-family:var(--mono);font-size:12.5px;color:var(--gold-bright);width:46px;text-align:center;}
+body.has-player{padding-bottom:130px;}
 .hidden{display:none !important;}
-@media(max-width:480px){.module-nav-grid{grid-template-columns:1fr;}.abs-options{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.module-nav-grid{grid-template-columns:1fr;}.abs-options{grid-template-columns:repeat(2,1fr);}
+  .player-ctl button{padding:6px 7px;}.player-ctl .sp b{width:40px;}body.has-player{padding-bottom:140px;}}
 </style>
 </head>
 <body>
@@ -176,6 +234,8 @@ footer.reset-zone button{background:none;border:none;color:var(--ink-soft);font-
 
 <main class="wrap" id="app"></main>
 
+<div class="player hidden" id="ttsBar"></div>
+
 <script>
 /* ponytail: l'hote d'origine fournissait window.storage ; un navigateur normal
    (GitHub Pages, file://) ne l'a pas, et sans ce relais la progression n'etait
@@ -194,6 +254,7 @@ const MODULES = [
   {id:'digital', ep:'T4 · L2', label:'Numériques'},
   {id:'eufte', ep:'T5 · L2', label:'EUFTE'},
   {id:'annexe', ep:'', label:'Annexe'},
+  {id:'audio', ep:'', label:'Écoute'},
   {id:'strategy', ep:'', label:'Stratégie'},
 ];
 
@@ -4104,6 +4165,698 @@ const CHECKLIST = [
 `Les 40 minutes ont été respectées`,
 ];
 
+/* ================= LECTURE AUDIO =================
+   Synthèse vocale locale via l'API speechSynthesis du navigateur. Aucun service
+   externe : le texte n'est envoyé nulle part, il est prononcé par le moteur de
+   voix du système. Le cours UE et l'annexe entière deviennent un catalogue de
+   chapitres écoutables dans n'importe quel ordre, chacun retenant sa position. */
+
+const TTS_SUPPORT = typeof window.speechSynthesis !== 'undefined'
+                 && typeof window.SpeechSynthesisUtterance !== 'undefined';
+
+/* ---- Catalogue ---- */
+/* Identifiant stable dérivé du titre : la reprise doit survivre à l'ajout d'une
+   fiche au milieu d'une banque, ce qu'un simple index ne permettrait pas. */
+function ttsSlug(s){
+  return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);
+}
+const AUDIO_GROUPS = [
+  {g:'cours',  label:`Cours · Connaissances UE`},
+  {g:'pilier', label:`Annexe · Piliers fondamentaux`},
+  {g:'actu',   label:`Annexe · Actualité européenne`},
+  {g:'theme',  label:`Annexe · Dossiers du Parlement`},
+  {g:'fiche',  label:`Annexe · Fiches détaillées`},
+];
+const AUDIO_GROUP_LABEL = Object.fromEntries(AUDIO_GROUPS.map(x=>[x.g,x.label]));
+function buildAudioLib(){
+  const out = [];
+  EU_KNOWLEDGE.forEach(s=>out.push({g:'cours', sub:'', title:s.title, html:s.body}));
+  ANNEXE_KNOWLEDGE.forEach(s=>{
+    if(s.group==='pilier'||s.group==='actu'||s.group==='theme')
+      out.push({g:s.group, sub:'', title:s.title, html:s.body});
+  });
+  ANNEXE_FICHES.forEach(f=>out.push({g:'fiche', sub:f.section, title:f.title, html:f.body}));
+  const vus = new Set();
+  out.forEach(x=>{
+    let id = x.g+'/'+ttsSlug(x.title), k = 2;
+    while(vus.has(id)) id = x.g+'/'+ttsSlug(x.title)+'-'+(k++);
+    vus.add(id); x.id = id;
+  });
+  return out;
+}
+const AUDIO_LIB = TTS_SUPPORT ? buildAudioLib() : [];
+const AUDIO_BY_ID = new Map(AUDIO_LIB.map(x=>[x.id,x]));
+const AUDIO_BY_TITLE = new Map(AUDIO_LIB.map(x=>[x.g+'|'+x.title,x.id]));
+function audioIdFor(g,title){ return AUDIO_BY_TITLE.get(g+'|'+title) || null; }
+
+/* ---- Normalisation : ce qui s'écrit bien mais se lit mal ----
+   Les sigles non prononçables sont développés (l'oreille n'a pas le texte sous
+   les yeux), ceux qui s'épellent naturellement sont espacés lettre à lettre, et
+   ceux qui se lisent comme un mot (EPSO, OTAN, Schengen) sont laissés tels quels. */
+const TTS_ACRO = [
+  [/\bTFUE\b/g, `traité sur le fonctionnement de l'Union européenne`],
+  [/\bTUE\b/g, `traité sur l'Union européenne`],
+  [/\bCJUE\b/g, `Cour de justice de l'Union européenne`],
+  [/\bCEDH\b/g, `Cour européenne des droits de l'homme`],
+  [/\bBCE\b/g, `Banque centrale européenne`],
+  [/\bBEI\b/g, `Banque européenne d'investissement`],
+  [/\bSEBC\b/g, `système européen de banques centrales`],
+  [/\bUEM\b/g, `union économique et monétaire`],
+  [/\bMES\b/g, `mécanisme européen de stabilité`],
+  [/\bMCE\b/g, `mécanisme de change européen`],
+  [/\bCFP\b/g, `cadre financier pluriannuel`],
+  [/\bPAC\b/g, `politique agricole commune`],
+  [/\bPCP\b/g, `politique commune de la pêche`],
+  [/\bPESC\b/g, `politique étrangère et de sécurité commune`],
+  [/\bPSDC\b/g, `politique de sécurité et de défense commune`],
+  [/\bSEAE\b/g, `Service européen pour l'action extérieure`],
+  [/\bPEV\b/g, `politique européenne de voisinage`],
+  [/\bCECA\b/g, `Communauté européenne du charbon et de l'acier`],
+  [/\bCEE\b/g, `Communauté économique européenne`],
+  [/\bCED\b/g, `Communauté européenne de défense`],
+  [/\bEEE\b/g, `Espace économique européen`],
+  [/\bAELE\b/g, `Association européenne de libre-échange`],
+  [/\bOMC\b/g, `Organisation mondiale du commerce`],
+  [/\bRGPD\b/g, `règlement général sur la protection des données`],
+  [/\bSEQE\b/g, `système d'échange de quotas d'émission`],
+  [/\bFEDER\b/g, `Fonds européen de développement régional`],
+  [/\bFEADER\b/g, `Fonds européen agricole pour le développement rural`],
+  [/\bFEAGA\b/g, `Fonds européen agricole de garantie`],
+  [/\bFSE\b/g, `Fonds social européen`],
+  [/\bRTE-T\b/g, `réseau transeuropéen de transport`],
+  [/\bRTE\b/g, `réseau transeuropéen`],
+  [/\bICE\b/g, `initiative citoyenne européenne`],
+  [/\bCESE\b/g, `Comité économique et social européen`],
+  [/\bCdR\b/g, `Comité européen des régions`],
+  [/\bCAE\b/g, `Conseil affaires étrangères`],
+  [/\bIA\b/g, `intelligence artificielle`],
+  [/\bUE\b/g, `Union européenne`],
+  [/\bCE\b/g, `Communauté européenne`],
+  /* Sigles qui s'épellent : on force l'épellation, sinon le moteur tente un mot. */
+  [/\bPIB\b/g, `P I B`], [/\bRNB\b/g, `R N B`], [/\bTVA\b/g, `T V A`],
+  [/\bPME\b/g, `P M E`], [/\bQCM\b/g, `Q C M`], [/\bDSA\b/g, `D S A`],
+  [/\bDMA\b/g, `D M A`], [/\bNUTS\b/g, `N U T S`], [/\bFIMI\b/g, `F I M I`],
+  [/\bIVCDCI\b/g, `I V C D C I`], [/\bPPE\b/g, `P P E`], [/\bS&D\b/g, `S et D`],
+];
+function ttsNormalize(t){
+  t = String(t).replace(/[   ]/g,' ');
+  /* « 1 490 » doit se lire comme un nombre, pas comme « un, quatre cent quatre-vingt-dix ». */
+  t = t.replace(/(\d) (?=\d{3}(?!\d))/g,'$1').replace(/(\d) (?=\d{3}(?!\d))/g,'$1');
+  TTS_ACRO.forEach(r=>{ t = t.replace(r[0], r[1]); });
+  t = t.replace(/Md€/g,` milliards d'euros`).replace(/M€/g,` millions d'euros`).replace(/€/g,` euros`);
+  t = t.replace(/[−–-]\s?(\d[\d,.]*)\s*%/g,`moins $1 pour cent`);
+  t = t.replace(/\+\s?(\d[\d,.]*)\s*%/g,`plus $1 pour cent`);
+  t = t.replace(/\s*%/g,` pour cent`).replace(/\s*‰/g,` pour mille`);
+  t = t.replace(/\b1er\b/g,`premier`).replace(/\b1re\b/g,`première`);
+  t = t.replace(/\bart\.\s*/gi,`article `).replace(/\bn°\s*/g,`numéro `);
+  t = t.replace(/\bEx\s*:/g,`Exemple :`).replace(/\bex\s*:/g,`exemple :`);
+  t = t.replace(/((?:19|20)\d{2})\s*[-–—]\s*((?:19|20)\d{2})/g,`$1 à $2`);
+  t = t.replace(/\bIII\b/g,`trois`).replace(/\bII\b/g,`deux`);
+  /* Le point médian sépare des blocs dans tout le corpus : c'est une fin de phrase.
+     Les guillemets et les tirets longs, eux, se prononcent si on les laisse. */
+  t = t.replace(/\s*·\s*/g,`. `).replace(/[«»“”„"]/g,` `).replace(/\s*[—–]\s*/g,`, `).replace(/…/g,`.`);
+  /* On resserre l'espace avant la ponctuation basse seulement : l'espace avant
+     « : ; ! ? » est la règle française et le texte du lecteur reste lisible. */
+  return t.replace(/\s+([,.])/g,`$1`).replace(/\s{2,}/g,' ').trim();
+}
+
+/* ---- Découpage en phrases ----
+   Une énonciation = une phrase. C'est ce qui donne une prosodie correcte (le
+   moteur pose sa respiration sur une vraie frontière) et ce qui rend le
+   changement de vitesse indolore : on ne reprend qu'une phrase, pas un chapitre. */
+const TTS_MAX = 180;
+function ttsSentences(text){
+  const raw = []; let start = 0;
+  for(let i=0;i<text.length;i++){
+    /* Pas de coupe sur « : » : en français il annonce ce qui suit, et couper
+       dessus laisse la voix finir sur « Présidente : » avant un silence. */
+    if('.!?;'.indexOf(text[i]) < 0) continue;
+    /* Décimale : le point entre deux chiffres ne termine pas une phrase. */
+    if(text[i]==='.' && /\d/.test(text[i-1]||'') && /\d/.test(text[i+1]||'')) continue;
+    if(text[i+1] && text[i+1] !== ' ') continue;
+    const seg = text.slice(start, i+1).trim();
+    /* « 2. Les institutions » : ce point numérote un titre ou une puce, il
+       n'annonce pas une phrase. Sans ce garde-fou la voix lit « deux » toute seule. */
+    if(/^\d{1,2}\.$/.test(seg)) continue;
+    if(seg) raw.push(seg);
+    start = i+1;
+  }
+  const tail = text.slice(start).trim();
+  if(tail) raw.push(tail);
+  /* Un fragment très court est un reliquat de ponctuation, pas une phrase : on le
+     recolle au précédent, ou au suivant quand il ouvre le bloc. */
+  const out = [];
+  raw.forEach(seg=>{
+    if(seg.length < 28 && out.length) out[out.length-1] += ' ' + seg; else out.push(seg);
+  });
+  for(let i=0;i<out.length-1;i++){
+    if(out[i].length < 28){ out[i+1] = out[i]+' '+out[i+1]; out.splice(i,1); i--; }
+  }
+  return out.length ? out : [text];
+}
+/* Chrome interrompt une énonciation qui dépasse une quinzaine de secondes : une
+   phrase trop longue est recoupée sur une virgule, jamais au milieu d'un mot. */
+function ttsCap(s){
+  if(s.length <= TTS_MAX) return [s];
+  const out = []; let rest = s;
+  while(rest.length > TTS_MAX){
+    /* La coupe se cherche avant la limite, jamais dessus : le fragment retenu
+       va jusqu'à cut inclus, un point de coupe à TTS_MAX rendrait 181 caractères. */
+    let cut = rest.lastIndexOf(', ', TTS_MAX-1);
+    if(cut < TTS_MAX*0.45) cut = rest.lastIndexOf(' ', TTS_MAX-1);
+    if(cut <= 0) cut = TTS_MAX-1;
+    out.push(rest.slice(0, cut+1).trim());
+    rest = rest.slice(cut+1).trim();
+  }
+  if(rest) out.push(rest);
+  return out;
+}
+
+/* ---- Mise en blocs ----
+   Le silence entre deux blocs est ce qui distingue une lecture d'un débit de
+   machine : un paragraphe respire davantage qu'une puce, un titre davantage encore. */
+const TTS_GAP = {title:0, p:340, li:190};
+function ttsBuild(chap){
+  if(chap._blocks) return chap._blocks;
+  const box = document.createElement('div');
+  box.innerHTML = chap.html;
+  const raw = [{kind:'title', text:chap.title}];
+  const addP = el=>{
+    const clone = el.cloneNode(true);
+    let lead = '';
+    const f = clone.firstChild;
+    /* Presque tous les paragraphes du corpus commencent par un intertitre en gras
+       collé au texte : sans point derrière, la lecture les enchaîne sans pause. */
+    if(f && f.nodeType===1 && f.tagName==='B'){
+      lead = f.textContent.trim().replace(/[\s:·.]+$/,'');
+      clone.removeChild(f);
+    }
+    const rest = clone.textContent.trim().replace(/^[\s:·]+/,'');
+    /* L'intertitre est mémorisé sous sa forme normalisée : les sigles y sont
+       développés comme dans le reste du texte, sinon l'affichage ne le retrouve plus. */
+    if(lead && rest) raw.push({kind:'p', lead:ttsNormalize(lead), text:lead+'. '+rest});
+    else if(lead) raw.push({kind:'p', lead:ttsNormalize(lead), text:lead+'.'});
+    else if(rest) raw.push({kind:'p', text:rest});
+  };
+  Array.from(box.childNodes).forEach(n=>{
+    if(n.nodeType===3){ const t=n.textContent.trim(); if(t) raw.push({kind:'p', text:t}); return; }
+    if(n.nodeType!==1) return;
+    if(n.tagName==='P'){ addP(n); return; }
+    if(n.tagName==='UL' || n.tagName==='OL'){
+      Array.from(n.children).forEach(li=>{ const t=li.textContent.trim(); if(t) raw.push({kind:'li', text:t}); });
+      return;
+    }
+    if(n.tagName==='TABLE'){
+      raw.push({kind:'p', text:'Tableau.'});
+      Array.from(n.querySelectorAll('tr')).forEach(tr=>{
+        const cells = Array.from(tr.children).map(c=>c.textContent.trim()).filter(Boolean);
+        if(cells.length) raw.push({kind:'li', text:cells.join(', ')+'.'});
+      });
+      return;
+    }
+    const t = n.textContent.trim(); if(t) raw.push({kind:'p', text:t});
+  });
+
+  const blocks = [], flat = [];
+  raw.forEach(b=>{
+    const parts = [];
+    ttsSentences(ttsNormalize(b.text)).forEach(s=>ttsCap(s).forEach(x=>{ if(x) parts.push(x); }));
+    if(!parts.length) return;
+    const chunks = parts.map((text,k)=>{
+      const c = {text, i:flat.length, gap: k===0 ? TTS_GAP[b.kind] : 0};
+      flat.push(c); return c;
+    });
+    blocks.push({kind:b.kind, lead:b.lead, chunks});
+  });
+  if(flat[1]) flat[1].gap = 620;   // souffle après l'annonce du titre
+  chap._blocks = blocks; chap._chunks = flat; chap._chars = flat.reduce((a,c)=>a+c.text.length,0);
+  return blocks;
+}
+/* Une voix française lit autour de 15 caractères par seconde à vitesse 1. */
+function ttsDuration(chap){
+  ttsBuild(chap);
+  return Math.round(chap._chars / (15 * TTS.rate));
+}
+function ttsMinutes(sec){ return sec < 60 ? '< 1 min' : Math.round(sec/60)+' min'; }
+
+/* ---- État du lecteur ---- */
+const TTS = {
+  chap:null, chunks:[], i:0, playing:false, paused:false, tok:0,
+  rate:1, voiceURI:null, continuous:true, follow:true,
+  queue:[], pos:{}, last:null,
+  timer:null, keep:null, saveT:null, filter:'all', q:'',
+};
+function ttsStateBlob(){
+  return JSON.stringify({rate:TTS.rate, voiceURI:TTS.voiceURI, continuous:TTS.continuous,
+    follow:TTS.follow, pos:TTS.pos, last:TTS.last, queue:TTS.queue});
+}
+async function ttsLoad(){
+  try{
+    const r = await window.storage.get('epso-audio');
+    if(r && r.value){
+      const s = JSON.parse(r.value);
+      if(typeof s.rate==='number') TTS.rate = Math.max(0.5, Math.min(2, s.rate));
+      TTS.voiceURI = s.voiceURI || null;
+      TTS.continuous = s.continuous !== false;
+      TTS.follow = s.follow !== false;
+      TTS.pos = s.pos || {};
+      TTS.last = s.last || null;
+      TTS.queue = Array.isArray(s.queue) ? s.queue.filter(id=>AUDIO_BY_ID.has(id)) : [];
+    }
+  }catch(e){}
+}
+function ttsFlush(){ try{ window.storage.set('epso-audio', ttsStateBlob()); }catch(e){} }
+function ttsSave(){ clearTimeout(TTS.saveT); TTS.saveT = setTimeout(ttsFlush, 900); }
+
+/* ---- Voix ---- */
+let TTS_VOICES = [];
+/* Les voix neuronales (Edge « Natural », Google, voix « améliorées » d'Apple) sont
+   d'un tout autre niveau que les voix système historiques : on les remonte. */
+function ttsScore(v){
+  const n = (v.name||'').toLowerCase(); let s = 0;
+  if(/natural|neural/.test(n)) s += 100;
+  if(/online/.test(n)) s += 40;
+  if(/google/.test(n)) s += 35;
+  if(/enhanced|premium|améliorée|amelioree/.test(n)) s += 30;
+  if(/(amélie|amelie|thomas|audrey|aurélie|aurelie|denise|henri|rémy|remy|charline|marie)/.test(n)) s += 15;
+  if(/(compact|eloquence|novelty|whisper|zarvox)/.test(n)) s -= 70;
+  if(/^fr-fr/i.test(v.lang||'')) s += 10;
+  return s;
+}
+function ttsRefreshVoices(){
+  if(!TTS_SUPPORT) return;
+  let all = [];
+  try{ all = speechSynthesis.getVoices() || []; }catch(e){ all = []; }
+  const fr = all.filter(v=>/^fr/i.test(v.lang||''));
+  TTS_VOICES = (fr.length ? fr : all).slice().sort((a,b)=>ttsScore(b)-ttsScore(a));
+  if(TTS_VOICES.length && !TTS_VOICES.some(v=>v.voiceURI===TTS.voiceURI))
+    TTS.voiceURI = TTS_VOICES[0].voiceURI;
+}
+function ttsVoice(){
+  try{ return (speechSynthesis.getVoices()||[]).find(v=>v.voiceURI===TTS.voiceURI) || null; }
+  catch(e){ return null; }
+}
+
+/* ---- Moteur ----
+   Une seule énonciation en vol à la fois, enchaînée dans onend. Le jeton `tok`
+   invalide les callbacks des énonciations annulées : sans lui, un cancel() ferait
+   avancer l'index une seconde fois et la lecture sauterait une phrase. */
+const TTS_BLINK = /Chrome|Chromium|Edg\//.test(navigator.userAgent) && !/Firefox/.test(navigator.userAgent);
+function ttsKeepAlive(on){
+  clearInterval(TTS.keep);
+  /* Chrome coupe silencieusement une énonciation longue : un pause/resume
+     périodique réarme son minuteur interne. Inutile et risqué ailleurs. */
+  if(!on || !TTS_BLINK) return;
+  TTS.keep = setInterval(()=>{
+    if(TTS.playing && !TTS.paused && speechSynthesis.speaking){
+      try{ speechSynthesis.pause(); speechSynthesis.resume(); }catch(e){}
+    }
+  }, 9000);
+}
+function ttsKill(){
+  TTS.tok++; clearTimeout(TTS.timer);
+  try{ speechSynthesis.cancel(); }catch(e){}
+}
+function ttsSpeak(delay){
+  const tok = ++TTS.tok;
+  clearTimeout(TTS.timer);
+  const go = ()=>{
+    if(tok!==TTS.tok || !TTS.playing || TTS.paused) return;
+    const c = TTS.chunks[TTS.i];
+    if(!c){ ttsChapterDone(); return; }
+    const u = new SpeechSynthesisUtterance(c.text);
+    const v = ttsVoice();
+    if(v) u.voice = v;
+    u.lang = (v && v.lang) || 'fr-FR';
+    u.rate = TTS.rate; u.pitch = 1; u.volume = 1;
+    u.onend = ()=>{
+      if(tok!==TTS.tok || !TTS.playing) return;
+      TTS.i++;
+      TTS.pos[TTS.chap.id] = TTS.i; ttsSave();
+      const nxt = TTS.chunks[TTS.i];
+      if(!nxt){ ttsChapterDone(); return; }
+      ttsPaint(); ttsSpeak(nxt.gap);
+    };
+    u.onerror = e=>{
+      if(tok!==TTS.tok || !TTS.playing) return;
+      /* « interrupted » et « canceled » sont nos propres annulations. */
+      if(e && (e.error==='interrupted' || e.error==='canceled')) return;
+      TTS.i++;
+      if(TTS.i >= TTS.chunks.length){ ttsChapterDone(); return; }
+      ttsPaint(); ttsSpeak(120);
+    };
+    ttsPaint();
+    try{ speechSynthesis.speak(u); }catch(e){ TTS.playing = false; ttsPaint(); }
+  };
+  if(delay > 0) TTS.timer = setTimeout(go, delay); else go();
+}
+function ttsOpen(id, autoplay){
+  const chap = AUDIO_BY_ID.get(id);
+  if(!chap) return;
+  ttsKill();
+  TTS.playing = false; TTS.paused = false;
+  TTS.chap = chap;
+  ttsBuild(chap);
+  TTS.chunks = chap._chunks;
+  let p = TTS.pos[id] || 0;
+  if(p >= TTS.chunks.length) p = 0;      // chapitre déjà terminé : on repart du début
+  TTS.i = p;
+  TTS.last = id; ttsSave();
+  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  if(autoplay) ttsPlay();
+}
+function ttsPlay(){
+  if(!TTS.chap || !TTS.chunks.length) return;
+  if(TTS.i >= TTS.chunks.length) TTS.i = 0;
+  TTS.playing = true; TTS.paused = false;
+  ttsKeepAlive(true);
+  ttsSpeak(0);
+}
+/* Pause = arrêt franc + mémorisation de la phrase. Les implémentations de
+   pause()/resume() sont trop inégales selon les plateformes pour s'y fier ;
+   reprendre la phrase en cours à son début est prévisible et sans surprise. */
+function ttsPause(){
+  if(!TTS.playing) return;
+  ttsKill(); ttsKeepAlive(false);
+  TTS.playing = false; TTS.paused = true;
+  if(TTS.chap){ TTS.pos[TTS.chap.id] = TTS.i; ttsSave(); }
+  ttsPaint();
+}
+function ttsToggle(){ if(TTS.playing) ttsPause(); else ttsPlay(); }
+function ttsStop(){
+  ttsKill(); ttsKeepAlive(false);
+  TTS.playing = false; TTS.paused = false; TTS.chap = null; TTS.chunks = []; TTS.i = 0;
+  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+}
+function ttsSetRate(r){
+  TTS.rate = Math.max(0.5, Math.min(2, Math.round(r*20)/20));
+  ttsSave();
+  /* Une énonciation garde la vitesse qu'elle avait au départ : pour que le
+     changement soit audible tout de suite, on relance la phrase en cours. */
+  if(TTS.playing){ ttsKill(); ttsSpeak(0); }
+  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+}
+function ttsSeek(d){ ttsGoto(TTS.i + d); }
+function ttsGoto(i){
+  if(!TTS.chap) return;
+  TTS.i = Math.max(0, Math.min(TTS.chunks.length-1, i));
+  TTS.pos[TTS.chap.id] = TTS.i; ttsSave();
+  if(TTS.playing){ ttsKill(); ttsSpeak(0); } else ttsPaint();
+}
+function ttsNextId(dir){
+  while(dir > 0 && TTS.queue.length){
+    const id = TTS.queue.shift(); ttsSave();
+    if(AUDIO_BY_ID.has(id) && (!TTS.chap || id!==TTS.chap.id)) return id;
+  }
+  if(!TTS.chap) return null;
+  const k = AUDIO_LIB.findIndex(x=>x.id===TTS.chap.id);
+  const n = AUDIO_LIB[k+dir];
+  return n ? n.id : null;
+}
+function ttsChapter(dir){
+  const id = ttsNextId(dir);
+  if(!id) return;
+  if(dir > 0) TTS.pos[id] = 0;    // on avance : le chapitre suivant démarre au début
+  ttsOpen(id, TTS.playing);
+}
+function ttsChapterDone(){
+  if(TTS.chap){ TTS.pos[TTS.chap.id] = TTS.chunks.length; ttsSave(); }
+  const wasPlaying = TTS.playing;
+  const id = (TTS.queue.length || TTS.continuous) ? ttsNextId(1) : null;
+  if(id && wasPlaying){ TTS.pos[id] = 0; ttsOpen(id, true); return; }
+  ttsKeepAlive(false);
+  TTS.playing = false; TTS.paused = false;
+  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+}
+
+/* ---- Barre de lecture (hors de #app : elle survit aux changements d'onglet) ---- */
+function ttsBarInit(){
+  const bar = document.getElementById('ttsBar');
+  if(!bar) return;
+  bar.innerHTML = `<div class="pw">
+    <div class="player-top">
+      <span class="player-eyebrow" id="pbGroup"></span>
+      <span class="player-title" id="pbTitle"></span>
+      <span class="player-count" id="pbCount"></span>
+    </div>
+    <div class="player-prog"><i id="pbFill"></i></div>
+    <div class="player-ctl">
+      <button id="pbPrevCh" title="Chapitre précédent">⏮</button>
+      <button id="pbPrev" title="Phrase précédente">◀</button>
+      <button class="big" id="pbPlay" title="Lecture / pause">▶</button>
+      <button id="pbNext" title="Phrase suivante">▶|</button>
+      <button id="pbNextCh" title="Chapitre suivant">⏭</button>
+      <span class="sp">
+        <button id="pbSlow" title="Ralentir">−</button>
+        <b id="pbRate">1,00×</b>
+        <button id="pbFast" title="Accélérer">+</button>
+        <button id="pbClose" title="Fermer le lecteur">✕</button>
+      </span>
+    </div></div>`;
+  const on = (id,fn)=>document.getElementById(id).addEventListener('click',fn);
+  on('pbPlay',   ttsToggle);
+  on('pbPrev',  ()=>ttsSeek(-1));
+  on('pbNext',  ()=>ttsSeek(1));
+  on('pbPrevCh',()=>ttsChapter(-1));
+  on('pbNextCh',()=>ttsChapter(1));
+  on('pbSlow',  ()=>ttsSetRate(TTS.rate-0.05));
+  on('pbFast',  ()=>ttsSetRate(TTS.rate+0.05));
+  on('pbClose', ttsStop);
+}
+function ttsBarSync(){
+  const bar = document.getElementById('ttsBar');
+  if(!bar) return;
+  if(!TTS.chap){ bar.classList.add('hidden'); document.body.classList.remove('has-player'); return; }
+  bar.classList.remove('hidden'); document.body.classList.add('has-player');
+  const n = TTS.chunks.length || 1;
+  document.getElementById('pbGroup').textContent = AUDIO_GROUP_LABEL[TTS.chap.g] || '';
+  document.getElementById('pbTitle').textContent = TTS.chap.title;
+  document.getElementById('pbCount').textContent = (TTS.i+1)+' / '+n;
+  document.getElementById('pbFill').style.width = Math.round(100*TTS.i/n)+'%';
+  document.getElementById('pbPlay').textContent = TTS.playing ? '❙❙' : '▶';
+  document.getElementById('pbRate').textContent = TTS.rate.toFixed(2).replace('.',',')+'×';
+}
+/* Appelée à chaque phrase : elle ne touche que ce qui bouge. */
+function ttsPaint(){
+  ttsBarSync();
+  /* Le bouton de la section en cours s'allume aussi dans l'Annexe et le cours. */
+  document.querySelectorAll('.kb-play.on').forEach(b=>b.classList.remove('on'));
+  if(TTS.chap && TTS.playing){
+    const kb = document.querySelector('.kb-play[data-audio="'+TTS.chap.id+'"]');
+    if(kb) kb.classList.add('on');
+  }
+  const rd = document.getElementById('ttsReader');
+  if(!rd) return;
+  const prev = rd.querySelector('.tts-chunk.on');
+  if(prev) prev.classList.remove('on');
+  const el = rd.querySelector('.tts-chunk[data-i="'+TTS.i+'"]');
+  if(el){
+    el.classList.add('on');
+    if(TTS.follow){
+      const y = el.offsetTop - rd.clientHeight/2 + el.offsetHeight/2;
+      rd.scrollTo({top:Math.max(0,y), behavior:'smooth'});
+    }
+  }
+}
+
+/* ---- Raccourcis clavier ---- */
+function ttsKey(e){
+  if(!TTS.chap) return;
+  const t = e.target;
+  if(t && (t.tagName==='INPUT' || t.tagName==='TEXTAREA' || t.tagName==='SELECT' || t.isContentEditable)) return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if(k===' '){ e.preventDefault(); ttsToggle(); }
+  else if(k==='ArrowRight'){ e.preventDefault(); e.shiftKey ? ttsChapter(1) : ttsSeek(1); }
+  else if(k==='ArrowLeft'){ e.preventDefault(); e.shiftKey ? ttsChapter(-1) : ttsSeek(-1); }
+  else if(k==='+' || k==='='){ e.preventDefault(); ttsSetRate(TTS.rate+0.05); }
+  else if(k==='-'){ e.preventDefault(); ttsSetRate(TTS.rate-0.05); }
+}
+
+/* ---- Onglet Écoute ---- */
+function ttsPct(id){
+  const chap = AUDIO_BY_ID.get(id); if(!chap) return 0;
+  ttsBuild(chap);
+  const n = chap._chunks.length || 1;
+  return Math.min(100, Math.round(100*(TTS.pos[id]||0)/n));
+}
+function ttsReaderHTML(){
+  const esc = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return TTS.chap._blocks.map(b=>{
+    const cls = b.kind==='title' ? 'ttl' : (b.kind==='li' ? 'li' : '');
+    return '<p class="'+cls+'">'+b.chunks.map((c,k)=>{
+      const hasLead = b.lead && k===0 && c.text.indexOf(b.lead)===0;
+      const txt = hasLead ? '<b>'+esc(b.lead)+'</b>'+esc(c.text.slice(b.lead.length)) : esc(c.text);
+      return '<span class="tts-chunk" data-i="'+c.i+'">'+txt+' </span>';
+    }).join('')+'</p>';
+  }).join('');
+}
+function renderAudio(){
+  const app = document.getElementById('app');
+  if(!TTS_SUPPORT){
+    app.innerHTML = `<div class="card"><span class="eyebrow">Écoute</span>
+      <h2>Synthèse vocale indisponible</h2>
+      <p>Ce navigateur n'expose pas l'API <b>speechSynthesis</b>. Le module fonctionne
+      dans Chrome, Edge, Safari et Firefox à jour.</p></div>`;
+    return;
+  }
+  const q = TTS.q.trim().toLowerCase();
+  const shown = AUDIO_LIB.filter(x=>
+    (TTS.filter==='all' || x.g===TTS.filter) &&
+    (!q || x.title.toLowerCase().includes(q) || (x.sub||'').toLowerCase().includes(q)));
+  const voiceOpts = TTS_VOICES.map(v=>'<option value="'+v.voiceURI.replace(/"/g,'&quot;')+'"'
+      +(v.voiceURI===TTS.voiceURI?' selected':'')+'>'+v.name+' ('+v.lang+')</option>').join('');
+  const presets = [0.85,1,1.15,1.3,1.5];
+  const done = AUDIO_LIB.filter(x=>ttsPct(x.id)>=100).length;
+
+  app.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">Écoute · ${AUDIO_LIB.length} chapitres</span>
+    <h2>Le cours et l'annexe, lus à voix haute</h2>
+    <p style="font-size:14px;">Tout le module <b>Connaissances UE</b> et l'intégralité de l'<b>Annexe</b>
+    sont découpés en chapitres écoutables. Choisis-en un, mets tes écouteurs. Chaque chapitre
+    <b>retient l'endroit exact où tu t'es arrêté</b> : rouvrir l'app reprend la phrase suivante, pas le début.</p>
+    <div class="info-box">La lecture se fait par le moteur de voix de ton système : rien n'est envoyé
+    sur Internet, et une fois la voix installée, tout fonctionne hors ligne.</div>
+
+    <div class="aud-ctl-row">
+      <label for="ttsVoiceSel">Voix</label>
+      <select class="aud-select" id="ttsVoiceSel">${voiceOpts || '<option>Aucune voix détectée</option>'}</select>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:-4px 0 12px;">
+      Les voix contenant <b>Natural</b>, <b>Online</b>, <b>Google</b> ou <b>Améliorée</b> sont neuronales et
+      nettement plus naturelles ; elles sont remontées en tête de liste. Sur Windows, Edge donne accès aux voix
+      « Natural » ; sur macOS et iOS, installe la voix améliorée de Thomas ou Amélie dans les réglages système.</p>
+
+    <div class="aud-ctl-row">
+      <label for="ttsRate">Vitesse</label>
+      <input class="aud-range" type="range" id="ttsRate" min="0.5" max="2" step="0.05" value="${TTS.rate}">
+      <span class="aud-rate-val" id="ttsRateVal">${TTS.rate.toFixed(2).replace('.',',')}×</span>
+    </div>
+    <div class="aud-presets">
+      ${presets.map(p=>'<button data-rate="'+p+'" class="'+(Math.abs(p-TTS.rate)<0.001?'on':'')+'">'+p.toFixed(2).replace('.',',')+'×</button>').join('')}
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 12px;">Réglable en cours de lecture :
+    la phrase en cours reprend à son début à la nouvelle vitesse, puis l'enchaînement continue normalement.</p>
+
+    <div class="aud-ctl-row">
+      <label class="aud-toggle"><input type="checkbox" id="ttsCont" ${TTS.continuous?'checked':''}> Enchaîner le chapitre suivant</label>
+      <label class="aud-toggle"><input type="checkbox" id="ttsFollow" ${TTS.follow?'checked':''}> Suivre le texte à l'écran</label>
+    </div>
+    ${TTS.last && AUDIO_BY_ID.has(TTS.last) && (!TTS.chap || TTS.chap.id!==TTS.last)
+      ? '<button class="btn wide" id="ttsResume">Reprendre · '+AUDIO_BY_ID.get(TTS.last).title+' ('+ttsPct(TTS.last)+' %)</button>' : ''}
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px;">
+      <b>Raccourcis</b> · espace : lecture/pause · ← → : phrase précédente/suivante ·
+      maj + ← → : chapitre précédent/suivant · + / − : vitesse.</p>
+  </div>
+
+  ${TTS.chap ? `<div class="card">
+    <div class="section-title"><span class="eyebrow">${AUDIO_GROUP_LABEL[TTS.chap.g]}</span>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${TTS.i+1} / ${TTS.chunks.length}</span></div>
+    <h2 style="font-size:18px;">${TTS.chap.title}</h2>
+    <p style="font-size:12.5px;color:var(--ink-soft);">≈ ${ttsMinutes(ttsDuration(TTS.chap))} à cette vitesse ·
+    clique une phrase pour y sauter.</p>
+    <div class="tts-reader" id="ttsReader">${ttsReaderHTML()}</div>
+    <button class="btn wide" id="ttsBigPlay" style="margin-top:12px;">${TTS.playing?'Pause':'Lire ce chapitre'}</button>
+  </div>` : ''}
+
+  <div class="card">
+    <div class="section-title"><h2>File d'attente</h2>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${TTS.queue.length} en attente</span></div>
+    <p style="font-size:13.5px;color:var(--ink-soft);">Empile les chapitres dans l'ordre que tu veux avec le bouton <b>+</b>
+    de la bibliothèque. Ils passent avant l'enchaînement automatique.</p>
+    <div id="ttsQueue"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Bibliothèque</h2>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${done} / ${AUDIO_LIB.length} écoutés</span></div>
+    <input class="aud-search" id="ttsSearch" placeholder="Rechercher un chapitre…" value="${TTS.q.replace(/"/g,'&quot;')}">
+    <div class="aud-chips">
+      <button class="aud-chip ${TTS.filter==='all'?'on':''}" data-f="all">Tout (${AUDIO_LIB.length})</button>
+      ${AUDIO_GROUPS.map(g=>'<button class="aud-chip '+(TTS.filter===g.g?'on':'')+'" data-f="'+g.g+'">'
+        +g.label.replace(/^.*· /,'')+' ('+AUDIO_LIB.filter(x=>x.g===g.g).length+')</button>').join('')}
+    </div>
+    <div id="ttsLib"></div>
+  </div>`;
+
+  /* File d'attente */
+  const qz = document.getElementById('ttsQueue');
+  qz.innerHTML = TTS.queue.length ? TTS.queue.map((id,k)=>{
+    const c = AUDIO_BY_ID.get(id);
+    return '<div class="aud-row"><span class="at">'+(k+1)+'. '+c.title
+      +'<small>'+AUDIO_GROUP_LABEL[c.g]+'</small></span>'
+      +'<button data-up="'+k+'" title="Monter">↑</button>'
+      +'<button data-down="'+k+'" title="Descendre">↓</button>'
+      +'<button data-rm="'+k+'" title="Retirer">✕</button></div>';
+  }).join('') : '<p class="aud-empty">Vide. La lecture enchaînera simplement le chapitre suivant.</p>';
+  qz.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>{
+    const k=+b.dataset.up; if(k>0){ const a=TTS.queue; [a[k-1],a[k]]=[a[k],a[k-1]]; ttsSave(); renderAudio(); }
+  }));
+  qz.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',()=>{
+    const k=+b.dataset.down, a=TTS.queue; if(k<a.length-1){ [a[k+1],a[k]]=[a[k],a[k+1]]; ttsSave(); renderAudio(); }
+  }));
+  qz.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{
+    TTS.queue.splice(+b.dataset.rm,1); ttsSave(); renderAudio();
+  }));
+
+  /* Bibliothèque */
+  const lib = document.getElementById('ttsLib');
+  let html = '', lastHead = '';
+  shown.forEach(x=>{
+    const head = x.sub || AUDIO_GROUP_LABEL[x.g];
+    if(head !== lastHead){ html += '<p class="aud-group">'+head+'</p>'; lastHead = head; }
+    const pct = ttsPct(x.id), cur = TTS.chap && TTS.chap.id===x.id;
+    html += '<div class="aud-row'+(cur?' cur':'')+'"><span class="at">'+x.title
+      +'<small>≈ '+ttsMinutes(ttsDuration(x))+'</small></span>'
+      +'<span class="aud-pct'+(pct>=100?' done':'')+'">'+(pct>=100?'✓':(pct?pct+' %':''))+'</span>'
+      +'<button data-play="'+x.id+'">▶</button>'
+      +'<button data-add="'+x.id+'" title="Ajouter à la file">+</button></div>';
+  });
+  lib.innerHTML = html || '<p class="aud-empty">Aucun chapitre ne correspond.</p>';
+  lib.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>ttsOpen(b.dataset.play,true)));
+  lib.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{
+    TTS.queue.push(b.dataset.add); ttsSave(); renderAudio();
+  }));
+
+  /* Réglages */
+  const sel = document.getElementById('ttsVoiceSel');
+  if(sel) sel.addEventListener('change',()=>{
+    TTS.voiceURI = sel.value; ttsSave();
+    if(TTS.playing){ ttsKill(); ttsSpeak(0); }
+  });
+  const rg = document.getElementById('ttsRate');
+  rg.addEventListener('input',()=>{ document.getElementById('ttsRateVal').textContent = (+rg.value).toFixed(2).replace('.',','); });
+  rg.addEventListener('change',()=>ttsSetRate(+rg.value));   // pendant le glissement, on ne relance rien
+  app.querySelectorAll('[data-rate]').forEach(b=>b.addEventListener('click',()=>ttsSetRate(+b.dataset.rate)));
+  document.getElementById('ttsCont').addEventListener('change',e=>{ TTS.continuous = e.target.checked; ttsSave(); });
+  document.getElementById('ttsFollow').addEventListener('change',e=>{ TTS.follow = e.target.checked; ttsSave(); });
+  const rs = document.getElementById('ttsResume');
+  if(rs) rs.addEventListener('click',()=>ttsOpen(TTS.last,true));
+  const bp = document.getElementById('ttsBigPlay');
+  if(bp) bp.addEventListener('click',ttsToggle);
+  const sq = document.getElementById('ttsSearch');
+  sq.addEventListener('input',()=>{ TTS.q = sq.value; renderAudio(); document.getElementById('ttsSearch').focus(); });
+  app.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{ TTS.filter = b.dataset.f; renderAudio(); }));
+  const rd = document.getElementById('ttsReader');
+  if(rd) rd.querySelectorAll('.tts-chunk').forEach(s=>s.addEventListener('click',()=>ttsGoto(+s.dataset.i)));
+  ttsPaint();
+}
+async function ttsInit(){
+  if(!TTS_SUPPORT) return;
+  await ttsLoad();
+  ttsRefreshVoices();
+  /* La liste des voix arrive de façon asynchrone dans Chrome. */
+  try{ speechSynthesis.addEventListener('voiceschanged', ()=>{
+    ttsRefreshVoices(); if(CURRENT==='audio') renderAudio();
+  }); }catch(e){}
+  ttsBarInit();
+  document.addEventListener('keydown', ttsKey);
+  window.addEventListener('beforeunload', ()=>{ ttsFlush(); try{ speechSynthesis.cancel(); }catch(e){} });
+  if(TTS.last && AUDIO_BY_ID.has(TTS.last)) ttsOpen(TTS.last, false);
+}
+
 /* ================= STOCKAGE ================= */
 const DEFAULT_PROGRESS = ()=>({
   verbal:{att:0,cor:0}, numeric:{att:0,cor:0}, abstract:{att:0,cor:0},
@@ -4154,7 +4907,9 @@ function renderTabs(){
   nav.innerHTML = MODULES.map(m=>'<button class="tab-btn '+(m.id===CURRENT?'active':'')+'" data-m="'+m.id+'">'+(m.ep?m.ep:'&nbsp;')+'<b>'+m.label+'</b></button>').join('');
   nav.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.m)));
 }
-function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); window.scrollTo({top:0,behavior:'smooth'}); }
+/* La lecture audio n'est pas coupée par la navigation : elle est volontairement
+   indépendante des chronos de session, on écoute en passant d'un onglet à l'autre. */
+function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ================= DASHBOARD ================= */
 function renderDashboard(){
@@ -4610,13 +5365,7 @@ function renderEuKnow(){
   </div>
   <div id="kbList"></div>
   <button class="btn wide" id="startQuiz" style="margin-top:6px;">Passer au quiz (${Math.min(EU_COUNT, EU_QUIZ.length)} questions tirées de ${EU_QUIZ.length} · 40 min au total)</button>`;
-  const kbList = document.getElementById('kbList');
-  kbList.innerHTML = EU_KNOWLEDGE.map((s,i)=>'<div class="kb-section"><button class="kb-head" data-i="'+i+'"><span>'+s.title+'</span><span class="car">▸</span></button><div class="kb-body" id="kbb'+i+'">'+s.body+'</div></div>').join('');
-  kbList.querySelectorAll('.kb-head').forEach(b=>b.addEventListener('click',()=>{
-    const body = document.getElementById('kbb'+b.dataset.i);
-    const open = body.classList.toggle('open');
-    b.querySelector('.car').style.transform = open?'rotate(90deg)':'rotate(0)';
-  }));
+  renderAnnexeSection(document.getElementById('kbList'), EU_KNOWLEDGE, 'kbb', 'cours');
   document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(EU_QUIZ,'euknow',EU_SEC,'Connaissances UE','Test 3','euknow',EU_COUNT));
 }
 
@@ -4745,12 +5494,23 @@ function renderEufte(){
 }
 
 /* ================= ANNEXE APPRENTISSAGE ================= */
-function renderAnnexeSection(container, items, idPrefix){
-  container.innerHTML = items.map((s,i)=>'<div class="kb-section"><button class="kb-head" data-i="'+i+'"><span>'+s.title+'</span><span class="car">▸</span></button><div class="kb-body" id="'+idPrefix+i+'">'+s.body+'</div></div>').join('');
+/* `grp` relie la section à son chapitre audio : sans lui, pas de bouton d'écoute. */
+function renderAnnexeSection(container, items, idPrefix, grp){
+  container.innerHTML = items.map((s,i)=>{
+    const aid = grp ? audioIdFor(grp, s.title) : null;
+    return '<div class="kb-section"><div class="kb-headrow">'
+      +'<button class="kb-head" data-i="'+i+'"><span>'+s.title+'</span><span class="car">▸</span></button>'
+      +(aid?'<button class="kb-play" data-audio="'+aid+'" title="Écouter cette section">🎧 écouter</button>':'')
+      +'</div><div class="kb-body" id="'+idPrefix+i+'">'+s.body+'</div></div>';
+  }).join('');
   container.querySelectorAll('.kb-head').forEach(b=>b.addEventListener('click',()=>{
     const body = document.getElementById(idPrefix+b.dataset.i);
     const open = body.classList.toggle('open');
     b.querySelector('.car').style.transform = open?'rotate(90deg)':'rotate(0)';
+  }));
+  container.querySelectorAll('.kb-play').forEach(b=>b.addEventListener('click',()=>{
+    if(TTS.chap && TTS.chap.id===b.dataset.audio && TTS.playing) ttsPause();
+    else ttsOpen(b.dataset.audio, true);
   }));
 }
 function renderAnnexe(){
@@ -4785,11 +5545,11 @@ function renderAnnexe(){
     <p style="font-size:13px;color:var(--ink-soft);">${ANNEXE_FICHES.length} fiches condensées, une par sujet officiel, classées par domaine.</p>
     ${ficheSections.map((sec,si)=>'<p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:16px 0 4px;">'+sec.toUpperCase()+'</p><div id="annexeFiches'+si+'"></div>').join('')}
   </div>`;
-  renderAnnexeSection(document.getElementById('annexePiliers'), piliers, 'akbp');
-  renderAnnexeSection(document.getElementById('annexeActus'), actus, 'akba');
-  renderAnnexeSection(document.getElementById('annexeThemes'), themes, 'akbt');
+  renderAnnexeSection(document.getElementById('annexePiliers'), piliers, 'akbp', 'pilier');
+  renderAnnexeSection(document.getElementById('annexeActus'), actus, 'akba', 'actu');
+  renderAnnexeSection(document.getElementById('annexeThemes'), themes, 'akbt', 'theme');
   ficheSections.forEach((sec,si)=>{
-    renderAnnexeSection(document.getElementById('annexeFiches'+si), ANNEXE_FICHES.filter(f=>f.section===sec), 'akbf'+si+'_');
+    renderAnnexeSection(document.getElementById('annexeFiches'+si), ANNEXE_FICHES.filter(f=>f.section===sec), 'akbf'+si+'_', 'fiche');
   });
 }
 
@@ -4852,9 +5612,10 @@ function renderStrategy(){
 /* ================= INIT ================= */
 const RENDERERS = {
   dashboard: renderDashboard, verbal: renderVerbal, numabs: renderNumAbs,
-  euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte, annexe: renderAnnexe, strategy: renderStrategy,
+  euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte, annexe: renderAnnexe,
+  audio: renderAudio, strategy: renderStrategy,
 };
-loadProgress().then(()=>{ renderTabs(); renderDashboard(); });
+loadProgress().then(ttsInit).then(()=>{ renderTabs(); renderDashboard(); });
 </script>
 </body>
 </html>
