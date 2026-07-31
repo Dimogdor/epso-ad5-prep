@@ -202,6 +202,7 @@ input.aud-range{flex:1;min-width:150px;accent-color:var(--gold);}
 .player-eyebrow{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-bright);flex-shrink:0;}
 .player-title{font-family:var(--serif);font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
 .player-count{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;}
+.player-notice{background:#F3E3E1;color:var(--wine);border-radius:3px;padding:8px 11px;font-size:12px;line-height:1.5;margin-top:8px;}
 .player-prog{height:3px;background:rgba(255,255,255,.16);border-radius:2px;margin:7px 0 9px;overflow:hidden;}
 .player-prog i{display:block;height:100%;background:var(--gold-bright);width:0;transition:width .3s;}
 .player-ctl{display:flex;align-items:center;gap:5px;}
@@ -4393,10 +4394,13 @@ function ttsBuild(chap){
   chap._blocks = blocks; chap._chunks = flat; chap._chars = flat.reduce((a,c)=>a+c.text.length,0);
   return blocks;
 }
-/* Une voix française lit autour de 15 caractères par seconde à vitesse 1. */
+/* Une voix française lit autour de 15 caractères par seconde à vitesse 1.
+   L'estimation se prend sur le texte brut : découper les 208 chapitres pour
+   afficher une durée approchée bloquerait plus d'une seconde au premier rendu. */
 function ttsDuration(chap){
-  ttsBuild(chap);
-  return Math.round(chap._chars / (15 * TTS.rate));
+  if(chap._plain===undefined)
+    chap._plain = chap.html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().length;
+  return Math.round(chap._plain / (15 * TTS.rate));
 }
 function ttsMinutes(sec){ return sec < 60 ? '< 1 min' : Math.round(sec/60)+' min'; }
 
@@ -4406,6 +4410,7 @@ const TTS = {
   rate:1, voiceURI:null, continuous:true, follow:true,
   queue:[], pos:{}, last:null,
   timer:null, keep:null, saveT:null, filter:'all', q:'',
+  watch:null, notice:'', utt:null,
 };
 function ttsStateBlob(){
   return JSON.stringify({rate:TTS.rate, voiceURI:TTS.voiceURI, continuous:TTS.continuous,
@@ -4462,11 +4467,14 @@ function ttsVoice(){
    Une seule énonciation en vol à la fois, enchaînée dans onend. Le jeton `tok`
    invalide les callbacks des énonciations annulées : sans lui, un cancel() ferait
    avancer l'index une seconde fois et la lecture sauterait une phrase. */
-const TTS_BLINK = /Chrome|Chromium|Edg\//.test(navigator.userAgent) && !/Firefox/.test(navigator.userAgent);
+const TTS_ANDROID = /Android/i.test(navigator.userAgent);
+/* Le minuteur qui coupe les énonciations longues est un défaut de Chrome de
+   bureau. Sur Android, pause() ne met pas en pause et coupe souvent la voix
+   pour de bon : y appliquer le même contournement rend l'app muette. */
+const TTS_BLINK = /Chrome|Chromium|Edg\//.test(navigator.userAgent)
+               && !/Firefox/.test(navigator.userAgent) && !TTS_ANDROID;
 function ttsKeepAlive(on){
   clearInterval(TTS.keep);
-  /* Chrome coupe silencieusement une énonciation longue : un pause/resume
-     périodique réarme son minuteur interne. Inutile et risqué ailleurs. */
   if(!on || !TTS_BLINK) return;
   TTS.keep = setInterval(()=>{
     if(TTS.playing && !TTS.paused && speechSynthesis.speaking){
@@ -4475,12 +4483,25 @@ function ttsKeepAlive(on){
   }, 9000);
 }
 function ttsKill(){
-  TTS.tok++; clearTimeout(TTS.timer);
-  try{ speechSynthesis.cancel(); }catch(e){}
+  TTS.tok++; clearTimeout(TTS.timer); clearTimeout(TTS.watch);
+  /* cancel() alors que rien ne parle laisse le moteur d'Android dans un état où
+     le speak() suivant est accepté puis reste muet : on n'annule que s'il y a
+     réellement quelque chose en cours. */
+  try{ if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }catch(e){}
+}
+/* Une panne de synthèse est silencieuse par nature : sans message, la barre de
+   progression avance sur du vide et rien n'explique pourquoi. */
+const TTS_MUTE_HELP = `Aucun son ne sort. Sur Android : vérifie d'abord le volume <b>multimédia</b> (pas celui de la sonnerie), puis ouvre <b>Paramètres › Accessibilité › Sortie de synthèse vocale</b> et installe les données de la voix <b>française</b> du moteur Google. Sans ces données le navigateur accepte la demande et reste muet.`;
+function ttsErrMsg(err){
+  if(err==='language-unavailable' || err==='voice-unavailable')
+    return `La voix choisie n'est pas disponible sur cet appareil. Choisis-en une autre dans l'onglet Écoute.`;
+  if(err==='not-allowed')
+    return `Le navigateur a refusé de démarrer la lecture. Touche à nouveau le bouton de lecture.`;
+  return `Le moteur vocal du système n'a pas pu lire ce passage (${err||'erreur inconnue'}).`;
 }
 function ttsSpeak(delay){
   const tok = ++TTS.tok;
-  clearTimeout(TTS.timer);
+  clearTimeout(TTS.timer); clearTimeout(TTS.watch);
   const go = ()=>{
     if(tok!==TTS.tok || !TTS.playing || TTS.paused) return;
     const c = TTS.chunks[TTS.i];
@@ -4490,8 +4511,14 @@ function ttsSpeak(delay){
     if(v) u.voice = v;
     u.lang = (v && v.lang) || 'fr-FR';
     u.rate = TTS.rate; u.pitch = 1; u.volume = 1;
+    /* Chrome peut ramasser une énonciation que plus personne ne référence avant
+       même de l'avoir prononcée : on en garde une trace. */
+    TTS.utt = u;
+    let started = false;
+    u.onstart = ()=>{ started = true; ttsNotice(''); };
     u.onend = ()=>{
       if(tok!==TTS.tok || !TTS.playing) return;
+      clearTimeout(TTS.watch);
       TTS.i++;
       TTS.pos[TTS.chap.id] = TTS.i; ttsSave();
       const nxt = TTS.chunks[TTS.i];
@@ -4500,14 +4527,21 @@ function ttsSpeak(delay){
     };
     u.onerror = e=>{
       if(tok!==TTS.tok || !TTS.playing) return;
+      clearTimeout(TTS.watch);
       /* « interrupted » et « canceled » sont nos propres annulations. */
       if(e && (e.error==='interrupted' || e.error==='canceled')) return;
+      ttsNotice(ttsErrMsg(e && e.error));
       TTS.i++;
       if(TTS.i >= TTS.chunks.length){ ttsChapterDone(); return; }
       ttsPaint(); ttsSpeak(120);
     };
     ttsPaint();
-    try{ speechSynthesis.speak(u); }catch(e){ TTS.playing = false; ttsPaint(); }
+    try{ speechSynthesis.speak(u); }
+    catch(e){ TTS.playing = false; ttsNotice(ttsErrMsg('')); ttsPaint(); return; }
+    /* Ni onstart ni onerror : la demande a été acceptée dans le vide. */
+    TTS.watch = setTimeout(()=>{
+      if(tok===TTS.tok && TTS.playing && !started) ttsNotice(TTS_MUTE_HELP);
+    }, 3000);
   };
   if(delay > 0) TTS.timer = setTimeout(go, delay); else go();
 }
@@ -4523,13 +4557,20 @@ function ttsOpen(id, autoplay){
   if(p >= TTS.chunks.length) p = 0;      // chapitre déjà terminé : on repart du début
   TTS.i = p;
   TTS.last = id; ttsSave();
-  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  /* On lance la voix AVANT de redessiner. Reconstruire la bibliothèque coûte
+     plusieurs centaines de millisecondes sur un téléphone ; passées dans le
+     gestionnaire de clic, elles suffisent à ce que le navigateur ne rattache
+     plus le speak() au geste de l'utilisateur, et la lecture reste muette. */
   if(autoplay) ttsPlay();
+  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
 }
 function ttsPlay(){
   if(!TTS.chap || !TTS.chunks.length) return;
   if(TTS.i >= TTS.chunks.length) TTS.i = 0;
   TTS.playing = true; TTS.paused = false;
+  /* Android peuple parfois la liste des voix seulement après la première
+     demande de lecture : on retente ici avant de conclure quoi que ce soit. */
+  if(!TTS_VOICES.length) ttsRefreshVoices();
   ttsKeepAlive(true);
   ttsSpeak(0);
 }
@@ -4600,6 +4641,7 @@ function ttsBarInit(){
       <span class="player-title" id="pbTitle"></span>
       <span class="player-count" id="pbCount"></span>
     </div>
+    <div id="pbNotice"></div>
     <div class="player-prog"><i id="pbFill"></i></div>
     <div class="player-ctl">
       <button id="pbPrevCh" title="Chapitre précédent">⏮</button>
@@ -4636,6 +4678,14 @@ function ttsBarSync(){
   document.getElementById('pbFill').style.width = Math.round(100*TTS.i/n)+'%';
   document.getElementById('pbPlay').textContent = TTS.playing ? '❙❙' : '▶';
   document.getElementById('pbRate').textContent = TTS.rate.toFixed(2).replace('.',',')+'×';
+}
+/* Le message d'anomalie vit dans la barre de lecture : il reste visible quel que
+   soit l'onglet, et disparaît de lui-même dès qu'une phrase démarre vraiment. */
+function ttsNotice(msg){
+  if(TTS.notice === msg) return;
+  TTS.notice = msg;
+  const el = document.getElementById('pbNotice');
+  if(el) el.innerHTML = msg ? '<div class="player-notice">'+msg+'</div>' : '';
 }
 /* Appelée à chaque phrase : elle ne touche que ce qui bouge. */
 function ttsPaint(){
@@ -4675,15 +4725,17 @@ function ttsKey(e){
 }
 
 /* ---- Onglet Écoute ---- */
+/* Un chapitre jamais ouvert est à zéro : inutile de le découper pour le savoir. */
 function ttsPct(id){
+  const p = TTS.pos[id];
+  if(!p) return 0;
   const chap = AUDIO_BY_ID.get(id); if(!chap) return 0;
   ttsBuild(chap);
-  const n = chap._chunks.length || 1;
-  return Math.min(100, Math.round(100*(TTS.pos[id]||0)/n));
+  return Math.min(100, Math.round(100*p/(chap._chunks.length || 1)));
 }
 function ttsReaderHTML(){
   const esc = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return TTS.chap._blocks.map(b=>{
+  return ttsBuild(TTS.chap).map(b=>{
     const cls = b.kind==='title' ? 'ttl' : (b.kind==='li' ? 'li' : '');
     return '<p class="'+cls+'">'+b.chunks.map((c,k)=>{
       const hasLead = b.lead && k===0 && c.text.indexOf(b.lead)===0;
