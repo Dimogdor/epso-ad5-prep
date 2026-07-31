@@ -203,6 +203,19 @@ input.aud-range{flex:1;min-width:150px;accent-color:var(--gold);}
 .player-title{font-family:var(--serif);font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
 .player-count{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;}
 .player-notice{background:#F3E3E1;color:var(--wine);border-radius:3px;padding:8px 11px;font-size:12px;line-height:1.5;margin-top:8px;}
+.notice-btn{display:block;width:100%;margin-top:7px;background:var(--wine);color:#fff;border:none;border-radius:3px;padding:8px;font-size:12.5px;font-weight:600;}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(27,36,56,.6);display:flex;align-items:center;justify-content:center;padding:14px;overflow-y:auto;}
+.modal-box{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;max-width:520px;width:100%;padding:22px 20px;max-height:92vh;overflow-y:auto;position:relative;}
+.modal-close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:22px;color:var(--ink-soft);line-height:1;padding:4px 8px;}
+.diag-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;}
+.diag-line:last-child{border-bottom:none;}
+.diag-line b{font-family:var(--mono);font-size:12.5px;text-align:right;}
+.diag-ok{color:var(--green);}
+.diag-no{color:var(--wine);}
+.btn-link{display:block;width:100%;box-sizing:border-box;text-align:center;background:var(--ink);color:#fff;border:none;border-radius:3px;padding:13px 12px;font-size:14.5px;font-weight:600;font-family:var(--sans);text-decoration:none;margin-bottom:8px;}
+.btn-link.alt{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.diag-steps{font-size:13px;line-height:1.6;color:var(--ink-soft);padding-left:18px;margin:0 0 10px;}
+.diag-steps li{margin-bottom:5px;}
 .player-prog{height:3px;background:rgba(255,255,255,.16);border-radius:2px;margin:7px 0 9px;overflow:hidden;}
 .player-prog i{display:block;height:100%;background:var(--gold-bright);width:0;transition:width .3s;}
 .player-ctl{display:flex;align-items:center;gap:5px;}
@@ -236,6 +249,7 @@ body.has-player{padding-bottom:130px;}
 <main class="wrap" id="app"></main>
 
 <div class="player hidden" id="ttsBar"></div>
+<div class="modal hidden" id="ttsDiag"></div>
 
 <script>
 /* ponytail: l'hote d'origine fournissait window.storage ; un navigateur normal
@@ -4410,7 +4424,7 @@ const TTS = {
   rate:1, voiceURI:null, continuous:true, follow:true,
   queue:[], pos:{}, last:null,
   timer:null, keep:null, saveT:null, filter:'all', q:'',
-  watch:null, notice:'', utt:null,
+  watch:null, notice:'', utt:null, lastError:'', diagShown:false,
 };
 function ttsStateBlob(){
   return JSON.stringify({rate:TTS.rate, voiceURI:TTS.voiceURI, continuous:TTS.continuous,
@@ -4530,7 +4544,9 @@ function ttsSpeak(delay){
       clearTimeout(TTS.watch);
       /* « interrupted » et « canceled » sont nos propres annulations. */
       if(e && (e.error==='interrupted' || e.error==='canceled')) return;
+      TTS.lastError = (e && e.error) || 'inconnue';
       ttsNotice(ttsErrMsg(e && e.error));
+      ttsDiagAuto();
       TTS.i++;
       if(TTS.i >= TTS.chunks.length){ ttsChapterDone(); return; }
       ttsPaint(); ttsSpeak(120);
@@ -4540,7 +4556,7 @@ function ttsSpeak(delay){
     catch(e){ TTS.playing = false; ttsNotice(ttsErrMsg('')); ttsPaint(); return; }
     /* Ni onstart ni onerror : la demande a été acceptée dans le vide. */
     TTS.watch = setTimeout(()=>{
-      if(tok===TTS.tok && TTS.playing && !started) ttsNotice(TTS_MUTE_HELP);
+      if(tok===TTS.tok && TTS.playing && !started){ ttsNotice(TTS_MUTE_HELP); ttsDiagAuto(); }
     }, 3000);
   };
   if(delay > 0) TTS.timer = setTimeout(go, delay); else go();
@@ -4685,7 +4701,127 @@ function ttsNotice(msg){
   if(TTS.notice === msg) return;
   TTS.notice = msg;
   const el = document.getElementById('pbNotice');
-  if(el) el.innerHTML = msg ? '<div class="player-notice">'+msg+'</div>' : '';
+  if(!el) return;
+  el.innerHTML = msg ? '<div class="player-notice">'+msg
+    +'<button class="notice-btn" id="pbFix">Diagnostic et solutions</button></div>' : '';
+  const f = document.getElementById('pbFix');
+  if(f) f.addEventListener('click', ttsDiagOpen);
+}
+
+/* ---- Diagnostic et remédiation ----
+   Une page web ne peut pas installer une voix : aucune API ne l'autorise. Elle
+   peut en revanche dire exactement ce que le navigateur rapporte, faire un essai
+   déclenché par le doigt de l'utilisateur, et l'amener en un tap sur le moteur
+   vocal à installer. C'est le maximum de ce qui est faisable côté web. */
+const TTS_GOOGLE_TTS = 'https://play.google.com/store/apps/details?id=com.google.android.tts';
+/* Chrome Android sait ouvrir un écran de réglages système par une intention ;
+   quand l'appareil la refuse, browser_fallback_url renvoie vers l'installation. */
+const TTS_SETTINGS_INTENT = 'intent://#Intent;action=com.android.settings.TTS_SETTINGS;'
+  + 'S.browser_fallback_url=' + encodeURIComponent(TTS_GOOGLE_TTS) + ';end';
+
+/* La boîte s'ouvre d'elle-même à la première panne, puis plus jamais sans qu'on
+   la demande : personne n'a envie de revoir un diagnostic toutes les phrases. */
+function ttsDiagAuto(){
+  if(TTS.diagShown) return;
+  TTS.diagShown = true;
+  ttsPause();
+  ttsDiagOpen();
+}
+function ttsDiagClose(){
+  const m = document.getElementById('ttsDiag');
+  if(m){ m.classList.add('hidden'); m.innerHTML = ''; }
+}
+function ttsDiagOpen(){
+  const m = document.getElementById('ttsDiag');
+  if(!m) return;
+  ttsRefreshVoices();
+  const all = (()=>{ try{ return speechSynthesis.getVoices()||[]; }catch(e){ return []; } })();
+  const fr = all.filter(v=>/^fr/i.test(v.lang||''));
+  const ligne = (label, val, ok)=>'<div class="diag-line"><span>'+label+'</span>'
+    +'<b class="'+(ok===true?'diag-ok':ok===false?'diag-no':'')+'">'+val+'</b></div>';
+
+  m.innerHTML = `<div class="modal-box">
+    <button class="modal-close" id="diagX" title="Fermer">✕</button>
+    <span class="eyebrow">Lecture audio</span>
+    <h2>Pourquoi il n'y a pas de son</h2>
+    <p style="font-size:13.5px;">L'app ne produit pas la voix elle-même : elle demande à ton téléphone
+    de parler. S'il n'a pas de moteur vocal français installé, il accepte la demande et reste muet.
+    Voici ce que ton navigateur rapporte en ce moment.</p>
+
+    ${ligne(`Synthèse vocale`, TTS_SUPPORT?`disponible`:`absente`, TTS_SUPPORT)}
+    ${ligne(`Voix détectées`, String(all.length), all.length>0)}
+    ${ligne(`Voix françaises`, String(fr.length), fr.length>0)}
+    ${ligne(`Voix utilisée`, (ttsVoice()&&ttsVoice().name) || `aucune`, !!ttsVoice())}
+    ${TTS.lastError ? ligne(`Dernière erreur du moteur`, TTS.lastError, false) : ''}
+
+    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">D'ABORD, UN ESSAI</p>
+    <button class="btn-link" id="diagTest">🔊 Tester la voix maintenant</button>
+    <div id="diagResult"></div>
+
+    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">SI TU N'ENTENDS RIEN</p>
+    <p style="font-size:13.5px;"><b>1. Le volume multimédia.</b> Ce n'est pas celui de la sonnerie.
+    Lance l'essai ci-dessus et monte le volume <b>pendant</b> qu'il tourne : les touches agissent
+    alors sur le bon canal.</p>
+    ${TTS_ANDROID ? `
+    <p style="font-size:13.5px;"><b>2. Le moteur vocal.</b> Beaucoup de téléphones sortent d'usine
+    sans données de voix française. Ça s'installe une fois, gratuitement, et ça sert ensuite
+    hors ligne.</p>
+    <a class="btn-link" href="${TTS_GOOGLE_TTS}" target="_blank" rel="noopener">Installer le moteur vocal Google</a>
+    <a class="btn-link alt" href="${TTS_SETTINGS_INTENT}">Ouvrir les réglages de synthèse vocale</a>
+    <p style="font-size:13px;color:var(--ink-soft);">Si le second bouton ne fait rien, ton téléphone
+    bloque l'accès aux réglages depuis le navigateur. À faire à la main :</p>
+    <ol class="diag-steps">
+      <li>Ouvre l'app <b>Paramètres</b> du téléphone.</li>
+      <li>Cherche <b>« synthèse vocale »</b> dans la barre de recherche des paramètres. Selon la marque,
+      l'écran s'appelle <i>Sortie de synthèse vocale</i>, <i>Text-to-speech</i> ou <i>Langue et saisie</i>.</li>
+      <li>Choisis le moteur <b>Services vocaux de Google</b>, ouvre ses réglages (l'engrenage),
+      puis <b>Installer les données vocales</b> et <b>Français</b>.</li>
+      <li>Reviens ici et relance l'essai. Nul besoin de recharger la page.</li>
+    </ol>` : `
+    <p style="font-size:13.5px;"><b>2. La voix du système.</b> Choisis une autre voix dans la liste
+    de l'onglet Écoute : celle qui est active n'est peut-être pas installée.</p>`}
+    <button class="btn-link alt" id="diagDone" style="margin-top:6px;">Fermer</button>
+  </div>`;
+  m.classList.remove('hidden');
+  document.getElementById('diagX').addEventListener('click', ttsDiagClose);
+  document.getElementById('diagDone').addEventListener('click', ttsDiagClose);
+  m.addEventListener('click', e=>{ if(e.target===m) ttsDiagClose(); });
+  document.getElementById('diagTest').addEventListener('click', ttsDiagTest);
+}
+/* L'essai part directement du doigt de l'utilisateur : c'est le chemin le plus
+   fiable, celui qu'aucune politique de lecture automatique ne peut bloquer. */
+function ttsDiagTest(){
+  const out = document.getElementById('diagResult');
+  if(!out) return;
+  ttsKill();
+  TTS.playing = false;
+  let started = false, err = '';
+  const dire = html=>{ out.innerHTML = html; };
+  dire('<p style="font-size:13.5px;color:var(--ink-soft);">Essai en cours, monte le volume maintenant…</p>');
+  const u = new SpeechSynthesisUtterance(`Bonjour. Si tu entends cette phrase, la lecture à voix haute fonctionne.`);
+  const v = ttsVoice();
+  if(v) u.voice = v;
+  u.lang = (v && v.lang) || 'fr-FR';
+  u.rate = TTS.rate; u.pitch = 1; u.volume = 1;
+  TTS.utt = u;
+  u.onstart = ()=>{ started = true; dire('<div class="info-box" style="font-size:13.5px;">Le moteur a démarré. Si tu n\'entends toujours rien, c\'est le <b>volume multimédia</b> : monte-le pendant que la phrase tourne.</div>'); };
+  u.onerror = e=>{
+    err = (e && e.error) || 'inconnue';
+    if(err==='interrupted' || err==='canceled') return;
+    TTS.lastError = err;
+    dire('<div class="warn-box" style="font-size:13.5px;">Le moteur a refusé : <b>'+err+'</b>.'
+      + (err==='language-unavailable'||err==='voice-unavailable'
+         ? ' La voix française n\'est pas installée sur ce téléphone : c\'est le bouton d\'installation ci-dessous.'
+         : ' Installe le moteur vocal ci-dessous, puis réessaie.')+'</div>');
+  };
+  try{ speechSynthesis.speak(u); }
+  catch(e){ dire('<div class="warn-box" style="font-size:13.5px;">Le navigateur a refusé la demande.</div>'); return; }
+  setTimeout(()=>{
+    if(!started && !err)
+      dire('<div class="warn-box" style="font-size:13.5px;">Le moteur <b>n\'a pas démarré du tout</b> : '
+        +'il ne renvoie ni son ni erreur. C\'est la signature d\'un téléphone sans données de voix '
+        +'installées. Utilise le bouton d\'installation ci-dessous.</div>');
+  }, 3200);
 }
 /* Appelée à chaque phrase : elle ne touche que ce qui bouge. */
 function ttsPaint(){
@@ -4798,6 +4934,7 @@ function renderAudio(){
     </div>
     ${TTS.last && AUDIO_BY_ID.has(TTS.last) && (!TTS.chap || TTS.chap.id!==TTS.last)
       ? '<button class="btn wide" id="ttsResume">Reprendre · '+AUDIO_BY_ID.get(TTS.last).title+' ('+ttsPct(TTS.last)+' %)</button>' : ''}
+    <button class="btn ghost wide" id="ttsDiagBtn" style="margin-top:10px;">🔊 Aucun son ne sort ? Tester et réparer</button>
     <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px;">
       <b>Raccourcis</b> · espace : lecture/pause · ← → : phrase précédente/suivante ·
       maj + ← → : chapitre précédent/suivant · + / − : vitesse.</p>
@@ -4884,6 +5021,7 @@ function renderAudio(){
   app.querySelectorAll('[data-rate]').forEach(b=>b.addEventListener('click',()=>ttsSetRate(+b.dataset.rate)));
   document.getElementById('ttsCont').addEventListener('change',e=>{ TTS.continuous = e.target.checked; ttsSave(); });
   document.getElementById('ttsFollow').addEventListener('change',e=>{ TTS.follow = e.target.checked; ttsSave(); });
+  document.getElementById('ttsDiagBtn').addEventListener('click', ttsDiagOpen);
   const rs = document.getElementById('ttsResume');
   if(rs) rs.addEventListener('click',()=>ttsOpen(TTS.last,true));
   const bp = document.getElementById('ttsBigPlay');
