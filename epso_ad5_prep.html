@@ -4424,7 +4424,7 @@ const TTS = {
   rate:1, voiceURI:null, continuous:true, follow:true,
   queue:[], pos:{}, last:null,
   timer:null, keep:null, saveT:null, filter:'all', q:'',
-  watch:null, notice:'', utt:null, lastError:'', diagShown:false,
+  watch:null, notice:'', utt:null, lastError:'', diagShown:false, tried:[],
 };
 function ttsStateBlob(){
   return JSON.stringify({rate:TTS.rate, voiceURI:TTS.voiceURI, continuous:TTS.continuous,
@@ -4529,7 +4529,9 @@ function ttsSpeak(delay){
        même de l'avoir prononcée : on en garde une trace. */
     TTS.utt = u;
     let started = false;
-    u.onstart = ()=>{ started = true; ttsNotice(''); };
+    /* Une voix qui parle vraiment est une voix saine : on repart d'une ardoise
+       vierge pour la prochaine panne éventuelle. */
+    u.onstart = ()=>{ started = true; TTS.tried = []; ttsNotice(''); };
     u.onend = ()=>{
       if(tok!==TTS.tok || !TTS.playing) return;
       clearTimeout(TTS.watch);
@@ -4556,7 +4558,22 @@ function ttsSpeak(delay){
     catch(e){ TTS.playing = false; ttsNotice(ttsErrMsg('')); ttsPaint(); return; }
     /* Ni onstart ni onerror : la demande a été acceptée dans le vide. */
     TTS.watch = setTimeout(()=>{
-      if(tok===TTS.tok && TTS.playing && !started){ ttsNotice(TTS_MUTE_HELP); ttsDiagAuto(); }
+      if(tok!==TTS.tok || !TTS.playing || started) return;
+      /* Chrome connaît depuis la v130 une régression où speak() est accepté puis
+         reste muet, en particulier sur les voix Google. Avant de conclure que
+         l'appareil n'a pas de voix, on rejoue la phrase avec une autre. */
+      /* La voix qui vient d'échouer est marquée d'abord, sans quoi la recherche
+         de remplaçante la redésignerait elle-même indéfiniment. */
+      if(TTS.tried.indexOf(TTS.voiceURI) < 0) TTS.tried.push(TTS.voiceURI);
+      const suivante = TTS_VOICES.find(v=>TTS.tried.indexOf(v.voiceURI)<0);
+      if(suivante){
+        TTS.tried.push(suivante.voiceURI);
+        TTS.voiceURI = suivante.voiceURI; ttsSave();
+        ttsNotice(`La voix précédente n'a produit aucun son. Nouvel essai avec <b>`+suivante.name+`</b>.`);
+        ttsKill(); ttsSpeak(0);
+        return;
+      }
+      ttsNotice(TTS_MUTE_HELP); ttsDiagAuto();
     }, 3000);
   };
   if(delay > 0) TTS.timer = setTimeout(go, delay); else go();
@@ -4753,6 +4770,13 @@ function ttsDiagOpen(){
     ${ligne(`Voix françaises`, String(fr.length), fr.length>0)}
     ${ligne(`Voix utilisée`, (ttsVoice()&&ttsVoice().name) || `aucune`, !!ttsVoice())}
     ${TTS.lastError ? ligne(`Dernière erreur du moteur`, TTS.lastError, false) : ''}
+    ${all.length ? '<p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px;">Voix vues par ce navigateur : '
+      + all.map(v=>v.name+' <span style="opacity:.7">('+v.lang+')</span>').join(' · ') + '</p>' : ''}
+    ${all.length ? `<div class="info-box" style="font-size:13px;">Chrome connaît depuis sa version 130 une anomalie
+      qui rend <b>speak()</b> muet sur certaines voix, alors que le même téléphone parle très bien dans un autre
+      navigateur. Si c'est ton cas : change de voix dans la liste de l'onglet Écoute, ou ferme complètement Chrome
+      (écran des applications récentes, balayer pour fermer) avant de le rouvrir, car il fige la liste des voix
+      au démarrage.</div>` : ''}
 
     <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 8px;">D'ABORD, UN ESSAI</p>
     <button class="btn-link" id="diagTest">🔊 Tester la voix maintenant</button>
@@ -5041,6 +5065,15 @@ async function ttsInit(){
   try{ speechSynthesis.addEventListener('voiceschanged', ()=>{
     ttsRefreshVoices(); if(CURRENT==='audio') renderAudio();
   }); }catch(e){}
+  /* Sur Android l'événement n'arrive pas toujours, et la liste peut rester vide
+     plusieurs secondes après le chargement : on la redemande quelques fois. */
+  let essais = 0;
+  const sonde = setInterval(()=>{
+    const avant = TTS_VOICES.length;
+    ttsRefreshVoices();
+    if(TTS_VOICES.length !== avant && CURRENT==='audio') renderAudio();
+    if(TTS_VOICES.length || ++essais >= 6) clearInterval(sonde);
+  }, 600);
   ttsBarInit();
   document.addEventListener('keydown', ttsKey);
   window.addEventListener('beforeunload', ()=>{ ttsFlush(); try{ speechSynthesis.cancel(); }catch(e){} });
