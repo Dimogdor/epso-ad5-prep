@@ -19,6 +19,10 @@ Dans les trois moteurs de session, l'ordre des options est permuté à l'afficha
 
 Ouvrir `epso_ad5_prep.html` dans un navigateur. La progression est enregistrée localement par le navigateur, sans compte ni serveur.
 
-La lecture audio passe par la synthèse vocale du système (API `speechSynthesis`) : aucun texte n'est envoyé sur un service externe et, la voix une fois installée, tout fonctionne hors ligne. La qualité dépend entièrement de la voix choisie — les voix neuronales (« Natural » sous Edge, « Google français » sous Chrome, voix améliorées d'Apple) sont d'un tout autre niveau que les voix système historiques ; elles sont remontées en tête du sélecteur. Sous iOS, la lecture s'interrompt quand l'écran se verrouille, limite du système et non de l'app.
+La lecture audio passe par la synthèse vocale du système (API `speechSynthesis`) : aucun texte n'est envoyé sur un service externe et, la voix une fois installée, tout fonctionne hors ligne. La qualité dépend entièrement de la voix choisie — les voix neuronales (« Natural » sous Edge, « Google français » sous Chrome, voix améliorées d'Apple) sont d'un tout autre niveau que les voix système historiques ; elles sont remontées en tête du sélecteur.
+
+La lecture continue écran verrouillé, avec les commandes sur l'écran de verrouillage et dans les écouteurs. Le navigateur gèle un onglet muet dès la mise en veille et ne compte pas la synthèse vocale comme une lecture audio : l'app maintient donc une piste inaudible pendant la lecture, ce qui lui donne le statut de lecteur média. Les appareils qui suspendent la page malgré tout sont couverts par deux filets : la lecture reprend d'elle-même au déverrouillage, et une option garde l'écran allumé.
+
+Un diagnostic intégré (onglet Écoute, « Aucun son ne sort ? ») rapporte ce que le navigateur expose réellement, teste la voix, et renvoie vers l'installation du moteur vocal. Si une voix est acceptée sans rien produire — anomalie connue de Chrome depuis sa version 130 — l'app bascule automatiquement sur la voix suivante.
 
 Si le dépôt est publié via GitHub Pages, l'app est directement accessible à l'URL de la Page.

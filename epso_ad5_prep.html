@@ -4425,10 +4425,11 @@ const TTS = {
   queue:[], pos:{}, last:null,
   timer:null, keep:null, saveT:null, filter:'all', q:'',
   watch:null, notice:'', utt:null, lastError:'', diagShown:false, tried:[],
+  audio:null, wake:null, keepAwake:false,
 };
 function ttsStateBlob(){
   return JSON.stringify({rate:TTS.rate, voiceURI:TTS.voiceURI, continuous:TTS.continuous,
-    follow:TTS.follow, pos:TTS.pos, last:TTS.last, queue:TTS.queue});
+    follow:TTS.follow, keepAwake:TTS.keepAwake, pos:TTS.pos, last:TTS.last, queue:TTS.queue});
 }
 async function ttsLoad(){
   try{
@@ -4439,6 +4440,7 @@ async function ttsLoad(){
       TTS.voiceURI = s.voiceURI || null;
       TTS.continuous = s.continuous !== false;
       TTS.follow = s.follow !== false;
+      TTS.keepAwake = s.keepAwake === true;
       TTS.pos = s.pos || {};
       TTS.last = s.last || null;
       TTS.queue = Array.isArray(s.queue) ? s.queue.filter(id=>AUDIO_BY_ID.has(id)) : [];
@@ -4495,6 +4497,64 @@ function ttsKeepAlive(on){
       try{ speechSynthesis.pause(); speechSynthesis.resume(); }catch(e){}
     }
   }, 9000);
+}
+/* ---- Lecture écran verrouillé ----
+   Android gèle un onglet dès que l'écran se verrouille, et la synthèse vocale ne
+   compte pas comme une lecture audio : la page est donc suspendue en plein
+   chapitre. On maintient en parallèle une piste inaudible, ce qui donne à la page
+   le statut de lecteur média — elle reste vivante et les contrôles apparaissent
+   sur l'écran verrouillé. */
+const TTS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function ttsSilentTrack(){
+  if(TTS.audio) return TTS.audio;
+  const rate = 8000, n = rate * 4;               // quatre secondes bouclées
+  const buf = new ArrayBuffer(44 + n*2), dv = new DataView(buf);
+  const wr = (o,s)=>{ for(let i=0;i<s.length;i++) dv.setUint8(o+i, s.charCodeAt(i)); };
+  wr(0,'RIFF'); dv.setUint32(4, 36+n*2, true); wr(8,'WAVEfmt ');
+  dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+  dv.setUint32(24,rate,true); dv.setUint32(28,rate*2,true); dv.setUint16(32,2,true);
+  dv.setUint16(34,16,true); wr(36,'data'); dv.setUint32(40, n*2, true);
+  /* Un seul pas de quantification, soit environ -90 dB : inaudible, mais pas
+     rigoureusement nul, car une piste parfaitement muette n'est pas considérée
+     comme une lecture en cours et ne protège de rien. */
+  for(let i=0;i<n;i++) dv.setInt16(44+i*2, (i%2)?1:-1, true);
+  const a = new Audio(URL.createObjectURL(new Blob([buf],{type:'audio/wav'})));
+  a.loop = true;
+  TTS.audio = a;
+  return a;
+}
+function ttsHoldAudio(on){
+  if(!TTS_MOBILE) return;
+  try{
+    const a = ttsSilentTrack();
+    if(on){ const p = a.play(); if(p && p.catch) p.catch(()=>{}); }
+    else a.pause();
+  }catch(e){}
+}
+/* Contrôles sur l'écran verrouillé et dans les écouteurs. */
+function ttsMediaSession(){
+  if(!('mediaSession' in navigator) || !TTS.chap) return;
+  try{
+    if(window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({
+      title: TTS.chap.title,
+      artist: AUDIO_GROUP_LABEL[TTS.chap.g] || '',
+      album: `Dossier de préparation · EPSO/AD/427/26`,
+    });
+    const set = (a,h)=>{ try{ navigator.mediaSession.setActionHandler(a,h); }catch(e){} };
+    set('play', ttsPlay); set('pause', ttsPause); set('stop', ttsPause);
+    set('previoustrack', ()=>ttsChapter(-1)); set('nexttrack', ()=>ttsChapter(1));
+    set('seekbackward', ()=>ttsSeek(-1)); set('seekforward', ()=>ttsSeek(1));
+  }catch(e){}
+}
+/* Option explicite pour les appareils où rien ne suffit : l'écran ne s'éteint
+   pas, donc la page n'est jamais gelée. Le verrou est perdu à chaque passage en
+   arrière-plan, il faut le redemander au retour. */
+async function ttsWakeLock(on){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    if(on){ if(!TTS.wake) TTS.wake = await navigator.wakeLock.request('screen'); }
+    else if(TTS.wake){ const w = TTS.wake; TTS.wake = null; await w.release(); }
+  }catch(e){}
 }
 function ttsKill(){
   TTS.tok++; clearTimeout(TTS.timer); clearTimeout(TTS.watch);
@@ -4604,6 +4664,11 @@ function ttsPlay(){
   /* Android peuple parfois la liste des voix seulement après la première
      demande de lecture : on retente ici avant de conclure quoi que ce soit. */
   if(!TTS_VOICES.length) ttsRefreshVoices();
+  /* Déclenché depuis le geste de l'utilisateur : c'est le seul moment où la
+     piste de maintien peut démarrer. */
+  ttsHoldAudio(true);
+  ttsMediaSession();
+  if(TTS.keepAwake) ttsWakeLock(true);
   ttsKeepAlive(true);
   ttsSpeak(0);
 }
@@ -4612,14 +4677,14 @@ function ttsPlay(){
    reprendre la phrase en cours à son début est prévisible et sans surprise. */
 function ttsPause(){
   if(!TTS.playing) return;
-  ttsKill(); ttsKeepAlive(false);
+  ttsKill(); ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = true;
   if(TTS.chap){ TTS.pos[TTS.chap.id] = TTS.i; ttsSave(); }
   ttsPaint();
 }
 function ttsToggle(){ if(TTS.playing) ttsPause(); else ttsPlay(); }
 function ttsStop(){
-  ttsKill(); ttsKeepAlive(false);
+  ttsKill(); ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = false; TTS.chap = null; TTS.chunks = []; TTS.i = 0;
   if(CURRENT==='audio') renderAudio(); else ttsBarSync();
 }
@@ -4659,7 +4724,7 @@ function ttsChapterDone(){
   const wasPlaying = TTS.playing;
   const id = (TTS.queue.length || TTS.continuous) ? ttsNextId(1) : null;
   if(id && wasPlaying){ TTS.pos[id] = 0; ttsOpen(id, true); return; }
-  ttsKeepAlive(false);
+  ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = false;
   if(CURRENT==='audio') renderAudio(); else ttsBarSync();
 }
@@ -4711,6 +4776,7 @@ function ttsBarSync(){
   document.getElementById('pbFill').style.width = Math.round(100*TTS.i/n)+'%';
   document.getElementById('pbPlay').textContent = TTS.playing ? '❙❙' : '▶';
   document.getElementById('pbRate').textContent = TTS.rate.toFixed(2).replace('.',',')+'×';
+  try{ if('mediaSession' in navigator) navigator.mediaSession.playbackState = TTS.playing?'playing':'paused'; }catch(e){}
 }
 /* Le message d'anomalie vit dans la barre de lecture : il reste visible quel que
    soit l'onglet, et disparaît de lui-même dès qu'une phrase démarre vraiment. */
@@ -4955,7 +5021,12 @@ function renderAudio(){
     <div class="aud-ctl-row">
       <label class="aud-toggle"><input type="checkbox" id="ttsCont" ${TTS.continuous?'checked':''}> Enchaîner le chapitre suivant</label>
       <label class="aud-toggle"><input type="checkbox" id="ttsFollow" ${TTS.follow?'checked':''}> Suivre le texte à l'écran</label>
+      <label class="aud-toggle"><input type="checkbox" id="ttsAwake" ${TTS.keepAwake?'checked':''}> Garder l'écran allumé</label>
     </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:-2px 0 12px;">
+      <b>Écran verrouillé</b> · la lecture continue et les commandes apparaissent sur l'écran de
+      verrouillage et dans tes écouteurs. Certains téléphones finissent malgré tout par suspendre la
+      page : coche <b>Garder l'écran allumé</b> si la lecture s'interrompt encore.</p>
     ${TTS.last && AUDIO_BY_ID.has(TTS.last) && (!TTS.chap || TTS.chap.id!==TTS.last)
       ? '<button class="btn wide" id="ttsResume">Reprendre · '+AUDIO_BY_ID.get(TTS.last).title+' ('+ttsPct(TTS.last)+' %)</button>' : ''}
     <button class="btn ghost wide" id="ttsDiagBtn" style="margin-top:10px;">🔊 Aucun son ne sort ? Tester et réparer</button>
@@ -5045,6 +5116,10 @@ function renderAudio(){
   app.querySelectorAll('[data-rate]').forEach(b=>b.addEventListener('click',()=>ttsSetRate(+b.dataset.rate)));
   document.getElementById('ttsCont').addEventListener('change',e=>{ TTS.continuous = e.target.checked; ttsSave(); });
   document.getElementById('ttsFollow').addEventListener('change',e=>{ TTS.follow = e.target.checked; ttsSave(); });
+  document.getElementById('ttsAwake').addEventListener('change',e=>{
+    TTS.keepAwake = e.target.checked; ttsSave();
+    ttsWakeLock(TTS.keepAwake && TTS.playing);
+  });
   document.getElementById('ttsDiagBtn').addEventListener('click', ttsDiagOpen);
   const rs = document.getElementById('ttsResume');
   if(rs) rs.addEventListener('click',()=>ttsOpen(TTS.last,true));
@@ -5076,6 +5151,19 @@ async function ttsInit(){
   }, 600);
   ttsBarInit();
   document.addEventListener('keydown', ttsKey);
+  /* Au retour de veille, le moteur a pu être vidé sans que onend soit jamais
+     appelé : la lecture resterait alors bloquée sur une phrase muette. On la
+     relance, et on reprend le verrou d'écran, qu'Android libère en arrière-plan. */
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState !== 'visible') return;
+    if(!TTS.playing || TTS.paused) return;
+    if(TTS.keepAwake) ttsWakeLock(true);
+    ttsHoldAudio(true);
+    setTimeout(()=>{
+      if(TTS.playing && !TTS.paused && !speechSynthesis.speaking && !speechSynthesis.pending)
+        ttsSpeak(0);
+    }, 400);
+  });
   window.addEventListener('beforeunload', ()=>{ ttsFlush(); try{ speechSynthesis.cancel(); }catch(e){} });
   if(TTS.last && AUDIO_BY_ID.has(TTS.last)) ttsOpen(TTS.last, false);
 }
