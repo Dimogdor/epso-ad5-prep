@@ -10,7 +10,7 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 - **Connaissances UE** · cours en 9 sections et 354 questions.
 - **Compétences numériques** · cadre DigComp et 193 questions.
 - **EUFTE** · six consignes au format réel, chacune avec une correction visant le haut de la grille et une explication critère par critère sur les cinq « anchors » publiés par EPSO.
-- **Cours** · 30 sections de référence, 169 fiches thématiques et un glossaire de 59 sigles développés puis expliqués. Chaque section est écoutable sur place.
+- **Cours** · 30 sections de référence, 169 fiches thématiques et un glossaire repliable de 59 sigles développés puis expliqués. Chaque section est écoutable sur place.
 - **Le concours** · modalités, calendrier, choix des deux langues, dix règles stratégiques et plan de préparation en deux parties.
 - **Paramètres** · thème, réglages de lecture audio, file d'attente, diagnostic vocal, réinitialisation.
 
