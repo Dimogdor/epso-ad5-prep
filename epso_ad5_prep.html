@@ -150,8 +150,18 @@ main{padding-top:28px;}
 .info-box{background:var(--accent-soft);border:1px solid transparent;}
 
 /* ---------- SESSIONS ---------- */
-.timer-wrap{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:16px;
-  border-bottom:1px solid var(--line-2);}
+/* Le chrono reste sous l'en-tête pendant qu'on fait défiler l'énoncé : sans cela
+   il sort de l'écran dès le premier texte long, sur un entraînement chronométré. */
+.timer-wrap{display:flex;align-items:center;gap:14px;margin-bottom:0;padding:10px 0 12px;
+  position:sticky;top:var(--header-h,104px);background:var(--surface);z-index:20;}
+.session-prog{height:4px;background:var(--line-2);border-radius:99px;overflow:hidden;
+  margin-bottom:20px;position:sticky;top:calc(var(--header-h,104px) + 54px);z-index:20;}
+.session-prog i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+/* Quitter n'est pas l'action principale : elle ne doit pas peser autant qu'elle. */
+.quit-row{text-align:center;padding:6px 0 4px;}
+.quit-row button{background:none;border:none;color:var(--muted);font-size:15px;
+  text-decoration:underline;text-underline-offset:3px;padding:10px 16px;}
+.quit-row button:hover{color:var(--bad);}
 .timer-txt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;}
 .timer-txt.low{color:var(--bad);}
 .session-score{margin-left:auto;font-size:14.5px;color:var(--muted);}
@@ -170,7 +180,14 @@ main{padding-top:28px;}
   background:var(--subtle);border-left:3px solid var(--line);}
 .feedback.ok{border-left-color:var(--good);background:var(--good-soft);}
 .feedback.no{border-left-color:var(--bad);background:var(--bad-soft);}
-.data-wrap{overflow-x:auto;margin-bottom:18px;border:1px solid var(--line);border-radius:var(--r-sm);}
+.data-wrap{overflow-x:auto;margin-bottom:18px;border:1px solid var(--line);border-radius:var(--r-sm);
+  background:
+    linear-gradient(to right,var(--surface) 30%,rgba(255,255,255,0)) left center,
+    linear-gradient(to left,var(--surface) 30%,rgba(255,255,255,0)) right center,
+    radial-gradient(farthest-side at 0 50%,rgba(20,22,26,.16),rgba(20,22,26,0)) left center,
+    radial-gradient(farthest-side at 100% 50%,rgba(20,22,26,.16),rgba(20,22,26,0)) right center;
+  background-repeat:no-repeat;background-size:40px 100%,40px 100%,15px 100%,15px 100%;
+  background-attachment:local,local,scroll,scroll;}
 .data-table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums;}
 .data-table caption{caption-side:top;text-align:left;padding:13px 15px 10px;font-size:14.5px;color:var(--muted);}
 .data-table th,.data-table td{border-top:1px solid var(--line-2);padding:10px 15px;text-align:right;white-space:nowrap;}
@@ -183,12 +200,14 @@ main{padding-top:28px;}
 
 /* ---------- ABSTRAIT ---------- */
 .abs-sequence{display:flex;align-items:center;justify-content:center;gap:11px;margin:24px 0;flex-wrap:wrap;}
-.abs-shape-box,.abs-q{width:64px;height:64px;border-radius:var(--r-sm);display:flex;align-items:center;
-  justify-content:center;padding:6px;flex-shrink:0;}
+.abs-shape-box,.abs-q{width:92px;height:92px;border-radius:var(--r-sm);display:flex;align-items:center;
+  justify-content:center;padding:9px;flex-shrink:0;}
+.abs-caption{font-size:14px;font-weight:650;color:var(--muted);margin:20px 0 2px;}
 .abs-shape-box{background:var(--tile);border:1px solid var(--tile-line);}
 .abs-q{border:2px dashed var(--accent);color:var(--accent);font-size:26px;font-weight:700;}
 .abs-arrow{color:var(--muted);font-size:17px;}
-.abs-options{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px;}
+.abs-options{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:8px;
+  max-width:560px;}
 .abs-opt{background:var(--tile);border:1px solid var(--tile-line);border-radius:var(--r-sm);padding:10px;
   position:relative;aspect-ratio:1;}
 .abs-opt:hover:not(:disabled){border-color:var(--accent);}
@@ -379,6 +398,8 @@ footer.reset-zone button{background:none;border:none;color:var(--muted);font-siz
   .card{padding:20px 17px;}
   .module-nav-grid{grid-template-columns:1fr;}
   .abs-options{grid-template-columns:repeat(3,1fr);}
+  .abs-shape-box,.abs-q{width:70px;height:70px;}
+  .data-table th,.data-table td{padding:8px 11px;}
   .section-title h2{font-size:21px;}
   .player-ctl button{padding:10px 10px;}
   .player-ctl .sp b{width:46px;}
@@ -5339,6 +5360,13 @@ function renderTabs(){
 }
 /* La lecture audio n'est pas coupée par la navigation : elle est volontairement
    indépendante des chronos de session, on écoute en passant d'un onglet à l'autre. */
+/* La barre d'onglets change de hauteur selon la largeur : on mesure plutôt que
+   de coder en dur le décalage du chrono collant. */
+function syncHeaderH(){
+  const h = document.querySelector('header.top');
+  if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
+}
+window.addEventListener('resize', syncHeaderH);
 function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ================= ACCUEIL ================= */
@@ -5531,13 +5559,15 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
     view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">'+ep+' · '+title+'</span><span class="q-count">'+(idx+1)+' / '+order.length+'</span></div>'
-      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">Score session : '+score+'/'+idx+'</span></div>'
+      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span>'
+      +'<span class="session-score" id="sc">Score : '+score+' / '+idx+'</span></div>'
+      +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
       +(item.table?'<div class="data-wrap">'+item.table+'</div>':'')
       +'<div class="qcm-question">'+item.q+'</div>'
       +'<div id="opts">'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
-      +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
+      +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo(backTo));
     app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
@@ -5552,6 +5582,8 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
     if(ok) score++;
     PROGRESS[statKey].att++; if(ok) PROGRESS[statKey].cor++;
     saveProgress(); renderStreak();
+    const sc = document.getElementById('sc');
+    if(sc) sc.textContent = 'Score : '+score+' / '+(idx+1);
     app.querySelectorAll('.qcm-opt').forEach((b,i)=>{
       b.disabled=true;
       if(i===view.c) b.classList.add('correct');
@@ -5661,14 +5693,17 @@ function runVerbalSession(){
     const item = VERBAL_BANK[order[idx]];
     view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
-      +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+'/'+order.length+'</span><span class="q-count">Score : '+score+'/'+idx+'</span></div>'
-      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span><span class="session-score">temps global pour '+order.length+' textes</span></div>'
+      +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+' / '+order.length+'</span>'
+      +'<span class="q-count" id="sc">Score : '+score+' / '+idx+'</span></div>'
+      +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span>'
+      +'<span class="session-score">temps global pour '+order.length+' textes</span></div>'
+      +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
       +'<div class="passage-box">'+item.passage+'</div>'
       +'<p style="font-size:13.5px;font-weight:600;margin:2px 0 10px;">Quelle affirmation est correcte, uniquement d\'après le texte ?</p>'
       +'<div id="opts">'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'"><b>'+String.fromCharCode(65+i)+'.</b> '+o+'</button>').join('')+'</div>'
       +'<div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Texte suivant →</button></div>'
-      +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
+      +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo('verbal'));
     app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
@@ -5683,6 +5718,8 @@ function runVerbalSession(){
     if(ok) score++;
     PROGRESS.verbal.att++; if(ok) PROGRESS.verbal.cor++;
     saveProgress(); renderStreak();
+    const sc = document.getElementById('sc');
+    if(sc) sc.textContent = 'Score : '+score+' / '+(idx+1);
     app.querySelectorAll('.qcm-opt').forEach((b,i)=>{
       b.disabled=true;
       if(i===view.c) b.classList.add('correct');
@@ -5807,22 +5844,28 @@ function runAbstractSession(){
     const item = series[order[idx]];
     view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
-      +'<div class="section-title"><span class="eyebrow">Abstrait · '+(idx+1)+'/'+order.length+'</span><span class="q-count">Score : '+score+'</span></div>'
+      +'<div class="section-title"><span class="eyebrow">Abstrait · '+(idx+1)+' / '+order.length+'</span>'
+      +'<span class="q-count" id="sc">Score : '+score+' / '+idx+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span></div>'
-      +'<p style="font-size:13.5px;color:var(--muted);">'+(item.kind==='set'
+      +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
+      +'<p style="font-size:16px;">'+(item.kind==='set'
           ? 'Ces cinq figures respectent toutes une même règle. Laquelle des propositions respecte la même règle ?'
           : 'Quelle forme complète la séquence ?')+'</p>'
+      /* Deux groupes de figures cohabitent : sans intitulés, on confond l'énoncé
+         avec les propositions, et c'est le piège même de ce type d'item. */
+      +'<p class="abs-caption">'+(item.kind==='set'?'Énoncé':'La séquence')+'</p>'
       +'<div class="abs-sequence">'
       + (item.kind==='set'
           ? item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('')
           : item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
             +'<span class="abs-arrow">→</span><div class="abs-q">?</div>')
       +'</div>'
+      +'<p class="abs-caption">Propositions</p>'
       +'<div class="abs-options" id="absOpts">'
       + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'"><span class="abs-letter">'+String.fromCharCode(65+i)+'</span>'+shapeSVG(o)+'</button>').join('')
       +'</div><div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
-      +'<button class="btn ghost wide" id="exitBtn">Quitter la session</button>';
+      +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo('numabs'));
     app.querySelectorAll('.abs-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
@@ -5837,6 +5880,8 @@ function runAbstractSession(){
     if(ok) score++;
     PROGRESS.abstract.att++; if(ok) PROGRESS.abstract.cor++;
     saveProgress(); renderStreak();
+    const sc = document.getElementById('sc');
+    if(sc) sc.textContent = 'Score : '+score+' / '+(idx+1);
     app.querySelectorAll('.abs-opt').forEach((b,i)=>{
       b.disabled=true;
       if(i===view.c) b.classList.add('correct');
@@ -6310,7 +6355,7 @@ const RENDERERS = {
   euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte,
   cours: renderCours, concours: renderConcours, params: renderParams,
 };
-loadProgress().then(ttsInit).then(()=>{ renderTabs(); renderDashboard(); });
+loadProgress().then(ttsInit).then(()=>{ renderTabs(); syncHeaderH(); renderDashboard(); });
 </script>
 </body>
 </html>
