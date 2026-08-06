@@ -5991,7 +5991,7 @@ function renderEufte(){
         <button class="btn" id="startTimer">Chrono 40 min</button>
         <button class="btn ghost" id="resetTimer">Réinitialiser</button>
       </div>
-      <textarea class="essay-area" id="essayArea" placeholder="Rédige ici, en Langue 2. Brouillon enregistré automatiquement.">${draft}</textarea>
+      <textarea class="essay-area" id="essayArea" lang="en" placeholder="Rédige ici, en Langue 2. Brouillon enregistré automatiquement."></textarea>
       <div id="modelZone"></div>
     </div>
     <div class="card">
@@ -6015,7 +6015,7 @@ function renderEufte(){
       document.getElementById('modelZone').innerHTML =
          '<details class="mth" style="margin-top:14px;"><summary>Voir une correction notée au maximum</summary>'
         +'<div class="info-box" style="margin-bottom:12px;">À lire seulement après avoir rédigé. Cette version vise le haut de la grille sur les cinq critères. Elle n\'est pas la seule possible : c\'est la méthode qui compte, pas les formulations.</div>'
-        +'<div class="passage-box" style="font-size:13.5px;line-height:1.65;">'+t.model+'</div>'
+        +'<div class="passage-box" lang="en">'+t.model+'</div>'
         +'<p class="eyebrow" style="color:var(--accent);margin:16px 0 8px;">POURQUOI CETTE COPIE MARQUE SUR CHAQUE CRITÈRE</p>'
         +'<ul style="font-size:13.5px;line-height:1.6;">'+t.why.map(w=>'<li style="margin-bottom:7px;">'+w+'</li>').join('')+'</ul>'
         +'</details>';
@@ -6027,6 +6027,10 @@ function renderEufte(){
     showTask();
 
     const area = document.getElementById('essayArea');
+    /* Le brouillon est posé comme VALEUR, jamais interpolé dans le balisage :
+       un essai contenant « </textarea> » serait sinon tronqué à cet endroit, et
+       la partie suivante du texte définitivement perdue au rechargement. */
+    area.value = draft;
     const wc = document.getElementById('wc');
     function updateWC(){ const words=area.value.trim().split(/\s+/).filter(Boolean).length; wc.textContent=words+' mots'; }
     updateWC();
