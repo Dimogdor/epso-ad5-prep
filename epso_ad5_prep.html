@@ -125,7 +125,7 @@ main{padding-top:28px;}
 .module-nav-card .mname{font-size:18px;font-weight:650;letter-spacing:-.02em;margin-top:2px;}
 .module-nav-card .macc{font-size:14px;color:var(--muted);}
 .module-nav-card button{margin-top:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);
-  border-radius:var(--r-sm);padding:10px;font-size:14.5px;font-weight:600;}
+  border-radius:var(--r-sm);padding:12px;min-height:44px;font-size:14.5px;font-weight:600;}
 .module-nav-card button:hover{border-color:var(--accent);color:var(--accent);}
 
 /* ---------- COMMANDES ---------- */
@@ -297,27 +297,30 @@ textarea.essay-area{width:100%;min-height:320px;border:1px solid var(--line);bor
 .set-label b{display:block;font-size:16.5px;font-weight:650;}
 .set-label span{font-size:15px;color:var(--muted);line-height:1.55;display:block;margin-top:3px;}
 .seg{display:inline-flex;background:var(--subtle);border:1px solid var(--line);border-radius:99px;padding:4px;gap:3px;}
-.seg button{border:none;background:transparent;border-radius:99px;padding:9px 18px;font-size:15px;
-  color:var(--muted);font-weight:600;}
+.seg button{border:none;background:transparent;border-radius:99px;padding:10px 18px;min-height:44px;
+  font-size:15px;color:var(--muted);font-weight:600;}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(20,22,26,.12);}
 select.aud-select{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;
   font-family:inherit;font-size:15.5px;background:var(--sunken);color:var(--ink);max-width:100%;}
-input.aud-range{flex:1;min-width:150px;accent-color:var(--accent);height:26px;}
+input.aud-range{flex:1;min-width:150px;accent-color:var(--accent);height:44px;}
 .aud-rate-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:18px;font-weight:700;
   color:var(--accent);}
 .aud-presets{display:flex;gap:8px;flex-wrap:wrap;}
 .aud-presets button{border:1px solid var(--line);background:var(--surface);border-radius:99px;
-  padding:9px 15px;font-size:14.5px;font-weight:600;color:var(--muted);
+  padding:11px 16px;min-height:44px;font-size:14.5px;font-weight:600;color:var(--muted);
   font-variant-numeric:tabular-nums;}
 .aud-presets button:hover{border-color:var(--accent);color:var(--accent);}
 .aud-presets button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
 :root[data-theme="dark"] .aud-presets button.on{color:#10221D;}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .aud-presets button.on{color:#10221D;}}
-.switch{position:relative;width:50px;height:30px;flex-shrink:0;}
-.switch input{opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+/* Le dessin reste fin, mais la zone sensible déborde jusqu'aux 44 px
+   recommandés : c'est la cible qui compte, pas le trait. */
+.switch{position:relative;width:52px;height:32px;flex-shrink:0;}
+.switch input{opacity:0;position:absolute;top:-7px;left:-9px;
+  width:calc(100% + 18px);height:calc(100% + 14px);margin:0;cursor:pointer;}
 .switch i{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:background .18s;
   pointer-events:none;}
-.switch i::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;
   background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
 .switch input:checked + i{background:var(--accent);}
 .switch input:checked + i::after{transform:translateX(20px);}
@@ -326,7 +329,7 @@ input.aud-range{flex:1;min-width:150px;accent-color:var(--accent);height:26px;}
 .aud-row .at{flex:1;min-width:0;font-size:16px;line-height:1.45;}
 .aud-row .at small{display:block;font-size:14px;color:var(--muted);margin-top:2px;}
 .aud-row button{flex-shrink:0;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);
-  padding:8px 12px;font-size:14.5px;}
+  padding:8px 12px;min-height:44px;min-width:44px;font-size:14.5px;}
 .aud-row button:hover{border-color:var(--accent);color:var(--accent);}
 .aud-empty{font-size:15.5px;color:var(--muted);padding:10px 0;}
 .danger{color:var(--bad) !important;border-color:var(--bad) !important;}
@@ -369,8 +372,8 @@ body.has-player{padding-bottom:150px;}
   justify-content:center;padding:18px;overflow-y:auto;}
 .modal-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-width:540px;
   width:100%;padding:28px 24px;max-height:90vh;overflow-y:auto;position:relative;}
-.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;
-  color:var(--muted);line-height:1;padding:6px 10px;border-radius:var(--r-sm);}
+.modal-close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:22px;
+  color:var(--muted);line-height:1;min-width:44px;min-height:44px;border-radius:var(--r-sm);}
 .modal-close:hover{background:var(--subtle);}
 .diag-line{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:11px 0;
   border-bottom:1px solid var(--line-2);font-size:15.5px;}
@@ -388,9 +391,6 @@ body.has-player{padding-bottom:150px;}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-link.alt{color:var(--ink);}}
 .diag-steps{font-size:15.5px;line-height:1.7;color:var(--ink-2);padding-left:21px;margin:0 0 13px;}
 .diag-steps li{margin-bottom:8px;}
-
-footer.reset-zone{text-align:center;padding:30px 0 14px;}
-footer.reset-zone button{background:none;border:none;color:var(--muted);font-size:15px;text-decoration:underline;}
 
 @media(max-width:560px){
   body{font-size:16.5px;}
@@ -5406,7 +5406,7 @@ function renderDashboard(){
       <div class="module-nav-card"><span class="eyebrow">EUFTE</span>
         <span class="mname">${PROGRESS.eufte.sessions} session${PROGRESS.eufte.sessions>1?'s':''}</span>
         <span class="macc">40 min par essai</span>
-        <button data-goto="eufte">S'entraîner →</button></div>
+        <button data-goto="eufte">S’entraîner →</button></div>
     </div>
   </div>
 
@@ -5980,7 +5980,7 @@ function renderEufte(){
       </details>
 
       <div class="essay-meta"><span>Sujet <b id="taskNum"></b> sur ${EUFTE_TASKS.length}</span>
-        <button class="btn ghost" id="newTask" style="padding:8px 14px;font-size:14.5px;">Changer de sujet</button></div>
+        <button class="btn ghost" id="newTask" style="padding:11px 16px;min-height:44px;font-size:14.5px;">Changer de sujet</button></div>
       <div id="taskZone"></div>
 
       <div class="essay-meta">
