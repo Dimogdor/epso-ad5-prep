@@ -3,231 +3,369 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dossier de préparation · EPSO/AD/427/26</title>
+<title>Préparation · EPSO/AD/427/26</title>
 <style>
+/* ============ JETONS ============ */
 :root{
-  --ink:#1B2438; --ink-soft:#4A5268; --paper:#EAE7DD; --paper-raised:#F7F5EF;
-  --line:#C9C3B2; --gold:#A9812F; --gold-bright:#C79A3E; --wine:#7A2331;
-  --green:#3F6B4A; --green-bg:#E4EBE3; --wine-bg:#F3E3E1; --gold-bg:#F1E7D2;
-  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --bg:#FFFFFF; --surface:#FFFFFF; --subtle:#F6F7F9; --sunken:#FBFCFD;
+  --ink:#12233A; --ink-2:#3C4C63; --muted:#67788F; --line:#E4E8EE; --line-2:#EEF1F5;
+  --accent:#1E5AA8; --accent-soft:#EDF3FB;
+  --good:#1F7A4D; --good-soft:#EAF5EF; --bad:#A8324A; --bad-soft:#FBEDF0;
+  --warn:#8A6216; --warn-soft:#FBF4E4;
+  --serif:Charter,'Bitstream Charter','Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --r:10px; --r-sm:7px;
+  --shadow:0 1px 2px rgba(18,35,58,.04),0 8px 24px -12px rgba(18,35,58,.10);
+  --tile:#FBFCFD;
+}
+:root[data-theme="dark"]{
+  --bg:#0F1520; --surface:#151C28; --subtle:#1A2230; --sunken:#121926;
+  --ink:#E7ECF3; --ink-2:#C2CDDB; --muted:#8D9CB2; --line:#27313F; --line-2:#1F2835;
+  --accent:#74A9EC; --accent-soft:#16263B;
+  --good:#5CBE8C; --good-soft:#132A20; --bad:#E98098; --bad-soft:#2C1720;
+  --warn:#D8AC55; --warn-soft:#2A2314;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  --tile:#E9EDF3;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1520; --surface:#151C28; --subtle:#1A2230; --sunken:#121926;
+    --ink:#E7ECF3; --ink-2:#C2CDDB; --muted:#8D9CB2; --line:#27313F; --line-2:#1F2835;
+    --accent:#74A9EC; --accent-soft:#16263B;
+    --good:#5CBE8C; --good-soft:#132A20; --bad:#E98098; --bad-soft:#2C1720;
+    --warn:#D8AC55; --warn-soft:#2A2314;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    --tile:#E9EDF3;
+  }
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;padding-bottom:60px;}
-::selection{background:var(--gold-bg);}
-h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0 0 .4em;letter-spacing:.01em;}
-p{margin:0 0 .8em;}
-button{font-family:var(--sans);cursor:pointer;}
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;}
-.wrap{max-width:760px;margin:0 auto;padding:0 18px;}
-header.top{background:var(--ink);color:var(--paper-raised);padding:18px 0 0;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 var(--gold);}
-.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand-seal{width:34px;height:34px;flex-shrink:0;}
-.brand-text .eyebrow{color:var(--gold-bright);}
-.brand-text h1{font-size:17px;color:#fff;margin:0;line-height:1.15;}
-.streak{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;background:rgba(255,255,255,.08);padding:6px 10px;border-radius:20px;white-space:nowrap;}
-.streak b{color:var(--gold-bright);font-size:15px;}
-nav.tabs{display:flex;gap:4px;overflow-x:auto;padding:12px 14px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-nav.tabs::-webkit-scrollbar{display:none;}
-.tab-btn{flex-shrink:0;background:transparent;border:none;color:rgba(255,255,255,.55);font-size:12.5px;font-family:var(--mono);letter-spacing:.03em;padding:9px 12px 12px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s;}
-.tab-btn b{display:block;font-family:var(--sans);font-size:13.5px;letter-spacing:0;margin-top:1px;font-weight:600;}
-.tab-btn.active{color:var(--gold-bright);border-bottom-color:var(--gold-bright);}
-.tab-btn:not(.active):hover{color:#fff;}
-main{padding-top:20px;}
-.card{background:var(--paper-raised);border:1px solid var(--line);border-radius:3px;padding:20px;margin-bottom:16px;position:relative;}
-.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);border-radius:3px 3px 0 0;}
-.section-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px;}
-.section-title h2{font-size:20px;}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:14px 0;}
-.stat-box{background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:12px 14px;}
-.stat-box .n{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink);}
-.stat-box .l{font-size:11.5px;color:var(--ink-soft);letter-spacing:.02em;margin-top:2px;}
-.weight-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);}
-.weight-row:last-child{border-bottom:none;}
-.weight-row .wname{flex:1;font-size:14.5px;}
-.weight-row .wtag{font-family:var(--mono);font-size:11px;color:var(--ink-soft);}
-.weight-bar-bg{width:70px;height:7px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden;flex-shrink:0;}
-.weight-bar-fill{height:100%;background:var(--gold);}
-.weight-pct{font-family:var(--mono);font-size:13px;font-weight:600;width:38px;text-align:right;flex-shrink:0;}
-.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:#7A5D1E;text-transform:uppercase;}
-.pill.l2{background:var(--wine-bg);color:var(--wine);}
-.timeline-item{display:flex;gap:12px;padding:10px 0;}
-.timeline-item .dot{width:9px;height:9px;border-radius:50%;background:var(--line);margin-top:5px;flex-shrink:0;}
-.timeline-item.done .dot{background:var(--green);}
-.timeline-item.next .dot{background:var(--gold);}
-.timeline-item .td{font-size:14.5px;}
-.timeline-item .tdate{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:1px;}
-.module-nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-.module-nav-card{background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:6px;}
-.module-nav-card .eyebrow{font-size:10px;}
-.module-nav-card .mname{font-family:var(--serif);font-size:15px;font-weight:600;}
-.module-nav-card .macc{font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
-.module-nav-card button{background:var(--ink);color:#fff;border:none;border-radius:3px;padding:7px 10px;font-size:12.5px;margin-top:4px;}
-.btn{background:var(--ink);color:#fff;border:none;border-radius:3px;padding:11px 18px;font-size:14.5px;font-weight:600;letter-spacing:.01em;}
-.btn:hover{background:#2A3550;}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
-.btn.ghost:hover{border-color:var(--ink);}
-.btn.wide{width:100%;}
-.btn:disabled{opacity:.4;cursor:default;}
-.spec-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
-.spec-table td{padding:7px 10px;border-bottom:1px dashed var(--line);}
-.spec-table td:first-child{color:var(--ink-soft);width:45%;}
-.spec-table td:last-child{font-weight:600;}
-.timer-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.timer-txt{font-family:var(--mono);font-size:18px;font-weight:600;}
-.timer-txt.low{color:var(--wine);}
-.session-score{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
-.passage-box{background:var(--paper);border-left:3px solid var(--gold);padding:14px 16px;font-size:15px;line-height:1.65;margin-bottom:16px;border-radius:0 3px 3px 0;}
-.statement-row{border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin-bottom:10px;background:var(--paper-raised);}
-.statement-row .stext{font-size:14.5px;margin-bottom:10px;}
-.vfn-row{display:flex;gap:6px;}
-.vfn-btn{flex:1;padding:9px 4px;border:1px solid var(--line);background:var(--paper-raised);border-radius:3px;font-size:12.5px;font-weight:600;color:var(--ink-soft);}
-.vfn-btn.sel{background:var(--ink);color:#fff;border-color:var(--ink);}
-.vfn-btn.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);}
-.vfn-btn.incorrect{background:var(--wine-bg);border-color:var(--wine);color:var(--wine);}
-.feedback{margin-top:10px;padding:9px 12px;border-radius:3px;font-size:13.5px;background:var(--paper);border:1px dashed var(--line);}
-.feedback.ok{border-color:var(--green);}
-.feedback.no{border-color:var(--wine);}
-.qcm-question{font-size:16px;margin-bottom:14px;}
-.data-wrap{overflow-x:auto;margin-bottom:14px;border:1px solid var(--line);border-radius:3px;}
-.data-table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
-.data-table caption{caption-side:top;text-align:left;padding:9px 10px 7px;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink-soft);}
-.data-table th,.data-table td{border-top:1px solid var(--line);padding:6px 10px;text-align:right;white-space:nowrap;}
-.data-table th{background:var(--paper-raised);font-weight:600;font-size:11.5px;}
-.data-table th:first-child,.data-table td:first-child{text-align:left;font-family:var(--sans);}
-.qcm-opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper-raised);border-radius:3px;padding:11px 14px;margin-bottom:8px;font-size:14.5px;}
-.qcm-opt.sel{border-color:var(--ink);}
-.qcm-opt.correct{background:var(--green-bg);border-color:var(--green);}
-.qcm-opt.incorrect{background:var(--wine-bg);border-color:var(--wine);}
-.session-end{text-align:center;padding:30px 10px;}
-.session-end .n{font-family:var(--serif);font-size:44px;color:var(--gold);}
-.abs-sequence{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0;flex-wrap:wrap;}
-.abs-shape-box{width:64px;height:64px;background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:6px;}
-.abs-arrow{font-size:18px;color:var(--ink-soft);}
-.abs-q{width:64px;height:64px;background:var(--paper);border:2px dashed var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--gold);}
-.abs-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;}
-.abs-opt{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:8px;position:relative;}
-.abs-letter{position:absolute;top:3px;left:5px;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);}
-.abs-opt.sel{border-color:var(--ink);border-width:2px;}
-.abs-opt.correct{border-color:var(--green);background:var(--green-bg);}
-.abs-opt.incorrect{border-color:var(--wine);background:var(--wine-bg);}
-.kb-section{border:1px solid var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;background:var(--paper-raised);}
-.kb-headrow{display:flex;align-items:stretch;background:var(--paper);}
-.kb-headrow .kb-head{flex:1;width:auto;min-width:0;}
-.kb-headrow .kb-head>span:first-child{min-width:0;padding-right:10px;}
-.kb-play{flex-shrink:0;background:transparent;border:none;border-left:1px dashed var(--line);color:var(--gold);font-family:var(--mono);font-size:12px;padding:0 14px;letter-spacing:.06em;}
-.kb-play:hover{background:var(--gold-bg);color:var(--ink);}
-.kb-play.on{background:var(--gold);color:#fff;}
-.kb-head{width:100%;text-align:left;background:var(--paper);border:none;padding:13px 16px;font-family:var(--serif);font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
-.kb-head .car{font-family:var(--mono);color:var(--gold);transition:transform .15s;}
-.kb-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .25s ease;}
-.kb-body.open{max-height:5000px;padding:14px 16px 16px;}
-.kb-body p{font-size:14.5px;}
-.kb-body ul{margin:0 0 10px;padding-left:20px;font-size:14.5px;}
-.kb-body li{margin-bottom:5px;}
-.kb-body table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
-.kb-body table td,.kb-body table th{padding:5px 8px;border-bottom:1px dashed var(--line);text-align:left;}
-.kb-body table th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);}
-.kb-fact{display:inline-block;background:var(--gold-bg);color:#7A5D1E;font-family:var(--mono);font-size:12px;padding:2px 7px;border-radius:3px;margin:2px 3px 2px 0;}
-.essay-prompt{font-family:var(--serif);font-size:19px;font-style:italic;padding:16px;background:var(--paper);border-radius:3px;margin-bottom:14px;border-left:3px solid var(--wine);}
-textarea.essay-area{width:100%;min-height:280px;border:1px solid var(--line);border-radius:3px;padding:14px;font-family:var(--sans);font-size:15px;line-height:1.6;resize:vertical;background:var(--paper-raised);color:var(--ink);}
-.essay-meta{display:flex;justify-content:space-between;align-items:center;margin:10px 0;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;gap:8px;}
-.checklist-item{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px;}
-.checklist-item:last-child{border-bottom:none;}
-.checklist-item input{margin-top:3px;width:16px;height:16px;flex-shrink:0;}
-.tip{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
-.tip:last-child{border-bottom:none;}
-.tip .tn{font-family:var(--serif);font-size:20px;color:var(--gold);width:26px;flex-shrink:0;}
-.tip b{display:block;margin-bottom:2px;}
-.tip p{font-size:14px;color:var(--ink-soft);margin:0;}
-.warn-box{background:var(--wine-bg);border-left:3px solid var(--wine);padding:12px 14px;border-radius:0 3px 3px 0;font-size:14px;margin:14px 0;}
-.info-box{background:var(--green-bg);border-left:3px solid var(--green);padding:12px 14px;border-radius:0 3px 3px 0;font-size:14px;margin:14px 0;}
-.mth{border:1px solid var(--line);border-radius:3px;margin-bottom:8px;background:var(--paper);padding:0 13px;}
-.mth summary{cursor:pointer;padding:11px 0;font-family:var(--serif);font-size:14.5px;font-weight:600;list-style:none;}
-.mth summary::-webkit-details-marker{display:none;}
-.mth summary::before{content:"▸ ";color:var(--gold);font-family:var(--mono);}
-.mth[open] summary::before{content:"▾ ";}
-.mth[open] summary{border-bottom:1px dashed var(--line);margin-bottom:9px;}
-.mth p,.mth li{font-size:13.5px;line-height:1.55;}
-.mth ul{padding-left:18px;margin:0 0 9px;}
-.mth li{margin-bottom:5px;}
-.mth p:last-child{margin-bottom:11px;}
-.plan-week{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;}
-.plan-week .pw{font-family:var(--mono);font-size:11.5px;color:var(--gold);width:70px;flex-shrink:0;font-weight:600;padding-top:2px;}
-footer.reset-zone{text-align:center;padding:26px 0 10px;}
-footer.reset-zone button{background:none;border:none;color:var(--ink-soft);font-size:12px;text-decoration:underline;}
-/* ---- Lecture audio ---- */
-.aud-ctl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;}
-.aud-ctl-row label{font-size:13px;color:var(--ink-soft);flex-shrink:0;}
-select.aud-select{flex:1;min-width:180px;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-family:var(--sans);font-size:13.5px;background:var(--paper);color:var(--ink);}
-input.aud-range{flex:1;min-width:150px;accent-color:var(--gold);}
-.aud-rate-val{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--gold);width:52px;text-align:right;}
-.aud-presets{display:flex;gap:5px;flex-wrap:wrap;}
-.aud-presets button{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:4px 9px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);}
-.aud-presets button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
-.aud-toggle{display:flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer;}
-.aud-toggle input{width:15px;height:15px;accent-color:var(--gold);}
-.aud-search{width:100%;border:1px solid var(--line);border-radius:3px;padding:9px 11px;font-family:var(--sans);font-size:14px;background:var(--paper);color:var(--ink);}
-.aud-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px;}
-.aud-chip{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 11px;font-size:12px;color:var(--ink-soft);}
-.aud-chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
-.aud-group{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:18px 0 2px;text-transform:uppercase;}
-.aud-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);}
-.aud-row:last-child{border-bottom:none;}
-.aud-row .at{flex:1;min-width:0;font-size:14px;line-height:1.35;}
-.aud-row .at small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:.03em;margin-top:2px;}
-.aud-row.cur>.at{color:var(--gold);font-weight:600;}
-.aud-row button{flex-shrink:0;border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:5px 9px;font-family:var(--mono);font-size:11.5px;color:var(--ink);}
-.aud-row button:hover{border-color:var(--ink);}
-.aud-pct{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);flex-shrink:0;width:40px;text-align:right;}
-.aud-pct.done{color:var(--green);}
-.aud-empty{font-size:13.5px;color:var(--ink-soft);font-style:italic;padding:6px 0;}
-.tts-reader{max-height:400px;overflow-y:auto;border:1px solid var(--line);border-radius:3px;padding:15px 16px;background:var(--paper);}
-.tts-reader p{font-size:14.5px;line-height:1.75;margin:0 0 11px;}
-.tts-reader p:last-child{margin-bottom:0;}
-.tts-reader p.li{padding-left:15px;text-indent:-15px;}
-.tts-reader p.li::before{content:"— ";color:var(--gold);}
-.tts-reader p.ttl{font-family:var(--serif);font-size:16px;font-weight:600;}
-.tts-chunk{cursor:pointer;border-radius:2px;}
-.tts-chunk:hover{background:var(--gold-bg);}
-.tts-chunk.on{background:var(--gold-bg);color:var(--ink);box-shadow:0 0 0 3px var(--gold-bg);}
-/* Barre de lecture persistante : elle survit aux changements d'onglet. */
-.player{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--ink);border-top:2px solid var(--gold);box-shadow:0 -4px 18px rgba(27,36,56,.22);}
-.player .pw{max-width:760px;margin:0 auto;padding:9px 18px 11px;}
-.player-top{display:flex;align-items:baseline;gap:9px;}
-.player-eyebrow{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-bright);flex-shrink:0;}
-.player-title{font-family:var(--serif);font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
-.player-count{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;}
-.player-notice{background:#F3E3E1;color:var(--wine);border-radius:3px;padding:8px 11px;font-size:12px;line-height:1.5;margin-top:8px;}
-.notice-btn{display:block;width:100%;margin-top:7px;background:var(--wine);color:#fff;border:none;border-radius:3px;padding:8px;font-size:12.5px;font-weight:600;}
-.modal{position:fixed;inset:0;z-index:80;background:rgba(27,36,56,.6);display:flex;align-items:center;justify-content:center;padding:14px;overflow-y:auto;}
-.modal-box{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;max-width:520px;width:100%;padding:22px 20px;max-height:92vh;overflow-y:auto;position:relative;}
-.modal-close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:22px;color:var(--ink-soft);line-height:1;padding:4px 8px;}
-.diag-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;}
-.diag-line:last-child{border-bottom:none;}
-.diag-line b{font-family:var(--mono);font-size:12.5px;text-align:right;}
-.diag-ok{color:var(--green);}
-.diag-no{color:var(--wine);}
-.btn-link{display:block;width:100%;box-sizing:border-box;text-align:center;background:var(--ink);color:#fff;border:none;border-radius:3px;padding:13px 12px;font-size:14.5px;font-weight:600;font-family:var(--sans);text-decoration:none;margin-bottom:8px;}
-.btn-link.alt{background:transparent;color:var(--ink);border:1px solid var(--line);}
-.diag-steps{font-size:13px;line-height:1.6;color:var(--ink-soft);padding-left:18px;margin:0 0 10px;}
-.diag-steps li{margin-bottom:5px;}
-.player-prog{height:3px;background:rgba(255,255,255,.16);border-radius:2px;margin:7px 0 9px;overflow:hidden;}
-.player-prog i{display:block;height:100%;background:var(--gold-bright);width:0;transition:width .3s;}
-.player-ctl{display:flex;align-items:center;gap:5px;}
-.player-ctl button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--paper-raised);border-radius:3px;padding:6px 9px;font-family:var(--mono);font-size:12.5px;line-height:1;}
-.player-ctl button:hover{background:rgba(255,255,255,.2);}
-.player-ctl button.big{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;padding:7px 15px;font-size:13.5px;}
-.player-ctl .sp{margin-left:auto;display:flex;align-items:center;gap:5px;}
-.player-ctl .sp b{font-family:var(--mono);font-size:12.5px;color:var(--gold-bright);width:46px;text-align:center;}
-body.has-player{padding-bottom:130px;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;padding-bottom:64px;
+  transition:background .2s ease,color .2s ease;}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0 0 .45em;letter-spacing:-.006em;line-height:1.25;}
+p{margin:0 0 .85em;}
+a{color:var(--accent);}
+button{font-family:var(--sans);cursor:pointer;color:inherit;}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;}
+::selection{background:var(--accent-soft);}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px;}
 .hidden{display:none !important;}
-@media(max-width:480px){.module-nav-grid{grid-template-columns:1fr;}.abs-options{grid-template-columns:repeat(2,1fr);}
-  .player-ctl button{padding:6px 7px;}.player-ctl .sp b{width:40px;}body.has-player{padding-bottom:140px;}}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
+
+/* ============ EN-TÊTE ============ */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 0;}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;}
+.brand-seal{width:30px;height:30px;flex-shrink:0;color:var(--accent);}
+.brand-text h1{font-size:16.5px;margin:0;line-height:1.2;letter-spacing:-.01em;}
+.brand-text .eyebrow{color:var(--muted);}
+.streak{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12.5px;color:var(--muted);
+  background:var(--subtle);border:1px solid var(--line);padding:5px 11px;border-radius:99px;flex-shrink:0;}
+.streak b{color:var(--ink);font-size:13.5px;}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;padding:10px 0 0;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+nav.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;background:transparent;border:none;border-bottom:2px solid transparent;
+  color:var(--muted);font-size:10px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px 9px;text-align:center;border-radius:var(--r-sm) var(--r-sm) 0 0;}
+.tab-btn b{display:block;font-family:var(--sans);font-size:14px;letter-spacing:-.005em;text-transform:none;
+  font-weight:500;margin-top:2px;color:var(--ink-2);}
+.tab-btn.active{border-bottom-color:var(--accent);}
+.tab-btn.active b{color:var(--accent);font-weight:600;}
+.tab-btn:hover:not(.active){background:var(--subtle);}
+main{padding-top:26px;}
+
+/* ============ BLOCS ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  margin-bottom:14px;flex-wrap:wrap;}
+.section-title h2{font-size:21px;margin:0;}
+.lede{color:var(--muted);font-size:15px;}
+.rule{height:1px;background:var(--line);border:none;margin:20px 0;}
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;
+  padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent);
+  border:1px solid transparent;margin:0 4px 4px 0;}
+.pill.l2{background:var(--warn-soft);color:var(--warn);}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin:16px 0;}
+.stat-box{background:var(--subtle);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:13px 15px;}
+.stat-box .n{font-family:var(--serif);font-size:25px;font-weight:600;letter-spacing:-.02em;}
+.stat-box .l{font-size:12px;color:var(--muted);margin-top:1px;}
+.weight-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2);}
+.weight-row:last-child{border-bottom:none;}
+.weight-row>div:first-child{flex:1;min-width:0;}
+.weight-row .wname{font-size:15px;}
+.weight-row .wtag{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px;}
+.weight-bar-bg{width:64px;height:5px;background:var(--line-2);border-radius:99px;overflow:hidden;flex-shrink:0;}
+.weight-bar-fill{height:100%;background:var(--accent);border-radius:99px;}
+.weight-pct{font-family:var(--mono);font-size:13px;font-weight:600;width:38px;text-align:right;flex-shrink:0;}
+.timeline-item{display:flex;gap:14px;padding:12px 0;}
+.timeline-item .dot{width:8px;height:8px;border-radius:50%;background:var(--line);margin-top:7px;flex-shrink:0;
+  box-shadow:0 0 0 3px var(--surface),0 0 0 4px var(--line-2);}
+.timeline-item.done .dot{background:var(--good);box-shadow:0 0 0 3px var(--surface),0 0 0 4px var(--good-soft);}
+.timeline-item.next .dot{background:var(--accent);box-shadow:0 0 0 3px var(--surface),0 0 0 4px var(--accent-soft);}
+.timeline-item .td{font-size:15px;}
+.timeline-item .tdate{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.module-nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:12px;}
+.module-nav-card{background:var(--subtle);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:14px;display:flex;flex-direction:column;gap:3px;}
+.module-nav-card .eyebrow{font-size:9.5px;}
+.module-nav-card .mname{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:-.01em;}
+.module-nav-card .macc{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+.module-nav-card button{margin-top:9px;background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:8px;font-size:13px;font-weight:500;}
+.module-nav-card button:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ============ COMMANDES ============ */
+.btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:12px 20px;
+  font-size:15px;font-weight:600;letter-spacing:-.005em;}
+.btn:hover{filter:brightness(1.08);}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);filter:none;}
+.btn.wide{width:100%;display:block;}
+.btn:disabled{opacity:.45;cursor:default;filter:none;}
+:root[data-theme="dark"] .btn{color:#0F1520;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#0F1520;}}
+:root[data-theme="dark"] .btn.ghost{color:var(--ink);}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--ink);}}
+.spec-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0;}
+.spec-table td{padding:9px 0;border-bottom:1px solid var(--line-2);vertical-align:top;}
+.spec-table tr:last-child td{border-bottom:none;}
+.spec-table td:first-child{color:var(--muted);width:46%;padding-right:12px;}
+.spec-table td:last-child{font-weight:600;}
+.warn-box,.info-box{border-radius:var(--r-sm);padding:13px 15px;margin:12px 0;font-size:14.5px;line-height:1.55;}
+.warn-box{background:var(--bad-soft);color:var(--ink);border-left:3px solid var(--bad);}
+.info-box{background:var(--accent-soft);color:var(--ink);border-left:3px solid var(--accent);}
+
+/* ============ SESSIONS ============ */
+.timer-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;
+  border-bottom:1px solid var(--line-2);}
+.timer-txt{font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:-.02em;}
+.timer-txt.low{color:var(--bad);}
+.session-score{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+.passage-box{background:var(--subtle);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:17px 19px;font-size:16px;line-height:1.72;margin-bottom:18px;}
+.qcm-question{font-size:17px;margin-bottom:16px;line-height:1.5;}
+.qcm-opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);
+  border-radius:var(--r-sm);padding:13px 15px;margin-bottom:9px;font-size:15px;line-height:1.5;
+  transition:border-color .12s,background .12s;}
+.qcm-opt:hover:not(:disabled){border-color:var(--accent);}
+.qcm-opt.sel{border-color:var(--accent);}
+.qcm-opt.correct{background:var(--good-soft);border-color:var(--good);}
+.qcm-opt.incorrect{background:var(--bad-soft);border-color:var(--bad);}
+.qcm-opt:disabled{cursor:default;}
+.feedback{margin-top:12px;padding:12px 14px;border-radius:var(--r-sm);font-size:14.5px;line-height:1.6;
+  background:var(--subtle);border-left:3px solid var(--line);}
+.feedback.ok{border-left-color:var(--good);}
+.feedback.no{border-left-color:var(--bad);}
+.data-wrap{overflow-x:auto;margin-bottom:16px;border:1px solid var(--line);border-radius:var(--r-sm);}
+.data-table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
+.data-table caption{caption-side:top;text-align:left;padding:11px 13px 9px;font-family:var(--sans);
+  font-size:12.5px;color:var(--muted);}
+.data-table th,.data-table td{border-top:1px solid var(--line-2);padding:8px 13px;text-align:right;white-space:nowrap;}
+.data-table th{background:var(--subtle);font-weight:600;font-size:11px;color:var(--muted);}
+.data-table th:first-child,.data-table td:first-child{text-align:left;font-family:var(--sans);}
+.session-end{text-align:center;padding:36px 12px;}
+.session-end .n{font-family:var(--serif);font-size:52px;color:var(--accent);letter-spacing:-.03em;margin:6px 0;}
+.session-end .btn{margin-top:6px;}
+
+/* ============ ABSTRAIT ============ */
+.abs-sequence{display:flex;align-items:center;justify-content:center;gap:10px;margin:22px 0;flex-wrap:wrap;}
+.abs-shape-box,.abs-q{width:62px;height:62px;border-radius:var(--r-sm);display:flex;align-items:center;
+  justify-content:center;padding:5px;flex-shrink:0;}
+.abs-shape-box{background:var(--tile);border:1px solid var(--line);}
+.abs-q{background:transparent;border:2px dashed var(--accent);color:var(--accent);
+  font-family:var(--serif);font-size:24px;}
+.abs-arrow{color:var(--muted);font-size:15px;}
+.abs-options{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:20px;}
+.abs-opt{background:var(--tile);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;
+  position:relative;aspect-ratio:1;}
+.abs-opt:hover:not(:disabled){border-color:var(--accent);}
+.abs-letter{position:absolute;top:4px;left:6px;font-family:var(--mono);font-size:10px;color:#67788F;}
+.abs-opt.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);}
+.abs-opt.correct{border-color:var(--good);box-shadow:0 0 0 2px var(--good-soft);}
+.abs-opt.incorrect{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-soft);}
+
+/* ============ COURS / ACCORDÉONS ============ */
+.kb-section{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:9px;
+  overflow:hidden;background:var(--surface);}
+.kb-headrow{display:flex;align-items:stretch;}
+.kb-head{flex:1;width:auto;min-width:0;text-align:left;background:transparent;border:none;
+  padding:15px 17px;font-family:var(--serif);font-size:16.5px;font-weight:600;letter-spacing:-.01em;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.kb-head:hover{background:var(--subtle);}
+.kb-head .car{font-family:var(--mono);color:var(--muted);transition:transform .18s;font-size:12px;flex-shrink:0;}
+.kb-play{flex-shrink:0;background:transparent;border:none;border-left:1px solid var(--line-2);
+  color:var(--muted);font-family:var(--mono);font-size:11px;padding:0 14px;letter-spacing:.04em;}
+.kb-play:hover{background:var(--accent-soft);color:var(--accent);}
+.kb-play.on{background:var(--accent-soft);color:var(--accent);box-shadow:inset 2px 0 0 var(--accent);}
+/* Pas de max-height chiffree : certaines fiches depassent largement toute valeur
+   qu'on fixerait, et le contenu s'en trouverait tronque sans avertissement. */
+.kb-body{display:none;padding:0 17px;}
+.kb-body.open{display:block;padding:4px 17px 18px;}
+.kb-body p{font-size:15.5px;line-height:1.72;}
+.kb-body ul,.kb-body ol{margin:0 0 12px;padding-left:20px;font-size:15.5px;line-height:1.7;}
+.kb-body li{margin-bottom:6px;}
+.kb-body table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0;}
+.kb-body table td,.kb-body table th{padding:7px 9px;border-bottom:1px solid var(--line-2);text-align:left;}
+.kb-body table th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--muted);}
+.kb-fact{display:inline-block;background:var(--accent-soft);color:var(--accent);font-family:var(--mono);
+  font-size:12.5px;padding:1px 7px;border-radius:4px;}
+.mth{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:9px;background:var(--surface);padding:0 15px;}
+.mth summary{cursor:pointer;padding:13px 0;font-family:var(--serif);font-size:15.5px;font-weight:600;
+  list-style:none;display:flex;gap:8px;align-items:baseline;}
+.mth summary::-webkit-details-marker{display:none;}
+.mth summary::before{content:"›";color:var(--accent);font-family:var(--mono);transition:transform .18s;
+  display:inline-block;}
+.mth[open] summary::before{transform:rotate(90deg);}
+.mth[open] summary{border-bottom:1px solid var(--line-2);margin-bottom:11px;}
+.mth p,.mth li{font-size:14.5px;line-height:1.65;}
+.mth ul,.mth ol{padding-left:19px;margin:0 0 11px;}
+.mth li{margin-bottom:6px;}
+.mth p:last-child{margin-bottom:13px;}
+
+/* ============ SIGLES ============ */
+.acr-search{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;
+  font-family:var(--sans);font-size:15px;background:var(--subtle);color:var(--ink);margin-bottom:6px;}
+.acr-letter{font-family:var(--serif);font-size:19px;color:var(--accent);margin:26px 0 2px;
+  font-weight:600;border-bottom:2px solid var(--accent-soft);padding-bottom:4px;}
+.acr-letter:first-child{margin-top:8px;}
+.acr-row{padding:11px 0;border-bottom:1px solid var(--line-2);}
+.acr-row:last-child{border-bottom:none;}
+.acr-row dt{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);}
+.acr-row dd{margin:2px 0 0;font-size:14.5px;line-height:1.55;}
+.acr-row dd i{color:var(--muted);font-style:normal;display:block;font-size:13.5px;margin-top:2px;}
+
+/* ============ EUFTE ============ */
+.essay-prompt{font-family:var(--serif);font-size:18px;line-height:1.6;padding:17px 19px;background:var(--subtle);
+  border-radius:var(--r-sm);margin-bottom:16px;border-left:3px solid var(--accent);}
+textarea.essay-area{width:100%;min-height:300px;border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:16px;font-family:var(--sans);font-size:15.5px;line-height:1.65;resize:vertical;
+  background:var(--sunken);color:var(--ink);}
+.essay-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;
+  font-family:var(--mono);font-size:12.5px;color:var(--muted);flex-wrap:wrap;}
+.checklist-item{display:flex;align-items:flex-start;gap:11px;padding:10px 0;
+  border-bottom:1px solid var(--line-2);font-size:14.5px;cursor:pointer;}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-item input{margin-top:3px;width:17px;height:17px;flex-shrink:0;accent-color:var(--accent);}
+.tip{display:flex;gap:15px;padding:14px 0;border-bottom:1px solid var(--line-2);}
+.tip:last-child{border-bottom:none;}
+.tip .tn{font-family:var(--serif);font-size:21px;color:var(--accent);width:26px;flex-shrink:0;line-height:1.2;}
+.tip b{display:block;margin-bottom:3px;font-size:15.5px;}
+.tip p{font-size:14.5px;color:var(--ink-2);margin:0;line-height:1.6;}
+.plan-week{display:flex;gap:15px;padding:12px 0;border-bottom:1px solid var(--line-2);font-size:14.5px;}
+.plan-week:last-child{border-bottom:none;}
+.plan-week .pw{font-family:var(--mono);font-size:11px;color:var(--accent);width:74px;flex-shrink:0;
+  font-weight:600;padding-top:3px;line-height:1.4;}
+
+/* ============ PARAMÈTRES ============ */
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--line-2);flex-wrap:wrap;}
+.set-row:last-child{border-bottom:none;}
+.set-label{flex:1;min-width:160px;}
+.set-label b{display:block;font-size:15px;font-weight:600;}
+.set-label span{font-size:13.5px;color:var(--muted);line-height:1.5;display:block;margin-top:2px;}
+.seg{display:inline-flex;background:var(--subtle);border:1px solid var(--line);border-radius:99px;padding:3px;gap:2px;}
+.seg button{border:none;background:transparent;border-radius:99px;padding:7px 15px;font-size:13.5px;
+  color:var(--muted);font-weight:500;}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow);}
+select.aud-select{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;
+  font-family:var(--sans);font-size:14.5px;background:var(--subtle);color:var(--ink);max-width:100%;}
+input.aud-range{flex:1;min-width:150px;accent-color:var(--accent);}
+.aud-rate-val{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);width:56px;text-align:right;}
+.aud-presets{display:flex;gap:6px;flex-wrap:wrap;}
+.aud-presets button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;
+  font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+.aud-presets button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.switch{position:relative;width:44px;height:26px;flex-shrink:0;}
+.switch input{opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+.switch i{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:background .18s;
+  pointer-events:none;}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.switch input:checked + i{background:var(--accent);}
+.switch input:checked + i::after{transform:translateX(18px);}
+.aud-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line-2);}
+.aud-row:last-child{border-bottom:none;}
+.aud-row .at{flex:1;min-width:0;font-size:14.5px;line-height:1.4;}
+.aud-row .at small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px;}
+.aud-row button{flex-shrink:0;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);
+  padding:6px 10px;font-family:var(--mono);font-size:11.5px;}
+.aud-row button:hover{border-color:var(--accent);color:var(--accent);}
+.aud-empty{font-size:14px;color:var(--muted);padding:8px 0;}
+.danger{color:var(--bad);border-color:var(--bad) !important;}
+.danger:hover{background:var(--bad-soft);}
+
+/* ============ LECTEUR ============ */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--surface);
+  border-top:1px solid var(--line);box-shadow:0 -4px 24px -8px rgba(18,35,58,.14);
+  padding-bottom:env(safe-area-inset-bottom);}
+.player .pw{max-width:720px;margin:0 auto;padding:11px 20px 13px;}
+.player-top{display:flex;align-items:baseline;gap:10px;}
+.player-eyebrow{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);flex-shrink:0;}
+.player-title{font-family:var(--serif);font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;flex:1;min-width:0;}
+.player-count{font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0;}
+.player-prog{height:3px;background:var(--line-2);border-radius:99px;margin:9px 0 10px;overflow:hidden;}
+.player-prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s;border-radius:99px;}
+.player-ctl{display:flex;align-items:center;gap:6px;}
+.player-ctl button{background:var(--subtle);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:8px 11px;font-family:var(--mono);font-size:12.5px;line-height:1;color:var(--ink-2);}
+.player-ctl button:hover{border-color:var(--accent);color:var(--accent);}
+.player-ctl button.big{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;padding:9px 17px;}
+.player-ctl .sp{margin-left:auto;display:flex;align-items:center;gap:5px;}
+.player-ctl .sp b{font-family:var(--mono);font-size:12.5px;color:var(--accent);width:46px;text-align:center;}
+.player-notice{background:var(--bad-soft);color:var(--ink);border-radius:var(--r-sm);padding:10px 12px;
+  font-size:12.5px;line-height:1.55;margin-top:9px;border-left:3px solid var(--bad);}
+.notice-btn{display:block;width:100%;margin-top:8px;background:var(--bad);color:#fff;border:none;
+  border-radius:var(--r-sm);padding:9px;font-size:12.5px;font-weight:600;}
+body.has-player{padding-bottom:136px;}
+.tts-chunk{border-radius:3px;transition:background .15s;}
+.tts-chunk.on{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft);}
+.kb-body .tts-chunk{cursor:pointer;}
+.kb-body .tts-chunk:hover{background:var(--line-2);}
+
+/* ============ MODALE ============ */
+.modal{position:fixed;inset:0;z-index:80;background:rgba(12,20,32,.55);display:flex;align-items:center;
+  justify-content:center;padding:16px;overflow-y:auto;backdrop-filter:blur(2px);}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-width:520px;
+  width:100%;padding:24px 22px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:var(--shadow);}
+.modal-close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;
+  color:var(--muted);line-height:1;padding:5px 9px;border-radius:var(--r-sm);}
+.modal-close:hover{background:var(--subtle);}
+.diag-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;
+  border-bottom:1px solid var(--line-2);font-size:14px;}
+.diag-line:last-of-type{border-bottom:none;}
+.diag-line b{font-family:var(--mono);font-size:12.5px;text-align:right;}
+.diag-ok{color:var(--good);}
+.diag-no{color:var(--bad);}
+.btn-link{display:block;width:100%;box-sizing:border-box;text-align:center;background:var(--accent);color:#fff;
+  border:none;border-radius:var(--r-sm);padding:13px;font-size:15px;font-weight:600;font-family:var(--sans);
+  text-decoration:none;margin-bottom:9px;}
+.btn-link.alt{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.diag-steps{font-size:14px;line-height:1.65;color:var(--ink-2);padding-left:19px;margin:0 0 11px;}
+.diag-steps li{margin-bottom:6px;}
+
+footer.reset-zone{text-align:center;padding:28px 0 12px;}
+footer.reset-zone button{background:none;border:none;color:var(--muted);font-size:13px;text-decoration:underline;}
+
+@media(max-width:520px){
+  body{font-size:16px;}
+  .wrap{padding:0 16px;}
+  .card{padding:18px 16px;border-radius:var(--r-sm);}
+  .module-nav-grid{grid-template-columns:1fr;}
+  .abs-options{grid-template-columns:repeat(3,1fr);}
+  .player-ctl button{padding:8px 9px;}
+  .player-ctl .sp b{width:40px;}
+  body.has-player{padding-bottom:146px;}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important;scroll-behavior:auto !important;}
+}
 </style>
 </head>
 <body>
@@ -235,10 +373,10 @@ body.has-player{padding-bottom:130px;}
 <header class="top">
   <div class="wrap top-row">
     <div class="brand">
-      <svg class="brand-seal" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="none" stroke="#C79A3E" stroke-width="1.5"/><circle cx="20" cy="20" r="13" fill="none" stroke="#C79A3E" stroke-width="1"/><text x="20" y="25" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#C79A3E">AD5</text></svg>
+      <svg class="brand-seal" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".35"/><circle cx="20" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 6.5v27M6.5 20h27" stroke="currentColor" stroke-width="1.6" opacity=".22"/></svg>
       <div class="brand-text">
         <div class="eyebrow">EPSO/AD/427/26</div>
-        <h1>Dossier de préparation</h1>
+        <h1>Préparation AD5</h1>
       </div>
     </div>
     <div class="streak" id="streakBox">🔥 <b id="streakN">0</b> j</div>
@@ -268,10 +406,23 @@ const MODULES = [
   {id:'euknow', ep:'T3 · L2', label:'Connaiss. UE'},
   {id:'digital', ep:'T4 · L2', label:'Numériques'},
   {id:'eufte', ep:'T5 · L2', label:'EUFTE'},
-  {id:'annexe', ep:'', label:'Annexe'},
-  {id:'audio', ep:'', label:'Écoute'},
-  {id:'strategy', ep:'', label:'Stratégie'},
+  {id:'cours', ep:'', label:'Cours'},
+  {id:'concours', ep:'', label:'Le concours'},
+  {id:'params', ep:'', label:'Paramètres'},
 ];
+
+/* ================= THÈME =================
+   Trois états : « auto » suit le réglage du système, « light » et « dark » le
+   forcent. Appliqué avant le premier rendu pour éviter tout clignotement. */
+const THEMES = ['auto','light','dark'];
+let THEME = 'auto';
+function applyTheme(t){
+  THEME = THEMES.indexOf(t)<0 ? 'auto' : t;
+  if(THEME==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', THEME);
+  try{ localStorage.setItem('epso-theme', THEME); }catch(e){}
+}
+try{ applyTheme(localStorage.getItem('epso-theme') || 'auto'); }catch(e){}
 
 /* ================= BANQUE VERBAL ================= */
 /* Format EPSO réel : un texte, 4 affirmations A/B/C/D, une seule pleinement
@@ -1309,7 +1460,7 @@ function dataTable(caption, headers, rows){
   return '<table class="data-table"><caption>'+caption+'</caption><thead><tr>'
     + headers.map(h=>'<th>'+h+'</th>').join('')
     + '</tr></thead><tbody>'
-    + rows.map(r=>'<tr>'+r.map((c,i)=>i===0?'<td>'+c+'</td>':'<td>'+c+'</td>').join('')+'</tr>').join('')
+    + rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')
     + '</tbody></table>';
 }
 /* Formatage à l'européenne : espace fine pour les milliers, virgule décimale. */
@@ -1846,28 +1997,6 @@ function absKey(s){
   const period = s.marker ? 360 : (n>2 ? 360/n : 360);
   const rot = (s.marker || n>2) ? Math.round((((s.rot||0)%period)+period)%period) : 0;
   return n+'|'+rot+'|'+(s.scale||1).toFixed(2)+'|'+(s.filled===false?0:1)+'|'+(s.color||ABS_COLORS[0])+'|'+lines+'|'+(s.marker?'m':'')+'|'+arr;
-}
-
-/* Variantes plausibles de la bonne réponse : on ne fausse qu'un attribut à la fois,
-   ce qui reproduit les distracteurs réels (juste sur l'attribut visible, faux sur un autre). */
-function absPerturb(s){
-  const c = [];
-  if(s.dots>0){
-    c.push({...s,dots:s.dots+1},{...s,dots:Math.max(1,s.dots-1)},{...s,dots:s.dots+2},
-           {...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]},
-           {...s,hline:!s.hline},{...s,vline:!s.vline});
-  } else {
-    const n = s.sides||0, half = n>2 ? Math.round(360/n/2) : 45;
-    c.push({...s,sides:n===0?3:n+1});
-    if(n>3) c.push({...s,sides:n-1});
-    c.push({...s,rot:(s.rot||0)+half});
-    c.push({...s,scale:absScale((s.scale||1)+0.2)});
-    c.push({...s,scale:absScale((s.scale||1)-0.2)});
-    c.push({...s,filled:!(s.filled!==false)});
-    c.push({...s,color:s.color===ABS_COLORS[0]?ABS_COLORS[1]:ABS_COLORS[0]});
-    c.push({...s,hline:!s.hline},{...s,vline:!s.vline});
-  }
-  return shuffle(c);
 }
 
 const absPick = a => a[ri(0,a.length-1)];
@@ -4296,118 +4425,188 @@ function ttsNormalize(t){
   return t.replace(/\s+([,.])/g,`$1`).replace(/\s{2,}/g,' ').trim();
 }
 
-/* ---- Découpage en phrases ----
-   Une énonciation = une phrase. C'est ce qui donne une prosodie correcte (le
-   moteur pose sa respiration sur une vraie frontière) et ce qui rend le
-   changement de vitesse indolore : on ne reprend qu'une phrase, pas un chapitre. */
+/* ---- Découpage en phrases, ancré sur le texte réel ----
+   Le découpage travaille sur des OFFSETS dans le texte d'origine, jamais sur une
+   copie normalisée : c'est ce qui permet de retrouver chaque phrase dans le DOM
+   du cours et de l'y surligner, au lieu de la surligner dans une vue séparée.
+   La normalisation pour la voix s'applique ensuite, phrase par phrase. */
 const TTS_MAX = 180;
-function ttsSentences(text){
-  const raw = []; let start = 0;
-  for(let i=0;i<text.length;i++){
-    /* Pas de coupe sur « : » : en français il annonce ce qui suit, et couper
-       dessus laisse la voix finir sur « Présidente : » avant un silence. */
+const TTS_VOID = {BR:1, IMG:1, HR:1, WBR:1};
+/* Substitutions d'un caractère pour un caractère : elles créent des frontières de
+   phrase sans décaler le moindre offset. */
+function ttsPreSplit(t){ return t.replace(/·/g,'.').replace(/…/g,'.'); }
+
+function ttsSentenceRanges(text, from){
+  if(from >= text.length) return [];
+  const raw = []; let start = from;
+  for(let i=from;i<text.length;i++){
     if('.!?;'.indexOf(text[i]) < 0) continue;
-    /* Décimale : le point entre deux chiffres ne termine pas une phrase. */
     if(text[i]==='.' && /\d/.test(text[i-1]||'') && /\d/.test(text[i+1]||'')) continue;
     if(text[i+1] && text[i+1] !== ' ') continue;
     const seg = text.slice(start, i+1).trim();
-    /* « 2. Les institutions » : ce point numérote un titre ou une puce, il
-       n'annonce pas une phrase. Sans ce garde-fou la voix lit « deux » toute seule. */
-    if(/^\d{1,2}\.$/.test(seg)) continue;
-    if(seg) raw.push(seg);
+    if(/^\d{1,2}\.$/.test(seg)) continue;     // « 2. Les institutions » : ce point numérote
+    if(seg) raw.push({a:start, z:i+1});
     start = i+1;
   }
-  const tail = text.slice(start).trim();
-  if(tail) raw.push(tail);
-  /* Un fragment très court est un reliquat de ponctuation, pas une phrase : on le
-     recolle au précédent, ou au suivant quand il ouvre le bloc. */
-  const out = [];
-  raw.forEach(seg=>{
-    if(seg.length < 28 && out.length) out[out.length-1] += ' ' + seg; else out.push(seg);
+  if(text.slice(start).trim()) raw.push({a:start, z:text.length});
+  /* Un fragment trop court est un reliquat de ponctuation : on le recolle au
+     précédent, ou au suivant quand il ouvre le bloc. */
+  const merged = [];
+  raw.forEach(r=>{
+    if(text.slice(r.a,r.z).trim().length < 28 && merged.length) merged[merged.length-1].z = r.z;
+    else merged.push({a:r.a, z:r.z});
   });
-  for(let i=0;i<out.length-1;i++){
-    if(out[i].length < 28){ out[i+1] = out[i]+' '+out[i+1]; out.splice(i,1); i--; }
+  for(let i=0;i<merged.length-1;i++){
+    if(text.slice(merged[i].a, merged[i].z).trim().length < 28){
+      merged[i+1].a = merged[i].a; merged.splice(i,1); i--;
+    }
   }
-  return out.length ? out : [text];
-}
-/* Chrome interrompt une énonciation qui dépasse une quinzaine de secondes : une
-   phrase trop longue est recoupée sur une virgule, jamais au milieu d'un mot. */
-function ttsCap(s){
-  if(s.length <= TTS_MAX) return [s];
-  const out = []; let rest = s;
-  while(rest.length > TTS_MAX){
-    /* La coupe se cherche avant la limite, jamais dessus : le fragment retenu
-       va jusqu'à cut inclus, un point de coupe à TTS_MAX rendrait 181 caractères. */
-    let cut = rest.lastIndexOf(', ', TTS_MAX-1);
-    if(cut < TTS_MAX*0.45) cut = rest.lastIndexOf(' ', TTS_MAX-1);
-    if(cut <= 0) cut = TTS_MAX-1;
-    out.push(rest.slice(0, cut+1).trim());
-    rest = rest.slice(cut+1).trim();
-  }
-  if(rest) out.push(rest);
+  /* Chrome coupe une énonciation qui dépasse une quinzaine de secondes : une
+     phrase trop longue est recoupée sur une virgule, jamais au milieu d'un mot.
+     La mesure porte sur le texte PRONONCÉ, pas sur le texte source : développer
+     les sigles rallonge la phrase de moitié, et un plafond appliqué au source
+     laisserait passer des énonciations bien au-delà de la limite. */
+  const fits = (a,z)=>ttsNormalize(text.slice(a,z)).length <= TTS_MAX;
+  const out = [];
+  merged.forEach(r=>{
+    let a = r.a, guard = 0;
+    while(!fits(a, r.z) && guard++ < 40){
+      let cut = -1;
+      for(let hi = Math.min(r.z-1, a+TTS_MAX); hi > a; ){
+        let c = text.lastIndexOf(', ', hi);
+        if(c <= a) c = text.lastIndexOf(' ', hi);
+        if(c <= a) break;
+        if(fits(a, c+1)){ cut = c; break; }
+        hi = c - 1;
+      }
+      if(cut < 0 || cut >= r.z - 1) break;
+      out.push({a, z:cut+1}); a = cut + 1;
+    }
+    if(r.z > a) out.push({a, z:r.z});
+  });
   return out;
 }
 
-/* ---- Mise en blocs ----
-   Le silence entre deux blocs est ce qui distingue une lecture d'un débit de
-   machine : un paragraphe respire davantage qu'une puce, un titre davantage encore. */
+/* ---- Blocs ----
+   Le même parcours est appliqué au corps détaché (pour fabriquer les phrases) et
+   au corps affiché dans le cours (pour les surligner). Étant déterministe, le
+   bloc numéro k désigne le même élément dans les deux cas. */
 const TTS_GAP = {title:0, p:340, li:190};
+function ttsScan(root){
+  const out = [];
+  const add = (el, kind, lead, txt, row)=>{
+    if(txt && txt.trim()) out.push({el, kind, lead, raw:ttsPreSplit(txt), row:!!row});
+  };
+  Array.from(root.childNodes).forEach(n=>{
+    if(n.nodeType===3){ add(null,'p',0,n.textContent); return; }
+    if(n.nodeType!==1) return;
+    if(n.tagName==='P'){
+      /* Presque tous les paragraphes ouvrent sur un intertitre en gras collé au
+         texte : isolé, il reçoit son propre point et donc sa propre respiration. */
+      const f = n.firstChild;
+      const lead = (f && f.nodeType===1 && f.tagName==='B') ? f.textContent.length : 0;
+      add(n,'p',lead,n.textContent);
+    } else if(n.tagName==='UL' || n.tagName==='OL'){
+      Array.from(n.children).forEach(li=>add(li,'li',0,li.textContent));
+    } else if(n.tagName==='TABLE'){
+      Array.from(n.querySelectorAll('tr')).forEach(tr=>add(tr,'li',0,tr.textContent,true));
+    } else {
+      add(n,'p',0,n.textContent);
+    }
+  });
+  return out;
+}
+function ttsChunkBlock(b){
+  const chunks = [];
+  if(b.row){
+    /* Une ligne de tableau se lit d'un trait, cellule après cellule. */
+    const cells = b.el ? Array.from(b.el.children).map(c=>c.textContent.trim()).filter(Boolean) : [b.raw];
+    const t = ttsNormalize(cells.join(', ') + '.');
+    if(t) chunks.push({start:0, end:b.raw.length, text:t});
+    return chunks;
+  }
+  let from = 0;
+  if(b.lead > 0){
+    const lead = ttsNormalize(b.raw.slice(0, b.lead).replace(/[\s:.]+$/,''));
+    if(lead){ chunks.push({start:0, end:b.lead, text:lead + '.'}); from = b.lead; }
+  }
+  ttsSentenceRanges(b.raw, from).forEach(r=>{
+    const t = ttsNormalize(b.raw.slice(r.a, r.z));
+    if(t) chunks.push({start:r.a, end:r.z, text:t});
+  });
+  return chunks;
+}
 function ttsBuild(chap){
-  if(chap._blocks) return chap._blocks;
+  if(chap._chunks) return chap._chunks;
   const box = document.createElement('div');
   box.innerHTML = chap.html;
-  const raw = [{kind:'title', text:chap.title}];
-  const addP = el=>{
-    const clone = el.cloneNode(true);
-    let lead = '';
-    const f = clone.firstChild;
-    /* Presque tous les paragraphes du corpus commencent par un intertitre en gras
-       collé au texte : sans point derrière, la lecture les enchaîne sans pause. */
-    if(f && f.nodeType===1 && f.tagName==='B'){
-      lead = f.textContent.trim().replace(/[\s:·.]+$/,'');
-      clone.removeChild(f);
-    }
-    const rest = clone.textContent.trim().replace(/^[\s:·]+/,'');
-    /* L'intertitre est mémorisé sous sa forme normalisée : les sigles y sont
-       développés comme dans le reste du texte, sinon l'affichage ne le retrouve plus. */
-    if(lead && rest) raw.push({kind:'p', lead:ttsNormalize(lead), text:lead+'. '+rest});
-    else if(lead) raw.push({kind:'p', lead:ttsNormalize(lead), text:lead+'.'});
-    else if(rest) raw.push({kind:'p', text:rest});
-  };
-  Array.from(box.childNodes).forEach(n=>{
-    if(n.nodeType===3){ const t=n.textContent.trim(); if(t) raw.push({kind:'p', text:t}); return; }
-    if(n.nodeType!==1) return;
-    if(n.tagName==='P'){ addP(n); return; }
-    if(n.tagName==='UL' || n.tagName==='OL'){
-      Array.from(n.children).forEach(li=>{ const t=li.textContent.trim(); if(t) raw.push({kind:'li', text:t}); });
-      return;
-    }
-    if(n.tagName==='TABLE'){
-      raw.push({kind:'p', text:'Tableau.'});
-      Array.from(n.querySelectorAll('tr')).forEach(tr=>{
-        const cells = Array.from(tr.children).map(c=>c.textContent.trim()).filter(Boolean);
-        if(cells.length) raw.push({kind:'li', text:cells.join(', ')+'.'});
-      });
-      return;
-    }
-    const t = n.textContent.trim(); if(t) raw.push({kind:'p', text:t});
-  });
-
-  const blocks = [], flat = [];
-  raw.forEach(b=>{
-    const parts = [];
-    ttsSentences(ttsNormalize(b.text)).forEach(s=>ttsCap(s).forEach(x=>{ if(x) parts.push(x); }));
-    if(!parts.length) return;
-    const chunks = parts.map((text,k)=>{
-      const c = {text, i:flat.length, gap: k===0 ? TTS_GAP[b.kind] : 0};
-      flat.push(c); return c;
+  const flat = [{text:ttsNormalize(chap.title), gap:0, b:-1, start:0, end:0}];
+  ttsScan(box).forEach((b,bi)=>{
+    ttsChunkBlock(b).forEach((c,k)=>{
+      flat.push({text:c.text, gap:(k===0 ? TTS_GAP[b.kind] : 0), b:bi, start:c.start, end:c.end});
     });
-    blocks.push({kind:b.kind, lead:b.lead, chunks});
   });
-  if(flat[1]) flat[1].gap = 620;   // souffle après l'annonce du titre
-  chap._blocks = blocks; chap._chunks = flat; chap._chars = flat.reduce((a,c)=>a+c.text.length,0);
-  return blocks;
+  flat.forEach((c,i)=>{ c.i = i; });
+  if(flat[1]) flat[1].gap = 620;      // souffle après l'annonce du titre
+  chap._chunks = flat;
+  return flat;
 }
+
+/* ---- Surlignage dans le texte affiché ----
+   On réécrit le balisage interne de chaque bloc en y insérant des repères de
+   phrase. Les repères se referment à chaque frontière d'élément pour ne jamais
+   produire d'imbrication invalide : une phrase à cheval sur une mise en forme
+   donne simplement plusieurs repères portant le même numéro. */
+function ttsSpanHTML(el, cs){
+  const esc = t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const attrs = e=>Array.from(e.attributes).map(x=>' '+x.name+'="'+x.value.replace(/"/g,'&quot;')+'"').join('');
+  const idxAt = q=>{ for(const c of cs) if(q>=c.start && q<c.end) return c.i; return -1; };
+  let out='', pos=0, cur=-1;
+  const open = k=>{ if(k===cur) return ''; const r = cur>=0?'</span>':''; cur=k;
+    return r + (k>=0 ? '<span class="tts-chunk" data-i="'+k+'">' : ''); };
+  const shut = ()=>{ const r = cur>=0?'</span>':''; cur=-1; return r; };
+  const walk = node=>{
+    Array.from(node.childNodes).forEach(ch=>{
+      if(ch.nodeType===3){
+        const t = ch.nodeValue; let off=0;
+        while(off < t.length){
+          const k = idxAt(pos+off);
+          let len = 1;
+          while(off+len < t.length && idxAt(pos+off+len)===k) len++;
+          out += open(k) + esc(t.substr(off,len));
+          off += len;
+        }
+        pos += t.length;
+      } else if(ch.nodeType===1){
+        const tag = ch.tagName.toLowerCase();
+        out += shut() + '<' + tag + attrs(ch) + '>';
+        if(!TTS_VOID[ch.tagName]){ walk(ch); out += shut() + '</' + tag + '>'; }
+      }
+    });
+  };
+  walk(el);
+  return out + shut();
+}
+/* Pose les repères sur le corps affiché d'un chapitre, ou les retire. */
+function ttsMarkBody(bodyEl, chap, on){
+  if(!bodyEl || !chap) return;
+  if(!on){ if(bodyEl.dataset.marked){ bodyEl.innerHTML = chap.html; delete bodyEl.dataset.marked; } return; }
+  if(bodyEl.dataset.marked === chap.id) return;
+  bodyEl.innerHTML = chap.html;
+  const chunks = ttsBuild(chap);
+  ttsScan(bodyEl).forEach((b,bi)=>{
+    if(!b.el) return;
+    const cs = chunks.filter(c=>c.b===bi);
+    if(!cs.length) return;
+    if(b.row){ b.el.setAttribute('data-i', cs[0].i); b.el.classList.add('tts-chunk'); return; }
+    b.el.innerHTML = ttsSpanHTML(b.el, cs);
+  });
+  bodyEl.dataset.marked = chap.id;
+  bodyEl.querySelectorAll('.tts-chunk').forEach(sp=>{
+    sp.addEventListener('click', e=>{ e.stopPropagation(); ttsGoto(+sp.dataset.i); });
+  });
+}
+
 /* Une voix française lit autour de 15 caractères par seconde à vitesse 1.
    L'estimation se prend sur le texte brut : découper les 208 chapitres pour
    afficher une durée approchée bloquerait plus d'une seconde au premier rendu. */
@@ -4538,7 +4737,7 @@ function ttsMediaSession(){
     if(window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({
       title: TTS.chap.title,
       artist: AUDIO_GROUP_LABEL[TTS.chap.g] || '',
-      album: `Dossier de préparation · EPSO/AD/427/26`,
+      album: `Préparation · EPSO/AD/427/26`,
     });
     const set = (a,h)=>{ try{ navigator.mediaSession.setActionHandler(a,h); }catch(e){} };
     set('play', ttsPlay); set('pause', ttsPause); set('stop', ttsPause);
@@ -4655,7 +4854,8 @@ function ttsOpen(id, autoplay){
      gestionnaire de clic, elles suffisent à ce que le navigateur ne rattache
      plus le speak() au geste de l'utilisateur, et la lecture reste muette. */
   if(autoplay) ttsPlay();
-  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  if(CURRENT==='params') renderParams(); else ttsBarSync();
+  ttsSyncCours();
 }
 function ttsPlay(){
   if(!TTS.chap || !TTS.chunks.length) return;
@@ -4686,7 +4886,7 @@ function ttsToggle(){ if(TTS.playing) ttsPause(); else ttsPlay(); }
 function ttsStop(){
   ttsKill(); ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = false; TTS.chap = null; TTS.chunks = []; TTS.i = 0;
-  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  if(CURRENT==='params') renderParams(); else ttsBarSync();
 }
 function ttsSetRate(r){
   TTS.rate = Math.max(0.5, Math.min(2, Math.round(r*20)/20));
@@ -4694,7 +4894,7 @@ function ttsSetRate(r){
   /* Une énonciation garde la vitesse qu'elle avait au départ : pour que le
      changement soit audible tout de suite, on relance la phrase en cours. */
   if(TTS.playing){ ttsKill(); ttsSpeak(0); }
-  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  if(CURRENT==='params') renderParams(); else ttsBarSync();
 }
 function ttsSeek(d){ ttsGoto(TTS.i + d); }
 function ttsGoto(i){
@@ -4726,7 +4926,7 @@ function ttsChapterDone(){
   if(id && wasPlaying){ TTS.pos[id] = 0; ttsOpen(id, true); return; }
   ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = false;
-  if(CURRENT==='audio') renderAudio(); else ttsBarSync();
+  if(CURRENT==='params') renderParams(); else ttsBarSync();
 }
 
 /* ---- Barre de lecture (hors de #app : elle survit aux changements d'onglet) ---- */
@@ -4916,23 +5116,27 @@ function ttsDiagTest(){
 /* Appelée à chaque phrase : elle ne touche que ce qui bouge. */
 function ttsPaint(){
   ttsBarSync();
-  /* Le bouton de la section en cours s'allume aussi dans l'Annexe et le cours. */
   document.querySelectorAll('.kb-play.on').forEach(b=>b.classList.remove('on'));
   if(TTS.chap && TTS.playing){
     const kb = document.querySelector('.kb-play[data-audio="'+TTS.chap.id+'"]');
     if(kb) kb.classList.add('on');
   }
-  const rd = document.getElementById('ttsReader');
-  if(!rd) return;
-  const prev = rd.querySelector('.tts-chunk.on');
-  if(prev) prev.classList.remove('on');
-  const el = rd.querySelector('.tts-chunk[data-i="'+TTS.i+'"]');
-  if(el){
-    el.classList.add('on');
-    if(TTS.follow){
-      const y = el.offsetTop - rd.clientHeight/2 + el.offsetHeight/2;
-      rd.scrollTo({top:Math.max(0,y), behavior:'smooth'});
-    }
+  document.querySelectorAll('.tts-chunk.on').forEach(x=>x.classList.remove('on'));
+  if(!TTS.chap) return;
+  /* Une phrase qui traverse une mise en forme est découpée en plusieurs repères
+     portant le même numéro : ils doivent tous s'allumer, sinon seul le premier
+     fragment est surligné. */
+  const parts = document.querySelectorAll('.tts-chunk[data-i="'+TTS.i+'"]');
+  if(!parts.length) return;
+  parts.forEach(x=>x.classList.add('on'));
+  const el = parts[0];
+  /* Le suivi ne défile que si la phrase est sortie du champ : sans ce test, la
+     page sursaute à chaque phrase alors qu'on lit déjà au bon endroit. */
+  if(TTS.follow){
+    const r = el.getBoundingClientRect();
+    const haut = 90, bas = window.innerHeight - (TTS.chap ? 150 : 40);
+    if(r.top < haut || r.bottom > bas)
+      el.scrollIntoView({block:'center', behavior:'smooth'});
   }
 }
 
@@ -4959,186 +5163,13 @@ function ttsPct(id){
   ttsBuild(chap);
   return Math.min(100, Math.round(100*p/(chap._chunks.length || 1)));
 }
-function ttsReaderHTML(){
-  const esc = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return ttsBuild(TTS.chap).map(b=>{
-    const cls = b.kind==='title' ? 'ttl' : (b.kind==='li' ? 'li' : '');
-    return '<p class="'+cls+'">'+b.chunks.map((c,k)=>{
-      const hasLead = b.lead && k===0 && c.text.indexOf(b.lead)===0;
-      const txt = hasLead ? '<b>'+esc(b.lead)+'</b>'+esc(c.text.slice(b.lead.length)) : esc(c.text);
-      return '<span class="tts-chunk" data-i="'+c.i+'">'+txt+' </span>';
-    }).join('')+'</p>';
-  }).join('');
-}
-function renderAudio(){
-  const app = document.getElementById('app');
-  if(!TTS_SUPPORT){
-    app.innerHTML = `<div class="card"><span class="eyebrow">Écoute</span>
-      <h2>Synthèse vocale indisponible</h2>
-      <p>Ce navigateur n'expose pas l'API <b>speechSynthesis</b>. Le module fonctionne
-      dans Chrome, Edge, Safari et Firefox à jour.</p></div>`;
-    return;
-  }
-  const q = TTS.q.trim().toLowerCase();
-  const shown = AUDIO_LIB.filter(x=>
-    (TTS.filter==='all' || x.g===TTS.filter) &&
-    (!q || x.title.toLowerCase().includes(q) || (x.sub||'').toLowerCase().includes(q)));
-  const voiceOpts = TTS_VOICES.map(v=>'<option value="'+v.voiceURI.replace(/"/g,'&quot;')+'"'
-      +(v.voiceURI===TTS.voiceURI?' selected':'')+'>'+v.name+' ('+v.lang+')</option>').join('');
-  const presets = [0.85,1,1.15,1.3,1.5];
-  const done = AUDIO_LIB.filter(x=>ttsPct(x.id)>=100).length;
-
-  app.innerHTML = `
-  <div class="card">
-    <span class="eyebrow">Écoute · ${AUDIO_LIB.length} chapitres</span>
-    <h2>Le cours et l'annexe, lus à voix haute</h2>
-    <p style="font-size:14px;">Tout le module <b>Connaissances UE</b> et l'intégralité de l'<b>Annexe</b>
-    sont découpés en chapitres écoutables. Choisis-en un, mets tes écouteurs. Chaque chapitre
-    <b>retient l'endroit exact où tu t'es arrêté</b> : rouvrir l'app reprend la phrase suivante, pas le début.</p>
-    <div class="info-box">La lecture se fait par le moteur de voix de ton système : rien n'est envoyé
-    sur Internet, et une fois la voix installée, tout fonctionne hors ligne.</div>
-
-    <div class="aud-ctl-row">
-      <label for="ttsVoiceSel">Voix</label>
-      <select class="aud-select" id="ttsVoiceSel">${voiceOpts || '<option>Aucune voix détectée</option>'}</select>
-    </div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin:-4px 0 12px;">
-      Les voix contenant <b>Natural</b>, <b>Online</b>, <b>Google</b> ou <b>Améliorée</b> sont neuronales et
-      nettement plus naturelles ; elles sont remontées en tête de liste. Sur Windows, Edge donne accès aux voix
-      « Natural » ; sur macOS et iOS, installe la voix améliorée de Thomas ou Amélie dans les réglages système.</p>
-
-    <div class="aud-ctl-row">
-      <label for="ttsRate">Vitesse</label>
-      <input class="aud-range" type="range" id="ttsRate" min="0.5" max="2" step="0.05" value="${TTS.rate}">
-      <span class="aud-rate-val" id="ttsRateVal">${TTS.rate.toFixed(2).replace('.',',')}×</span>
-    </div>
-    <div class="aud-presets">
-      ${presets.map(p=>'<button data-rate="'+p+'" class="'+(Math.abs(p-TTS.rate)<0.001?'on':'')+'">'+p.toFixed(2).replace('.',',')+'×</button>').join('')}
-    </div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 12px;">Réglable en cours de lecture :
-    la phrase en cours reprend à son début à la nouvelle vitesse, puis l'enchaînement continue normalement.</p>
-
-    <div class="aud-ctl-row">
-      <label class="aud-toggle"><input type="checkbox" id="ttsCont" ${TTS.continuous?'checked':''}> Enchaîner le chapitre suivant</label>
-      <label class="aud-toggle"><input type="checkbox" id="ttsFollow" ${TTS.follow?'checked':''}> Suivre le texte à l'écran</label>
-      <label class="aud-toggle"><input type="checkbox" id="ttsAwake" ${TTS.keepAwake?'checked':''}> Garder l'écran allumé</label>
-    </div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin:-2px 0 12px;">
-      <b>Écran verrouillé</b> · la lecture continue et les commandes apparaissent sur l'écran de
-      verrouillage et dans tes écouteurs. Certains téléphones finissent malgré tout par suspendre la
-      page : coche <b>Garder l'écran allumé</b> si la lecture s'interrompt encore.</p>
-    ${TTS.last && AUDIO_BY_ID.has(TTS.last) && (!TTS.chap || TTS.chap.id!==TTS.last)
-      ? '<button class="btn wide" id="ttsResume">Reprendre · '+AUDIO_BY_ID.get(TTS.last).title+' ('+ttsPct(TTS.last)+' %)</button>' : ''}
-    <button class="btn ghost wide" id="ttsDiagBtn" style="margin-top:10px;">🔊 Aucun son ne sort ? Tester et réparer</button>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:12px;">
-      <b>Raccourcis</b> · espace : lecture/pause · ← → : phrase précédente/suivante ·
-      maj + ← → : chapitre précédent/suivant · + / − : vitesse.</p>
-  </div>
-
-  ${TTS.chap ? `<div class="card">
-    <div class="section-title"><span class="eyebrow">${AUDIO_GROUP_LABEL[TTS.chap.g]}</span>
-      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${TTS.i+1} / ${TTS.chunks.length}</span></div>
-    <h2 style="font-size:18px;">${TTS.chap.title}</h2>
-    <p style="font-size:12.5px;color:var(--ink-soft);">≈ ${ttsMinutes(ttsDuration(TTS.chap))} à cette vitesse ·
-    clique une phrase pour y sauter.</p>
-    <div class="tts-reader" id="ttsReader">${ttsReaderHTML()}</div>
-    <button class="btn wide" id="ttsBigPlay" style="margin-top:12px;">${TTS.playing?'Pause':'Lire ce chapitre'}</button>
-  </div>` : ''}
-
-  <div class="card">
-    <div class="section-title"><h2>File d'attente</h2>
-      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${TTS.queue.length} en attente</span></div>
-    <p style="font-size:13.5px;color:var(--ink-soft);">Empile les chapitres dans l'ordre que tu veux avec le bouton <b>+</b>
-    de la bibliothèque. Ils passent avant l'enchaînement automatique.</p>
-    <div id="ttsQueue"></div>
-  </div>
-
-  <div class="card">
-    <div class="section-title"><h2>Bibliothèque</h2>
-      <span style="font-family:var(--mono);font-size:12px;color:var(--ink-soft);">${done} / ${AUDIO_LIB.length} écoutés</span></div>
-    <input class="aud-search" id="ttsSearch" placeholder="Rechercher un chapitre…" value="${TTS.q.replace(/"/g,'&quot;')}">
-    <div class="aud-chips">
-      <button class="aud-chip ${TTS.filter==='all'?'on':''}" data-f="all">Tout (${AUDIO_LIB.length})</button>
-      ${AUDIO_GROUPS.map(g=>'<button class="aud-chip '+(TTS.filter===g.g?'on':'')+'" data-f="'+g.g+'">'
-        +g.label.replace(/^.*· /,'')+' ('+AUDIO_LIB.filter(x=>x.g===g.g).length+')</button>').join('')}
-    </div>
-    <div id="ttsLib"></div>
-  </div>`;
-
-  /* File d'attente */
-  const qz = document.getElementById('ttsQueue');
-  qz.innerHTML = TTS.queue.length ? TTS.queue.map((id,k)=>{
-    const c = AUDIO_BY_ID.get(id);
-    return '<div class="aud-row"><span class="at">'+(k+1)+'. '+c.title
-      +'<small>'+AUDIO_GROUP_LABEL[c.g]+'</small></span>'
-      +'<button data-up="'+k+'" title="Monter">↑</button>'
-      +'<button data-down="'+k+'" title="Descendre">↓</button>'
-      +'<button data-rm="'+k+'" title="Retirer">✕</button></div>';
-  }).join('') : '<p class="aud-empty">Vide. La lecture enchaînera simplement le chapitre suivant.</p>';
-  qz.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>{
-    const k=+b.dataset.up; if(k>0){ const a=TTS.queue; [a[k-1],a[k]]=[a[k],a[k-1]]; ttsSave(); renderAudio(); }
-  }));
-  qz.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',()=>{
-    const k=+b.dataset.down, a=TTS.queue; if(k<a.length-1){ [a[k+1],a[k]]=[a[k],a[k+1]]; ttsSave(); renderAudio(); }
-  }));
-  qz.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{
-    TTS.queue.splice(+b.dataset.rm,1); ttsSave(); renderAudio();
-  }));
-
-  /* Bibliothèque */
-  const lib = document.getElementById('ttsLib');
-  let html = '', lastHead = '';
-  shown.forEach(x=>{
-    const head = x.sub || AUDIO_GROUP_LABEL[x.g];
-    if(head !== lastHead){ html += '<p class="aud-group">'+head+'</p>'; lastHead = head; }
-    const pct = ttsPct(x.id), cur = TTS.chap && TTS.chap.id===x.id;
-    html += '<div class="aud-row'+(cur?' cur':'')+'"><span class="at">'+x.title
-      +'<small>≈ '+ttsMinutes(ttsDuration(x))+'</small></span>'
-      +'<span class="aud-pct'+(pct>=100?' done':'')+'">'+(pct>=100?'✓':(pct?pct+' %':''))+'</span>'
-      +'<button data-play="'+x.id+'">▶</button>'
-      +'<button data-add="'+x.id+'" title="Ajouter à la file">+</button></div>';
-  });
-  lib.innerHTML = html || '<p class="aud-empty">Aucun chapitre ne correspond.</p>';
-  lib.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>ttsOpen(b.dataset.play,true)));
-  lib.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{
-    TTS.queue.push(b.dataset.add); ttsSave(); renderAudio();
-  }));
-
-  /* Réglages */
-  const sel = document.getElementById('ttsVoiceSel');
-  if(sel) sel.addEventListener('change',()=>{
-    TTS.voiceURI = sel.value; ttsSave();
-    if(TTS.playing){ ttsKill(); ttsSpeak(0); }
-  });
-  const rg = document.getElementById('ttsRate');
-  rg.addEventListener('input',()=>{ document.getElementById('ttsRateVal').textContent = (+rg.value).toFixed(2).replace('.',','); });
-  rg.addEventListener('change',()=>ttsSetRate(+rg.value));   // pendant le glissement, on ne relance rien
-  app.querySelectorAll('[data-rate]').forEach(b=>b.addEventListener('click',()=>ttsSetRate(+b.dataset.rate)));
-  document.getElementById('ttsCont').addEventListener('change',e=>{ TTS.continuous = e.target.checked; ttsSave(); });
-  document.getElementById('ttsFollow').addEventListener('change',e=>{ TTS.follow = e.target.checked; ttsSave(); });
-  document.getElementById('ttsAwake').addEventListener('change',e=>{
-    TTS.keepAwake = e.target.checked; ttsSave();
-    ttsWakeLock(TTS.keepAwake && TTS.playing);
-  });
-  document.getElementById('ttsDiagBtn').addEventListener('click', ttsDiagOpen);
-  const rs = document.getElementById('ttsResume');
-  if(rs) rs.addEventListener('click',()=>ttsOpen(TTS.last,true));
-  const bp = document.getElementById('ttsBigPlay');
-  if(bp) bp.addEventListener('click',ttsToggle);
-  const sq = document.getElementById('ttsSearch');
-  sq.addEventListener('input',()=>{ TTS.q = sq.value; renderAudio(); document.getElementById('ttsSearch').focus(); });
-  app.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{ TTS.filter = b.dataset.f; renderAudio(); }));
-  const rd = document.getElementById('ttsReader');
-  if(rd) rd.querySelectorAll('.tts-chunk').forEach(s=>s.addEventListener('click',()=>ttsGoto(+s.dataset.i)));
-  ttsPaint();
-}
 async function ttsInit(){
   if(!TTS_SUPPORT) return;
   await ttsLoad();
   ttsRefreshVoices();
   /* La liste des voix arrive de façon asynchrone dans Chrome. */
   try{ speechSynthesis.addEventListener('voiceschanged', ()=>{
-    ttsRefreshVoices(); if(CURRENT==='audio') renderAudio();
+    ttsRefreshVoices(); if(CURRENT==='params') renderParams();
   }); }catch(e){}
   /* Sur Android l'événement n'arrive pas toujours, et la liste peut rester vide
      plusieurs secondes après le chargement : on la redemande quelques fois. */
@@ -5146,7 +5177,7 @@ async function ttsInit(){
   const sonde = setInterval(()=>{
     const avant = TTS_VOICES.length;
     ttsRefreshVoices();
-    if(TTS_VOICES.length !== avant && CURRENT==='audio') renderAudio();
+    if(TTS_VOICES.length !== avant && CURRENT==='params') renderParams();
     if(TTS_VOICES.length || ++essais >= 6) clearInterval(sonde);
   }, 600);
   ttsBarInit();
@@ -5167,6 +5198,73 @@ async function ttsInit(){
   window.addEventListener('beforeunload', ()=>{ ttsFlush(); try{ speechSynthesis.cancel(); }catch(e){} });
   if(TTS.last && AUDIO_BY_ID.has(TTS.last)) ttsOpen(TTS.last, false);
 }
+
+
+/* ================= SIGLES =================
+   Tout sigle rencontré dans les cours, l'annexe ou les corrections d'exercices,
+   développé puis expliqué en une phrase. Les tests se passant en Langue 2, la
+   dénomination anglaise usuelle est donnée quand elle diffère vraiment. */
+const ACRONYMS = [
+{a:`AD`, f:`Administrateur`, d:`Groupe de fonctions des postes de conception et d'analyse dans la fonction publique européenne. AD5 en est le grade d'entrée, ouvert aux jeunes diplômés sans expérience exigée.`},
+{a:`AELE`, f:`Association européenne de libre-échange`, en:`EFTA`, d:`Islande, Liechtenstein, Norvège et Suisse. Les trois premiers forment l'Espace économique européen avec l'Union ; la Suisse est liée par des accords bilatéraux.`},
+{a:`AST`, f:`Assistant`, d:`Groupe de fonctions des postes d'exécution et de soutien administratif, distinct des AD.`},
+{a:`BCE`, f:`Banque centrale européenne`, en:`ECB`, d:`Conduit la politique monétaire de la zone euro depuis Francfort. Objectif principal : la stabilité des prix, cible d'inflation de 2 %. Indépendante des gouvernements.`},
+{a:`BEI`, f:`Banque européenne d'investissement`, en:`EIB`, d:`Banque de l'Union, détenue par les États membres. Elle prête pour des projets d'infrastructure, d'innovation et de climat. Siège au Luxembourg.`},
+{a:`CAE`, f:`Conseil affaires étrangères`, d:`Formation du Conseil réunissant les ministres des affaires étrangères, présidée par le Haut représentant et non par la présidence tournante.`},
+{a:`CdR`, f:`Comité européen des régions`, en:`CoR`, d:`Organe consultatif représentant les collectivités régionales et locales. Avis obligatoire sur les textes touchant à la cohésion, aux transports ou à la santé.`},
+{a:`CE`, f:`Communauté européenne`, d:`Nom de la Communauté économique européenne après Maastricht, absorbée par l'Union européenne lors de l'entrée en vigueur du traité de Lisbonne en 2009.`},
+{a:`CECA`, f:`Communauté européenne du charbon et de l'acier`, en:`ECSC`, d:`Première communauté, instituée par le traité de Paris de 1951 dans le sillage de la déclaration Schuman. Conclue pour cinquante ans, elle a expiré en 2002.`},
+{a:`CED`, f:`Communauté européenne de défense`, d:`Projet d'armée européenne signé en 1952 et enterré en 1954 par le rejet de l'Assemblée nationale française. L'échec fondateur de l'intégration militaire.`},
+{a:`CEDH`, f:`Cour européenne des droits de l'homme`, d:`Juridiction du Conseil de l'Europe, à Strasbourg. À ne pas confondre avec la Cour de justice de l'Union : ce sont deux organisations distinctes.`},
+{a:`CEE`, f:`Communauté économique européenne`, en:`EEC`, d:`Créée par le traité de Rome de 1957, elle établit le marché commun et l'union douanière. Devenue Communauté européenne à Maastricht.`},
+{a:`CESE`, f:`Comité économique et social européen`, en:`EESC`, d:`Organe consultatif représentant la société civile organisée : employeurs, syndicats et associations.`},
+{a:`CFP`, f:`Cadre financier pluriannuel`, en:`MFF`, d:`Budget de long terme de l'Union, arrêté pour au moins cinq ans, en pratique sept. Adopté à l'unanimité du Conseil après approbation du Parlement.`},
+{a:`CJUE`, f:`Cour de justice de l'Union européenne`, en:`CJEU`, d:`Assure l'interprétation uniforme du droit de l'Union depuis Luxembourg. Comprend la Cour de justice et le Tribunal.`},
+{a:`COREPER`, f:`Comité des représentants permanents`, d:`Prépare les travaux du Conseil. Coreper II traite des dossiers politiques, Coreper I des dossiers techniques. L'essentiel des compromis s'y noue.`},
+{a:`DG`, f:`Direction générale`, d:`Unité administrative de la Commission, l'équivalent d'un ministère. Par exemple DG COMP pour la concurrence, DG DIGIT pour l'informatique.`},
+{a:`DMA`, f:`Règlement sur les marchés numériques`, en:`Digital Markets Act`, d:`Impose des obligations aux très grandes plateformes qualifiées de contrôleurs d'accès, pour rouvrir la concurrence sur les marchés numériques.`},
+{a:`DSA`, f:`Règlement sur les services numériques`, en:`Digital Services Act`, d:`Encadre la modération des contenus et la transparence des plateformes en ligne, avec des obligations renforcées pour les très grandes plateformes.`},
+{a:`DigComp`, f:`Cadre européen des compétences numériques pour les citoyens`, d:`Référentiel en cinq domaines et vingt-et-une compétences, sur huit niveaux de maîtrise. Il structure le test de compétences numériques du concours.`},
+{a:`ECOFIN`, f:`Conseil des affaires économiques et financières`, d:`Formation du Conseil réunissant les ministres de l'économie et des finances.`},
+{a:`EEE`, f:`Espace économique européen`, en:`EEA`, d:`Étend le marché intérieur à l'Islande, au Liechtenstein et à la Norvège, sans participation aux politiques agricole et commerciale ni aux institutions.`},
+{a:`EFSA`, f:`Autorité européenne de sécurité des aliments`, d:`Agence chargée de l'évaluation scientifique des risques alimentaires. Siège à Parme.`},
+{a:`EMA`, f:`Agence européenne des médicaments`, d:`Évalue et surveille les médicaments dans l'Union. Transférée de Londres à Amsterdam après le Brexit.`},
+{a:`EPSO`, f:`Office européen de sélection du personnel`, d:`Organise les concours de recrutement pour l'ensemble des institutions de l'Union. Se prononce comme un mot.`},
+{a:`EUFTE`, f:`Épreuve écrite libre sur les affaires européennes`, en:`EU Free-Text Exercise`, d:`Épreuve de rédaction professionnelle du concours : un rôle, un destinataire, un document à produire à partir d'un rapport source, en quarante minutes.`},
+{a:`FEADER`, f:`Fonds européen agricole pour le développement rural`, d:`Second pilier de la politique agricole commune, consacré au développement des zones rurales.`},
+{a:`FEAGA`, f:`Fonds européen agricole de garantie`, d:`Premier pilier de la politique agricole commune : il finance les paiements directs aux agriculteurs et les mesures de marché.`},
+{a:`FEDER`, f:`Fonds européen de développement régional`, en:`ERDF`, d:`Principal instrument de la politique de cohésion : il finance infrastructures, innovation et transition dans les régions en retard de développement.`},
+{a:`FIMI`, f:`Manipulation de l'information et ingérence étrangères`, en:`Foreign Information Manipulation and Interference`, d:`Terminologie du Service européen pour l'action extérieure désignant les campagnes d'influence conduites depuis l'étranger.`},
+{a:`FSE`, f:`Fonds social européen`, en:`ESF`, d:`Finance l'emploi, la formation et l'inclusion sociale. Le plus ancien des fonds structurels, créé par le traité de Rome.`},
+{a:`ICE`, f:`Initiative citoyenne européenne`, d:`Un million de signatures dans au moins sept États membres permettent d'inviter la Commission à proposer un texte. Elle n'est pas tenue de le faire.`},
+{a:`MCE`, f:`Mécanisme de change européen`, en:`ERM`, d:`Encadre les fluctuations entre l'euro et les monnaies des États qui ne l'ont pas adopté. Y participer deux ans sans tension est un critère de convergence.`},
+{a:`MES`, f:`Mécanisme européen de stabilité`, en:`ESM`, d:`Fonds de secours de la zone euro, créé après la crise de la dette pour prêter aux États en difficulté sous conditions.`},
+{a:`NUTS`, f:`Nomenclature des unités territoriales statistiques`, d:`Découpage statistique du territoire européen en trois niveaux. Il sert à répartir les fonds de cohésion.`},
+{a:`OMC`, f:`Organisation mondiale du commerce`, en:`WTO`, d:`L'Union y siège comme membre à part entière, aux côtés de ses États membres, et y parle d'une seule voix par la Commission.`},
+{a:`PAC`, f:`Politique agricole commune`, en:`CAP`, d:`La plus ancienne politique intégrée et longtemps le premier poste budgétaire. Deux piliers : paiements directs et développement rural.`},
+{a:`PCP`, f:`Politique commune de la pêche`, en:`CFP`, d:`Gère l'accès aux eaux et les quotas de captures. Compétence exclusive de l'Union pour la conservation des ressources biologiques marines.`},
+{a:`PESC`, f:`Politique étrangère et de sécurité commune`, en:`CFSP`, d:`Volet diplomatique de l'action extérieure, régi par l'unanimité et piloté par le Haut représentant.`},
+{a:`PEV`, f:`Politique européenne de voisinage`, d:`Cadre des relations avec les pays voisins de l'Est et du Sud auxquels l'adhésion n'est pas proposée.`},
+{a:`PIB`, f:`Produit intérieur brut`, en:`GDP`, d:`Somme des richesses produites sur un territoire en un an. Sert de dénominateur à quantité de ratios du concours : déficit, dette, dépense de recherche.`},
+{a:`PME`, f:`Petites et moyennes entreprises`, en:`SME`, d:`Moins de 250 salariés. Elles représentent l'essentiel du tissu économique européen et bénéficient de régimes allégés.`},
+{a:`PPE`, f:`Parti populaire européen`, en:`EPP`, d:`Groupe de centre-droit, le plus important du Parlement européen depuis 1999.`},
+{a:`PSC`, f:`Pacte de stabilité et de croissance`, d:`Règles budgétaires de la zone euro : déficit sous 3 % du produit intérieur brut, dette sous 60 %. Arrêté au Conseil européen d'Amsterdam en 1997.`},
+{a:`PSDC`, f:`Politique de sécurité et de défense commune`, en:`CSDP`, d:`Volet militaire et civil de gestion de crise de la politique étrangère, partie intégrante de la PESC.`},
+{a:`QMV`, f:`Vote à la majorité qualifiée`, en:`Qualified Majority Voting`, d:`Double majorité au Conseil : 55 % des États, soit quinze sur vingt-sept, représentant 65 % de la population de l'Union.`},
+{a:`RGPD`, f:`Règlement général sur la protection des données`, en:`GDPR`, d:`Règlement de 2016, applicable depuis 2018. Consentement, droit d'accès, portabilité, droit à l'effacement. Directement applicable, sans transposition.`},
+{a:`RNB`, f:`Revenu national brut`, en:`GNI`, d:`Assiette de la principale ressource propre du budget de l'Union : chaque État verse un pourcentage de son revenu national brut.`},
+{a:`RTE-T`, f:`Réseau transeuropéen de transport`, en:`TEN-T`, d:`Programme de corridors ferroviaires, routiers et portuaires visant à relier les réseaux nationaux entre eux.`},
+{a:`SEAE`, f:`Service européen pour l'action extérieure`, en:`EEAS`, d:`Diplomatie de l'Union, placée sous l'autorité du Haut représentant. Il anime les délégations de l'Union dans le monde.`},
+{a:`SEBC`, f:`Système européen de banques centrales`, en:`ESCB`, d:`La Banque centrale européenne et l'ensemble des banques centrales nationales, y compris celles des États hors zone euro.`},
+{a:`SEQE`, f:`Système d'échange de quotas d'émission`, en:`EU ETS`, d:`Marché du carbone européen : un plafond d'émissions décroissant et des quotas échangeables. Le principal instrument climatique de l'Union.`},
+{a:`TAO`, f:`Plateforme d'examen à distance utilisée par EPSO`, d:`Environnement de passation surveillé à distance : identité vérifiée, écran unique, connexion stable exigée.`},
+{a:`TFUE`, f:`Traité sur le fonctionnement de l'Union européenne`, en:`TFEU`, d:`Avec le traité sur l'Union européenne, l'un des deux traités en vigueur. Il détaille les compétences, les politiques et les procédures.`},
+{a:`TUE`, f:`Traité sur l'Union européenne`, en:`TEU`, d:`Fixe les valeurs, les objectifs et le cadre institutionnel. Contient l'article 2 sur les valeurs, l'article 7 sur leur violation et l'article 50 sur le retrait.`},
+{a:`TVA`, f:`Taxe sur la valeur ajoutée`, en:`VAT`, d:`Une fraction de son assiette harmonisée constitue l'une des ressources propres du budget de l'Union.`},
+{a:`UE`, f:`Union européenne`, en:`EU`, d:`Vingt-sept États membres depuis le retrait du Royaume-Uni en 2020. Dotée d'une personnalité juridique unique depuis le traité de Lisbonne.`},
+{a:`UEM`, f:`Union économique et monétaire`, en:`EMU`, d:`Cadre de coordination des politiques économiques et de la monnaie unique. Vingt États en ont adopté l'euro.`},
+{a:`VLOP`, f:`Très grande plateforme en ligne`, en:`Very Large Online Platform`, d:`Plateforme dépassant quarante-cinq millions d'utilisateurs mensuels dans l'Union. Le règlement sur les services numériques leur impose des obligations renforcées.`},
+];
 
 /* ================= STOCKAGE ================= */
 const DEFAULT_PROGRESS = ()=>({
@@ -5220,9 +5318,9 @@ function renderTabs(){
 }
 /* La lecture audio n'est pas coupée par la navigation : elle est volontairement
    indépendante des chronos de session, on écoute en passant d'un onglet à l'autre. */
-function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
+function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
 
-/* ================= DASHBOARD ================= */
+/* ================= ACCUEIL ================= */
 function renderDashboard(){
   const app = document.getElementById('app');
   const modCards = [
@@ -5232,62 +5330,147 @@ function renderDashboard(){
   ];
   app.innerHTML = `
   <div class="card">
-    <span class="pill">Candidature validée</span> <span class="pill">100 % en ligne · plateforme TAO · surveillance à distance</span>
-    <h2 style="margin-top:10px;">EPSO/AD/427/26 · Graduate Administrators (AD5)</h2>
-    <p style="color:var(--ink-soft);font-size:14.5px;">Concours généraliste, 1 490 places sur la liste de réserve. Aucune expérience professionnelle requise. Publié au JO C/2026/711 le 5 février 2026. Pas de centre d'évaluation, pas d'oral : tout se joue sur 5 tests écrits à distance.</p>
+    <span class="eyebrow">EPSO/AD/427/26 · Graduate Administrators</span>
+    <h2 style="font-size:26px;margin-top:8px;">Concours généraliste AD5</h2>
+    <p class="lede">Cinq tests écrits passés à distance, sans centre d'évaluation ni oral.
+    1 490 places sur la liste de réserve, aucune expérience professionnelle requise.</p>
     <div class="stat-grid">
-      <div class="stat-box"><div class="n">174 922</div><div class="l">candidats au total</div></div>
-      <div class="stat-box"><div class="n">10 939</div><div class="l">candidats français</div></div>
+      <div class="stat-box"><div class="n">5</div><div class="l">tests écrits</div></div>
       <div class="stat-box"><div class="n">1 490</div><div class="l">places sur liste</div></div>
-      <div class="stat-box"><div class="n">2 235</div><div class="l">appelés à l'EUFTE (1,5×)</div></div>
+      <div class="stat-box"><div class="n">2</div><div class="l">sessions à distance</div></div>
+      <div class="stat-box"><div class="n">0</div><div class="l">épreuve orale</div></div>
+    </div>
+    <button class="btn ghost wide" data-goto="concours">Modalités, calendrier et stratégie →</button>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Progression</h2>
+      <span class="eyebrow">local, sans compte</span></div>
+    <div class="module-nav-grid">
+      ${modCards.map(c=>{
+        const a = acc(c.m); const st = PROGRESS[c.m];
+        return '<div class="module-nav-card"><span class="eyebrow">'+c.label+'</span>'
+          +'<span class="mname">'+(a===null?'Pas commencé':a+' % de réussite')+'</span>'
+          +'<span class="macc">'+st.att+' question'+(st.att>1?'s':'')+'</span>'
+          +'<button data-goto="'+c.id+'">S’entraîner →</button></div>';
+      }).join('')}
+      <div class="module-nav-card"><span class="eyebrow">EUFTE</span>
+        <span class="mname">${PROGRESS.eufte.sessions} session${PROGRESS.eufte.sessions>1?'s':''}</span>
+        <span class="macc">40 min par essai</span>
+        <button data-goto="eufte">S'entraîner →</button></div>
     </div>
   </div>
 
   <div class="card">
     <div class="section-title"><h2>Le double classement</h2></div>
-    <p style="font-size:13.5px;color:var(--ink-soft);">Deux calculs successifs. Le classement PRÉLIMINAIRE décide qui continue (top ~2 235). Le classement FINAL, après l'essai EUFTE, décide qui entre sur la liste de réserve.</p>
-    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:12px 0 4px;">CLASSEMENT PRÉLIMINAIRE</p>
-    <div class="weight-row"><div><div class="wname">Raisonnement verbal</div><div class="wtag">L1 · 20 q · 35 min · seuil 10/20</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:40%"></div></div><div class="weight-pct">40%</div></div>
-    <div class="weight-row"><div><div class="wname">Connaissances UE</div><div class="wtag">L2 · 30 q · 40 min</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><div class="weight-pct">30%</div></div>
-    <div class="weight-row"><div><div class="wname">Compétences numériques</div><div class="wtag">L2 · 40 q · 30 min</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><div class="weight-pct">30%</div></div>
-    <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:14px 0 4px;">CLASSEMENT FINAL</p>
-    <div class="weight-row"><div><div class="wname">Raisonnement verbal</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:35%"></div></div><div class="weight-pct">35%</div></div>
-    <div class="weight-row"><div><div class="wname">Connaissances UE</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:25%"></div></div><div class="weight-pct">25%</div></div>
-    <div class="weight-row"><div><div class="wname">Compétences numériques</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:25%"></div></div><div class="weight-pct">25%</div></div>
-    <div class="weight-row"><div><div class="wname">Essai EUFTE</div><div class="wtag">L2 · 40 min · noté /10 · seuil 5/10</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:15%"></div></div><div class="weight-pct">15%</div></div>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;">Le test combiné numérique + abstrait (20 q, 30 min, seuil 10/20) est un filtre pass/fail : il ne rapporte AUCUN point mais son échec élimine, quel que soit le reste. Chaque seuil non atteint met fin à la participation, sans compensation possible entre tests.</p>
-  </div>
-
-  <div class="card">
-    <div class="section-title"><h2>Ta progression</h2></div>
-    <div class="module-nav-grid">
-      ${modCards.map(c=>{
-        const a = acc(c.m); const s = PROGRESS[c.m];
-        return '<div class="module-nav-card"><span class="eyebrow">'+c.label+'</span><span class="mname">'+(a===null?'Pas commencé':a+'% de réussite')+'</span><span class="macc">'+s.att+' question'+(s.att>1?'s':'')+' faites</span><button data-goto="'+c.id+'">S\u2019entraîner →</button></div>';
-      }).join('')}
-      <div class="module-nav-card"><span class="eyebrow">EUFTE</span><span class="mname">${PROGRESS.eufte.sessions} session${PROGRESS.eufte.sessions>1?'s':''} d'écriture</span><span class="macc">40 min par essai</span><button data-goto="eufte">S'entraîner →</button></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-title"><h2>Ce qu'il reste à faire</h2></div>
-    <div class="timeline-item done"><div class="dot"></div><div><div class="td">Candidature soumise et validée</div></div></div>
-    <div class="timeline-item next"><div class="dot"></div><div><div class="td">Webinaire SGAE · nouvelles modalités du concours</div><div class="tdate">23 juillet 2026 · 12h30-14h · inscription avant le 20 juillet</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">Dépôt des diplômes et certificats</div><div class="tdate">au plus tard le 7 octobre 2026, 12h00 Bruxelles</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">Partie 1 à distance : verbal + numérique/abstrait combiné</div><div class="tdate">octobre/novembre 2026 · convocation individuelle via le Single Candidate Portal, sessions étalées sur plusieurs jours vu le volume de candidats</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">Référentiel officiel du test UE publié par EPSO</div><div class="tdate">environ 2 mois avant la partie 2</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">Partie 2 à distance (si seuils de la partie 1 atteints) : connaissances UE + compétences numériques</div><div class="tdate">2027 · dates non encore communiquées par EPSO</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">EUFTE (si dans le top ~2 235 du classement préliminaire) · document de référence fourni 2 semaines avant</div><div class="tdate">après les résultats préliminaires de la partie 2</div></div></div>
-    <div class="timeline-item"><div class="dot"></div><div><div class="td">Liste de réserve</div><div class="tdate">reportée avec le calendrier 2027 · nouvelle date non communiquée</div></div></div>
-  </div>
-
-  <div class="card">
-    <div class="section-title"><h2>Tes langues : la décision qui structure tout</h2></div>
-    <p style="font-size:14px;"><b>Langue 1 (C1 minimum)</b> · langue des tests verbal et numérique/abstrait. Pour toi : le <b>français</b>, ta langue la plus forte, sur le test qui pèse le plus lourd. Aucune raison de dévier.</p>
-    <p style="font-size:14px;"><b>Langue 2 (B2 minimum, différente de L1)</b> · langue des tests <b>connaissances UE, compétences numériques ET essai EUFTE</b>. Pour toi : l'<b>anglais</b> (C2) s'impose. Conséquence directe : révise le vocabulaire institutionnel européen EN ANGLAIS (glossaire dans le module Connaissances UE) et entraîne-toi à rédiger l'essai en anglais.</p>
-    <div class="warn-box">La moitié de ta note finale (25 + 25 + 15 = 65 % avec l'EUFTE) se joue dans ta Langue 2. Ne prépare pas ces trois épreuves uniquement en français.</div>
+    <p class="lede" style="font-size:14.5px;">Deux calculs successifs. Le classement préliminaire décide qui
+    continue ; le classement final, après l'essai EUFTE, décide qui entre sur la liste de réserve.</p>
+    <p class="eyebrow" style="color:var(--accent);margin:18px 0 2px;">Classement préliminaire</p>
+    <div class="weight-row"><div><div class="wname">Raisonnement verbal</div><div class="wtag">L1 · 20 q · 35 min · seuil 10/20</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:40%"></div></div><div class="weight-pct">40 %</div></div>
+    <div class="weight-row"><div><div class="wname">Connaissances UE</div><div class="wtag">L2 · 30 q · 40 min · seuil 15/30</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><div class="weight-pct">30 %</div></div>
+    <div class="weight-row"><div><div class="wname">Compétences numériques</div><div class="wtag">L2 · 40 q · 30 min · seuil 20/40</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:30%"></div></div><div class="weight-pct">30 %</div></div>
+    <p class="eyebrow" style="color:var(--accent);margin:20px 0 2px;">Classement final</p>
+    <div class="weight-row"><div><div class="wname">Raisonnement verbal</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:35%"></div></div><div class="weight-pct">35 %</div></div>
+    <div class="weight-row"><div><div class="wname">Connaissances UE</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:25%"></div></div><div class="weight-pct">25 %</div></div>
+    <div class="weight-row"><div><div class="wname">Compétences numériques</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:25%"></div></div><div class="weight-pct">25 %</div></div>
+    <div class="weight-row"><div><div class="wname">Essai EUFTE</div><div class="wtag">L2 · 40 min · noté /10 · seuil 5/10</div></div><div class="weight-bar-bg"><div class="weight-bar-fill" style="width:15%"></div></div><div class="weight-pct">15 %</div></div>
+    <div class="info-box">Le test combiné numérique + abstrait (20 q, 30 min, seuil 10/20) ne rapporte
+    aucun point : c'est un filtre. Son échec élimine quel que soit le reste, et aucun seuil manqué
+    ne se compense ailleurs.</div>
   </div>`;
   app.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.goto)));
+}
+
+/* ================= LE CONCOURS =================
+   Tout ce qui relève de l'épreuve elle-même : modalités, calendrier, choix de
+   langues et plan de préparation. Séparé de l'entraînement, qui est ailleurs. */
+function renderConcours(){
+  const app = document.getElementById('app');
+  const tips = [
+    {n:'1',t:'Le verbal est le premier levier',d:`35 à 40 % du score, et il se passe en Langue 1. Chaque point gagné y déplace le classement plus que partout ailleurs. Entraînement chronométré plusieurs fois par semaine.`},
+    {n:'2',t:'Aucune compensation entre tests',d:`Chaque seuil manqué (verbal 10/20, num + abstrait 10/20, connaissances UE 15/30, numériques 20/40, EUFTE 5/10) élimine, quel que soit le reste. Sécuriser les seuils avant d'optimiser les scores.`},
+    {n:'3',t:'Num + abstrait : viser le seuil, pas plus',d:`Test combiné pass/fail, zéro point de classement. Atteindre le seuil avec marge, sans y engloutir le temps réservé au verbal.`},
+    {n:'4',t:'Deux tiers de la note finale en Langue 2',d:`Connaissances UE (25 %) + compétences numériques (25 %) + EUFTE (15 %) se passent en Langue 2, soit 65 % du total. Réviser le vocabulaire institutionnel dans cette langue, et y rédiger ses essais d'entraînement.`},
+    {n:'5',t:'Le référentiel UE officiel change la donne',d:`EPSO publie la liste des sources du test de connaissances environ deux mois avant la partie 2. Dès sa sortie, il devient la matière prioritaire : le test est construit dessus.`},
+    {n:'6',t:'EUFTE : travailler sur sources',d:`Un document de référence est fourni deux semaines avant, et les correcteurs notent explicitement l'usage qui en est fait. Écrire de mémoire entraîne la mauvaise compétence.`},
+    {n:'7',t:'Deux sessions à distance, pas une',d:`Partie 1 (verbal + num/abstrait), puis partie 2 (connaissances UE + numériques, puis EUFTE si le classement préliminaire le permet). Chaque session est surveillée à distance : un seul écran, pièce calme, pièce d'identité, connexion stable. Faire le contrôle technique dès qu'il est proposé, et le refaire avant la partie 2.`},
+    {n:'8',t:'Surveiller son compte, pas sa boîte mail',d:`Convocations et résultats passent par le Single Candidate Portal EPSO. Les courriels sont secondaires ; vérifier le compte chaque semaine.`},
+    {n:'9',t:`Les ressources gratuites d'abord`,d:`Exemples officiels sur eu-careers.europa.eu et comptes d'entraînement gratuits. Aucun coaching payant n'est requis ni approuvé par EPSO.`},
+    {n:'10',t:'La liste de réserve n\'est pas un emploi',d:`Y figurer ouvre la porte aux entretiens de recrutement des institutions, qui y puisent selon leurs besoins et recherchent un équilibre géographique. Les nationalités sous-représentées y trouvent un avantage.`},
+  ];
+  const planPart1 = [
+    {w:`Sem. 1-2`,d:`Fondations. Relire l'avis de concours. Diagnostic : une session complète de verbal et une de num/abstrait pour mesurer le niveau de départ. Lancer la routine verbale, trois sessions par semaine au minimum.`},
+    {w:`Sem. 3-6`,d:`Verbal intensif, quotidien ou presque, 20 à 30 minutes chronométrées, en ciblant le piège « faux » contre « ne peut pas dire ». Num + abstrait deux à trois fois par semaine jusqu'à un seuil confortable, autour de 75 % de réussite en session.`},
+    {w:`Sem. 7-9`,d:`Maintien. Verbal deux à trois fois par semaine pour ne pas régresser, num/abstrait une fois. Commencer à parcourir les fondamentaux UE sans encore s'y consacrer : la partie 1 reste la priorité.`},
+    {w:`Dernières semaines`,d:`Régime de test : sessions en conditions réelles chronométrées, contrôle technique de la plateforme dès qu'il est proposé. Réduire l'intensité deux jours avant la session réelle.`},
+  ];
+  const planPart2 = [
+    {w:`Dès les résultats`,d:`Si les seuils de la partie 1 sont franchis : bascule sur les connaissances UE et le cadre DigComp. Une section de cours par jour, quiz à la fin de chaque section, vocabulaire de la Langue 2 en parallèle.`},
+    {w:`Jusqu'au référentiel`,d:`DigComp : lecture du cadre et quiz réguliers, en insistant sur les licences Creative Commons et le vocabulaire. Un essai EUFTE par semaine, 40 minutes chrono, en Langue 2.`},
+    {w:`Dès parution du référentiel`,d:`Priorité absolue au référentiel EPSO : c'est la matière exacte du test de connaissances. Re-quiz des sections faibles, essais EUFTE maintenus.`},
+    {w:`Dernières semaines`,d:`Conditions réelles chronométrées sur les deux tests, contrôle technique refait. Réduire l'intensité deux jours avant.`},
+  ];
+  app.innerHTML = `
+  <div class="card">
+    <span class="eyebrow">EPSO/AD/427/26</span>
+    <h2>Le concours</h2>
+    <p class="lede">Concours généraliste pour le grade AD5, publié au Journal officiel C/2026/711.
+    Intégralement à distance, sur plateforme surveillée.</p>
+    <table class="spec-table">
+      <tr><td>Grade</td><td>AD5, entrée de la catégorie administrateurs</td></tr>
+      <tr><td>Liste de réserve</td><td>1 490 lauréats</td></tr>
+      <tr><td>Expérience exigée</td><td>aucune</td></tr>
+      <tr><td>Épreuves</td><td>5 tests écrits, en deux sessions</td></tr>
+      <tr><td>Centre d'évaluation</td><td>supprimé</td></tr>
+      <tr><td>Appelés à l'EUFTE</td><td>environ 1,5 fois le nombre de places</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Calendrier</h2></div>
+    <div class="timeline-item done"><div class="dot"></div><div><div class="td">Candidature soumise et validée</div></div></div>
+    <div class="timeline-item next"><div class="dot"></div><div><div class="td">Dépôt des diplômes et certificats</div><div class="tdate">au plus tard le 7 octobre 2026, 12h00 heure de Bruxelles</div></div></div>
+    <div class="timeline-item"><div class="dot"></div><div><div class="td">Partie 1 à distance · verbal + numérique/abstrait combiné</div><div class="tdate">octobre-novembre 2026 · convocation individuelle via le Single Candidate Portal, sessions étalées sur plusieurs jours</div></div></div>
+    <div class="timeline-item"><div class="dot"></div><div><div class="td">Publication du référentiel officiel du test UE</div><div class="tdate">environ 2 mois avant la partie 2</div></div></div>
+    <div class="timeline-item"><div class="dot"></div><div><div class="td">Partie 2 à distance · connaissances UE + compétences numériques</div><div class="tdate">2027 · dates non communiquées à ce jour</div></div></div>
+    <div class="timeline-item"><div class="dot"></div><div><div class="td">EUFTE, pour les candidats les mieux classés · document de référence fourni 2 semaines avant</div><div class="tdate">après les résultats préliminaires de la partie 2</div></div></div>
+    <div class="timeline-item"><div class="dot"></div><div><div class="td">Publication de la liste de réserve</div><div class="tdate">reportée avec le calendrier 2027 · date non communiquée</div></div></div>
+    <div class="warn-box">Les diplômes et certificats doivent être liés au profil EPSO avant la date limite.
+    Un dossier incomplet à cette échéance met fin à la participation.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Le choix des deux langues</h2></div>
+    <p>C'est la décision qui structure toute la préparation, et elle se prend à l'inscription.</p>
+    <p><b>Langue 1</b> · niveau C1 minimum. Elle porte le <b>raisonnement verbal</b> et le test
+    <b>numérique/abstrait</b>. Le verbal étant l'épreuve au poids le plus élevé du concours, la langue
+    la plus solide se place ici, sans hésiter.</p>
+    <p><b>Langue 2</b> · niveau B2 minimum, obligatoirement différente de la première. Elle porte les
+    <b>connaissances UE</b>, les <b>compétences numériques</b> et l'<b>essai EUFTE</b>.</p>
+    <div class="warn-box">Ces trois épreuves pèsent <b>65 % de la note finale</b> (25 + 25 + 15).
+    Préparer ces matières uniquement dans sa langue la plus forte est l'erreur de méthode la plus
+    coûteuse du concours : le vocabulaire institutionnel doit être maîtrisé en Langue 2, et l'essai
+    doit y être répété en conditions réelles.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Dix règles stratégiques</h2></div>
+    ${tips.map(t=>'<div class="tip"><div class="tn">'+t.n+'</div><div><b>'+t.t+'</b><p>'+t.d+'</p></div></div>').join('')}
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Plan · partie 1</h2><span class="eyebrow">verbal + num/abstrait</span></div>
+    <p class="lede" style="font-size:14px;">À caler sur la date de convocation réelle dès qu'elle est
+    connue. Si le délai est plus court, comprimer en gardant les proportions.</p>
+    ${planPart1.map(x=>'<div class="plan-week"><div class="pw">'+x.w+'</div><div>'+x.d+'</div></div>').join('')}
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Plan · partie 2</h2><span class="eyebrow">UE + numériques + EUFTE</span></div>
+    <p class="lede" style="font-size:14px;">Ne pas commencer trop tôt : la partie 2 n'a lieu qu'en 2027.
+    Utiliser l'attente entre les résultats de la partie 1 et la convocation.</p>
+    ${planPart2.map(x=>'<div class="plan-week"><div class="pw">'+x.w+'</div><div>'+x.d+'</div></div>').join('')}
+  </div>`;
 }
 
 /* ================= MODALITÉS RÉELLES DU CONCOURS =================
@@ -5672,11 +5855,11 @@ function renderEuKnow(){
       <tr><td>Contenu</td><td>institutions, procédures, grandes politiques</td></tr>
       <tr><td>Référentiel officiel</td><td>publié par EPSO ~2 mois avant le test</td></tr>
     </table>
-    <div class="warn-box">Le test se passe en Langue 2. Apprends les notions ci-dessous ET leur vocabulaire anglais (section 9 : glossaire FR→EN). Dès que le référentiel officiel sort, bascule dessus en priorité absolue : c'est la matière exacte du test.</div>
+    <div class="warn-box">Le test se passe en <b>Langue 2</b>. Apprendre les notions ci-dessous ET leur vocabulaire dans cette langue : la section 9 fournit un glossaire, et l'onglet Cours développe tous les sigles. Dès la parution du référentiel officiel, il devient la priorité absolue : c'est la matière exacte du test.</div>
   </div>
   <div id="kbList"></div>
   <button class="btn wide" id="startQuiz" style="margin-top:6px;">Passer au quiz (${Math.min(EU_COUNT, EU_QUIZ.length)} questions tirées de ${EU_QUIZ.length} · 40 min au total)</button>`;
-  renderAnnexeSection(document.getElementById('kbList'), EU_KNOWLEDGE, 'kbb', 'cours');
+  renderKbList(document.getElementById('kbList'), EU_KNOWLEDGE, 'kbb', 'cours');
   document.getElementById('startQuiz').addEventListener('click',()=>runQCMSession(EU_QUIZ,'euknow',EU_SEC,'Connaissances UE','Test 3','euknow',EU_COUNT));
 }
 
@@ -5694,7 +5877,7 @@ function renderDigital(){
       <tr><td>Cadre de référence</td><td>DigComp (cadre européen des compétences numériques)</td></tr>
     </table>
     ${DIGITAL_CONTENT}
-    <div class="info-box">Le rythme de 45 secondes par question exige des réflexes, pas des raisonnements : c'est un test de familiarité. Vu ton expérience data chez Outlier, ton risque n'est pas le fond mais le vocabulaire DigComp spécifique et les licences Creative Commons : c'est là qu'il faut réviser.</div>
+    <div class="info-box">Le rythme de 45 secondes par question exige des réflexes, pas des raisonnements : c'est un test de familiarité, pas d'expertise informatique. Les points se perdent le plus souvent sur le <b>vocabulaire propre à DigComp</b> et sur les <b>licences Creative Commons</b>, rarement sur les notions elles-mêmes.</div>
     ${DIGITAL_QUIZ.length < DIG_COUNT ? '<div class="warn-box">Banque actuelle : '+DIGITAL_QUIZ.length+' questions, contre 40 au test réel. La session garde le rythme réel de 45 s par question, mais elle est plus courte que l\'épreuve. Banque à compléter.</div>' : ''}
     <button class="btn wide" id="startQuiz">Passer au quiz (${Math.min(DIG_COUNT, DIGITAL_QUIZ.length)} questions · ${fmtTime(Math.min(DIG_COUNT, DIGITAL_QUIZ.length)*DIG_SEC)} au total)</button>
   </div>`;
@@ -5722,7 +5905,7 @@ function renderEufte(){
         <tr><td>Qui le passe</td><td>le top ~2 235 du classement préliminaire (1,5×)</td></tr>
         <tr><td>Documentation</td><td>mise en ligne par EPSO avant l'épreuve et fournie de nouveau pendant</td></tr>
       </table>
-      <div class="warn-box">Ce n'est pas une dissertation d'opinion. L'épreuve blanche officielle donne un rôle, un destinataire et un type de document à produire, à partir d'un rapport source. On te demande par exemple une <b>note d'information avec éléments de langage</b> pour un directeur général. Écris en <b>anglais</b>, ta Langue 2.</div>
+      <div class="warn-box">Ce n'est pas une dissertation d'opinion. L'épreuve blanche officielle donne un rôle, un destinataire et un type de document à produire, à partir d'un rapport source. La consigne demande par exemple une <b>note d'information avec éléments de langage</b> pour un directeur général. L'essai se rédige en <b>Langue 2</b>.</div>
 
       <details class="mth"><summary>Les cinq critères d'évaluation publiés par EPSO</summary>
         <p>EPSO appelle ces critères des « anchors ». Ils portent sur la communication écrite : ce n'est ni un test de langue, ni un test de connaissances.</p>
@@ -5742,7 +5925,7 @@ function renderEufte(){
         <button class="btn" id="startTimer">Chrono 40 min</button>
         <button class="btn ghost" id="resetTimer">Réinitialiser</button>
       </div>
-      <textarea class="essay-area" id="essayArea" placeholder="Write your briefing note here, in English. Draft auto-saved.">${draft}</textarea>
+      <textarea class="essay-area" id="essayArea" placeholder="Rédige ici, en Langue 2. Brouillon enregistré automatiquement.">${draft}</textarea>
       <div id="modelZone"></div>
     </div>
     <div class="card">
@@ -5804,127 +5987,287 @@ function renderEufte(){
   });
 }
 
-/* ================= ANNEXE APPRENTISSAGE ================= */
-/* `grp` relie la section à son chapitre audio : sans lui, pas de bouton d'écoute. */
-function renderAnnexeSection(container, items, idPrefix, grp){
-  container.innerHTML = items.map((s,i)=>{
-    const aid = grp ? audioIdFor(grp, s.title) : null;
+/* ================= COURS =================
+   L'ancienne annexe devient le corps de cours. Chaque section est écoutable sur
+   place, et les phrases y sont surlignées au fil de la lecture : le suivi audio
+   se fait sur le texte réel, pas dans une vue de lecture séparée. */
+function renderKbList(container, items, idPrefix, grp){
+  container.innerHTML = items.map((x,i)=>{
+    const aid = grp ? audioIdFor(grp, x.title) : null;
     return '<div class="kb-section"><div class="kb-headrow">'
-      +'<button class="kb-head" data-i="'+i+'"><span>'+s.title+'</span><span class="car">▸</span></button>'
-      +(aid?'<button class="kb-play" data-audio="'+aid+'" title="Écouter cette section">🎧 écouter</button>':'')
-      +'</div><div class="kb-body" id="'+idPrefix+i+'">'+s.body+'</div></div>';
+      +'<button class="kb-head" data-i="'+i+'" aria-expanded="false"><span>'+x.title+'</span><span class="car">›</span></button>'
+      +(aid?'<button class="kb-play" data-audio="'+aid+'" title="Écouter cette section" aria-label="Écouter : '+x.title.replace(/"/g,'')+'">🎧</button>'
+          +'<button class="kb-play" data-queue="'+aid+'" title="Ajouter à la file d\'attente" aria-label="Ajouter à la file">+</button>':'')
+      +'</div><div class="kb-body" id="'+idPrefix+i+'"'+(aid?' data-audio="'+aid+'"':'')+'>'+x.body+'</div></div>';
   }).join('');
-  container.querySelectorAll('.kb-head').forEach(b=>b.addEventListener('click',()=>{
-    const body = document.getElementById(idPrefix+b.dataset.i);
+  container.querySelectorAll('.kb-head').forEach(btn=>btn.addEventListener('click',()=>{
+    const body = document.getElementById(idPrefix+btn.dataset.i);
     const open = body.classList.toggle('open');
-    b.querySelector('.car').style.transform = open?'rotate(90deg)':'rotate(0)';
+    btn.setAttribute('aria-expanded', open?'true':'false');
+    btn.querySelector('.car').style.transform = open?'rotate(90deg)':'rotate(0)';
   }));
-  container.querySelectorAll('.kb-play').forEach(b=>b.addEventListener('click',()=>{
-    if(TTS.chap && TTS.chap.id===b.dataset.audio && TTS.playing) ttsPause();
-    else ttsOpen(b.dataset.audio, true);
+  container.querySelectorAll('[data-audio].kb-play').forEach(btn=>btn.addEventListener('click',()=>{
+    if(TTS.chap && TTS.chap.id===btn.dataset.audio && TTS.playing){ ttsPause(); return; }
+    ttsOpen(btn.dataset.audio, true);
+  }));
+  container.querySelectorAll('[data-queue]').forEach(btn=>btn.addEventListener('click',()=>{
+    TTS.queue.push(btn.dataset.queue); ttsSave();
+    btn.textContent = '✓'; setTimeout(()=>{ btn.textContent = '+'; }, 1200);
   }));
 }
-function renderAnnexe(){
+/* Ouvre la section en cours de lecture et y pose les repères de phrase. */
+function ttsSyncCours(){
+  if(CURRENT!=='cours') return;
+  document.querySelectorAll('.kb-body[data-marked]').forEach(bd=>{
+    if(!TTS.chap || bd.dataset.audio !== TTS.chap.id){
+      const ch = AUDIO_BY_ID.get(bd.dataset.audio);
+      if(ch) ttsMarkBody(bd, ch, false);
+    }
+  });
+  if(!TTS.chap) return;
+  const body = document.querySelector('.kb-body[data-audio="'+TTS.chap.id+'"]');
+  if(!body) return;
+  ttsMarkBody(body, TTS.chap, true);
+  if(!body.classList.contains('open')){
+    body.classList.add('open');
+    const head = body.parentElement.querySelector('.kb-head');
+    if(head){ head.setAttribute('aria-expanded','true'); head.querySelector('.car').style.transform='rotate(90deg)'; }
+  }
+}
+function renderCours(){
   const app = document.getElementById('app');
-  const piliers = ANNEXE_KNOWLEDGE.filter(s=>s.group==='pilier');
-  const themes = ANNEXE_KNOWLEDGE.filter(s=>s.group==='theme');
-  const actus = ANNEXE_KNOWLEDGE.filter(s=>s.group==='actu');
+  const piliers = ANNEXE_KNOWLEDGE.filter(x=>x.group==='pilier');
+  const themes  = ANNEXE_KNOWLEDGE.filter(x=>x.group==='theme');
+  const actus   = ANNEXE_KNOWLEDGE.filter(x=>x.group==='actu');
   const ficheSections = [...new Set(ANNEXE_FICHES.map(f=>f.section))];
   app.innerHTML = `
   <div class="card">
-    <span class="eyebrow">Annexe · culture générale UE</span>
-    <h2>Ce qu'il faut savoir au-delà du quiz</h2>
-    <p style="font-size:14px;">Condensés de référence, vérifiés contre des sources officielles (europarl.europa.eu, eur-lex.europa.eu, ec.europa.eu, consilium.europa.eu, ecb.europa.eu...). Ils complètent le module Connaissances UE sans le répéter, et nourrissent surtout l'essai EUFTE : chaque section se termine si possible par un point de débat mobilisable.</p>
-    <div class="warn-box">Certains points sont explicitement signalés « à revérifier » dans le texte (chiffres de comitologie, répartition des sièges au Parlement, seuils d'un règlement trop récent...) : ce sont des faits que la vérification n'a pas pu confirmer avec certitude au moment de la rédaction. Recroise-les toi-même avant de les citer en test ou à l'essai.</div>
+    <span class="eyebrow">Cours · ${AUDIO_LIB.length} chapitres</span>
+    <h2>Connaissances européennes</h2>
+    <p class="lede">Condensés de référence vérifiés contre les sources officielles des institutions.
+    Ils complètent le module Connaissances UE sans le répéter, et nourrissent l'essai EUFTE : chaque
+    section se termine si possible par un point de débat mobilisable.</p>
+    <div class="info-box">Chaque section porte un bouton 🎧. La lecture <b>surligne les phrases dans le
+    texte au fil de l'écoute</b>, et un clic sur une phrase y déplace la lecture. Réglages de voix et
+    de vitesse dans l'onglet Paramètres.</div>
+    <div class="warn-box">Certains points sont signalés « à revérifier » dans le texte : ce sont des
+    faits que la vérification n'a pas pu confirmer avec certitude au moment de la rédaction.
+    Les recroiser avant de les citer en test ou à l'essai.</div>
   </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Sigles et acronymes</h2>
+      <span class="eyebrow">${ACRONYMS.length} entrées</span></div>
+    <p class="lede" style="font-size:14.5px;">Tout sigle croisé dans les cours, l'annexe ou les
+    corrections d'exercices, développé puis expliqué. La forme anglaise est donnée quand elle diffère,
+    les tests de connaissances et de numériques se passant en Langue 2.</p>
+    <input class="acr-search" id="acrSearch" placeholder="Filtrer : sigle, mot du libellé…" aria-label="Filtrer les sigles">
+    <div id="acrList"></div>
+  </div>
+
   <div class="card">
     <div class="section-title"><h2>Piliers fondamentaux</h2></div>
-    <div id="annexePiliers"></div>
+    <div id="cPiliers"></div>
   </div>
   <div class="card">
     <div class="section-title"><h2>Actualité européenne</h2></div>
-    <p style="font-size:14px;">Matière pour l'EUFTE, pas pour le QCM. Le test de connaissances porte sur les institutions, les procédures et les grandes politiques, pas sur l'actualité de l'année. En revanche, une note d'information gagne à s'appuyer sur un dossier en cours plutôt que sur des généralités.</p>
-    <div class="warn-box">Contenu daté : établi à partir des publications officielles de la Commission couvrant 2025 et le début de 2026, et de documents de travail transmis. Les chiffres bougent. Recroise toute donnée avant de la citer, et privilégie les tendances et les tensions aux chiffres exacts.</div>
-    <div id="annexeActus"></div>
+    <p class="lede" style="font-size:14.5px;">Matière pour l'EUFTE, pas pour le QCM : le test de
+    connaissances porte sur les institutions, les procédures et les grandes politiques, pas sur
+    l'actualité de l'année. Une note d'information, elle, gagne à s'appuyer sur un dossier en cours.</p>
+    <div class="warn-box">Contenu daté. Les chiffres bougent : privilégier les tendances et les
+    tensions aux valeurs exactes, et recroiser toute donnée avant de la citer.</div>
+    <div id="cActus"></div>
   </div>
   <div class="card">
-    <div class="section-title"><h2>Les 17 grands dossiers du Parlement européen</h2></div>
-    <div id="annexeThemes"></div>
+    <div class="section-title"><h2>Les grands dossiers du Parlement</h2></div>
+    <div id="cThemes"></div>
   </div>
   <div class="card">
-    <div class="section-title"><h2>Fiches détaillées (Parlement européen)</h2></div>
-    <p style="font-size:13px;color:var(--ink-soft);">${ANNEXE_FICHES.length} fiches condensées, une par sujet officiel, classées par domaine.</p>
-    ${ficheSections.map((sec,si)=>'<p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--gold);margin:16px 0 4px;">'+sec.toUpperCase()+'</p><div id="annexeFiches'+si+'"></div>').join('')}
+    <div class="section-title"><h2>Fiches détaillées</h2>
+      <span class="eyebrow">${ANNEXE_FICHES.length} fiches</span></div>
+    ${ficheSections.map((sec,si)=>'<p class="eyebrow" style="color:var(--accent);margin:22px 0 6px;">'
+      +sec+'</p><div id="cFiches'+si+'"></div>').join('')}
   </div>`;
-  renderAnnexeSection(document.getElementById('annexePiliers'), piliers, 'akbp', 'pilier');
-  renderAnnexeSection(document.getElementById('annexeActus'), actus, 'akba', 'actu');
-  renderAnnexeSection(document.getElementById('annexeThemes'), themes, 'akbt', 'theme');
+
+  renderKbList(document.getElementById('cPiliers'), piliers, 'kbp', 'pilier');
+  renderKbList(document.getElementById('cActus'),   actus,   'kba', 'actu');
+  renderKbList(document.getElementById('cThemes'),  themes,  'kbt', 'theme');
   ficheSections.forEach((sec,si)=>{
-    renderAnnexeSection(document.getElementById('annexeFiches'+si), ANNEXE_FICHES.filter(f=>f.section===sec), 'akbf'+si+'_', 'fiche');
+    renderKbList(document.getElementById('cFiches'+si),
+      ANNEXE_FICHES.filter(f=>f.section===sec), 'kbf'+si+'_', 'fiche');
   });
+
+  const acrList = document.getElementById('acrList');
+  const drawAcr = q=>{
+    q = q.trim().toLowerCase();
+    const hits = ACRONYMS.filter(x=>!q || x.a.toLowerCase().includes(q)
+      || x.f.toLowerCase().includes(q) || (x.en||'').toLowerCase().includes(q)
+      || x.d.toLowerCase().includes(q))
+      .sort((x,y)=>x.a.localeCompare(y.a,'fr'));
+    if(!hits.length){ acrList.innerHTML = '<p class="aud-empty">Aucun sigle ne correspond.</p>'; return; }
+    let html = '', letter = '';
+    hits.forEach(x=>{
+      const L = x.a[0].toUpperCase();
+      if(L !== letter){ html += '<p class="acr-letter">'+L+'</p>'; letter = L; }
+      html += '<dl class="acr-row"><dt>'+x.a+'</dt><dd>'+x.f
+        + (x.en ? ' <span class="kb-fact">'+x.en+'</span>' : '')
+        + '<i>'+x.d+'</i></dd></dl>';
+    });
+    acrList.innerHTML = html;
+  };
+  drawAcr('');
+  document.getElementById('acrSearch').addEventListener('input', e=>drawAcr(e.target.value));
+  ttsSyncCours();
 }
 
-/* ================= STRATÉGIE ================= */
-function renderStrategy(){
+/* ================= PARAMÈTRES ================= */
+function renderParams(){
   const app = document.getElementById('app');
-  const tips = [
-    {n:'1',t:'Le verbal est ton levier n°1',d:`35-40 % du score, dans ta langue maternelle. Chaque point gagné y déplace ton classement plus que partout ailleurs. Entraînement chronométré plusieurs fois par semaine, sans exception.`},
-    {n:'2',t:'Aucune compensation entre tests',d:`Chaque seuil raté (verbal 10/20, num+abstrait 10/20, EUFTE 5/10) élimine, quel que soit le reste. Sécurise les seuils avant d'optimiser les scores.`},
-    {n:'3',t:'Num + abstrait : le seuil, rien de plus',d:`Test combiné pass/fail (20 q, 30 min, 10/20), zéro point de classement. Vise le seuil avec marge, n'y engloutis pas ton temps de verbal.`},
-    {n:'4',t:'65 % de ta note finale en Langue 2',d:`Connaissances UE (25 %) + compétences numériques (25 %) + EUFTE (15 %) se passent en anglais pour toi. Révise le vocabulaire institutionnel anglais (glossaire), lis de la presse UE en anglais, rédige tes essais d'entraînement en anglais.`},
-    {n:'5',t:'Le référentiel UE officiel change tout',d:`EPSO publie la liste des sources du test UE ~2 mois avant la partie 2. Dès sa sortie, il devient TA matière prioritaire : le test est construit dessus.`},
-    {n:'6',t:'EUFTE : travaille sur sources',d:`Un document de référence est fourni 2 semaines avant, et les correcteurs notent l'usage des sources. Écrire de mémoire entraîne la mauvaise compétence. Utilise le mode dossier de ce module.`},
-    {n:'7',t:'Deux sessions à distance, pas une seule',d:`Le concours se joue en deux temps : partie 1 (verbal + num/abstrait) en octobre/novembre 2026, partie 2 (UE + numériques, puis EUFTE si tu es dans le top du classement préliminaire) en 2027. Chaque session est surveillée à distance (plateforme TAO) : un seul écran, pièce calme, pièce d'identité, connexion stable. Fais le check technique dès que proposé, pas la veille, et refais-le avant la partie 2.`},
-    {n:'8',t:'Surveille ton compte, pas ta boîte mail',d:`Les convocations et résultats passent par le Single Candidate Portal EPSO. Les emails sont secondaires. Vérifie ton compte chaque semaine.`},
-    {n:'9',t:`Ressources gratuites d'abord`,d:`Exemples officiels sur eu-careers.europa.eu, compte gratuit EU Training, webinaire SGAE du 23 juillet. Le coaching payant n'est ni requis ni approuvé par EPSO.`},
-    {n:'10',t:'Le ratio joue pour toi après la liste',d:`Aucun quota national au concours, mais 45 % des candidats sont italiens. Une fois sur la liste, les services recruteurs recherchent l'équilibre géographique : être français y devient un atout, la France étant sous-représentée.`},
-  ];
-  const planPart1 = [
-    {w:`Sem. 1-2`,d:`Fondations. Webinaire SGAE (23/07). Relire la Notice of Competition. Diagnostic : une session complète de verbal et de num/abstrait pour mesurer ton niveau de départ. Routine verbale lancée : 3 sessions/semaine minimum.`},
-    {w:`Sem. 3-6`,d:`Verbal intensif. Verbal quotidien ou presque (20-30 min chronométrées), focus sur le piège Faux / Ne peut pas dire. Num + abstrait 2-3×/semaine jusqu'au seuil confortable (75 %+ de réussite en session).`},
-    {w:`Sem. 7-9`,d:`Maintien du niveau. Verbal 2-3×/semaine pour ne pas régresser, num/abstrait en entretien léger 1×/semaine. Commence à jeter un oeil aux fondamentaux UE (module Connaissances UE) sans t'y consacrer encore à fond : la partie 1 reste la priorité.`},
-    {w:`Sem. 10-12 (jusqu'à la convocation)`,d:`Régime de test pour la partie 1 : sessions verbal + num/abstrait en conditions réelles chronométrées, check technique TAO dès qu'il est proposé. Réduire l'intensité 2 jours avant la session réelle.`},
-  ];
-  const planPart2 = [
-    {w:`Dès les résultats`,d:`Si tu passes les seuils de la partie 1 : bascule sur les Connaissances UE et le DigComp. Une section du cours UE par jour, quiz à la fin de chaque section, glossaire anglais en parallèle (le test se passe en Langue 2).`},
-    {w:`Continu jusqu'au référentiel`,d:`DigComp : lecture du cadre + quiz réguliers, focus licences Creative Commons et vocabulaire anglais. Un essai EUFTE par semaine en mode dossier, 40 min chrono, en anglais.`},
-    {w:`Dès parution du référentiel officiel (~2 mois avant la partie 2)`,d:`Bascule en priorité absolue sur le référentiel EPSO : c'est la matière exacte du test UE. Re-quiz des sections faibles du cours. Poursuis les essais EUFTE hebdomadaires.`},
-    {w:`Dernières semaines avant la partie 2`,d:`Régime de test : sessions UE + numériques en conditions réelles chronométrées, check technique TAO refait. Réduire l'intensité 2 jours avant la session réelle.`},
-  ];
+  const voiceOpts = TTS_VOICES.map(v=>'<option value="'+v.voiceURI.replace(/"/g,'&quot;')+'"'
+      +(v.voiceURI===TTS.voiceURI?' selected':'')+'>'+v.name+' ('+v.lang+')</option>').join('');
+  const presets = [0.85,1,1.15,1.3,1.5];
+  const sw = (id,on,label)=>'<label class="switch" aria-label="'+label+'"><input type="checkbox" id="'+id+'"'
+    +(on?' checked':'')+'><i></i></label>';
+  const done = AUDIO_LIB.filter(x=>ttsPct(x.id)>=100).length;
+
   app.innerHTML = `
   <div class="card">
-    <h2>Les 10 règles stratégiques</h2>
-    ${tips.map(t=>'<div class="tip"><div class="tn">'+t.n+'</div><div><b>'+t.t+'</b><p>'+t.d+'</p></div></div>').join('')}
+    <span class="eyebrow">Paramètres</span>
+    <h2>Réglages</h2>
+    <p class="lede">Tout est enregistré dans ce navigateur, sans compte ni serveur.</p>
   </div>
+
   <div class="card">
-    <h2 style="font-size:17px;">Plan de préparation · Partie 1 (verbal + num/abstrait)</h2>
-    <p style="font-size:13px;color:var(--ink-soft);">Vise la convocation attendue en octobre/novembre 2026. À caler sur la date réelle dès qu'elle tombe ; si le délai est plus court, compresse en gardant les proportions.</p>
-    ${planPart1.map(p=>'<div class="plan-week"><div class="pw">'+p.w+'</div><div>'+p.d+'</div></div>').join('')}
+    <div class="section-title"><h2>Apparence</h2></div>
+    <div class="set-row">
+      <div class="set-label"><b>Thème</b><span>« Auto » suit le réglage clair ou sombre du système.</span></div>
+      <div class="seg" id="themeSeg" role="group" aria-label="Thème">
+        <button data-th="auto"  class="${THEME==='auto'?'on':''}">Auto</button>
+        <button data-th="light" class="${THEME==='light'?'on':''}">Clair</button>
+        <button data-th="dark"  class="${THEME==='dark'?'on':''}">Sombre</button>
+      </div>
+    </div>
   </div>
+
   <div class="card">
-    <h2 style="font-size:17px;">Plan de préparation · Partie 2 (UE + numériques + EUFTE)</h2>
-    <p style="font-size:13px;color:var(--ink-soft);">Ne commence pas trop tôt : la partie 2 n'a lieu qu'en 2027, dates encore inconnues. Utilise l'attente entre les résultats de la partie 1 et la convocation pour construire ce bloc sans t'épuiser des mois à l'avance.</p>
-    ${planPart2.map(p=>'<div class="plan-week"><div class="pw">'+p.w+'</div><div>'+p.d+'</div></div>').join('')}
+    <div class="section-title"><h2>Lecture audio</h2>
+      <span class="eyebrow">${done} / ${AUDIO_LIB.length} chapitres écoutés</span></div>
+    ${!TTS_SUPPORT ? '<div class="warn-box">Ce navigateur n\'expose pas la synthèse vocale.</div>' : `
+    <div class="set-row">
+      <div class="set-label"><b>Voix</b><span>Les voix « Natural », « Online », « Google » ou « Améliorée »
+        sont neuronales et nettement plus naturelles ; elles sont remontées en tête.</span></div>
+      <select class="aud-select" id="ttsVoiceSel" aria-label="Voix">${voiceOpts || '<option>Aucune voix détectée</option>'}</select>
+    </div>
+    <div class="set-row">
+      <div class="set-label"><b>Vitesse</b><span>Réglable en cours de lecture : la phrase en cours
+        reprend à son début à la nouvelle vitesse.</span></div>
+      <span class="aud-rate-val" id="ttsRateVal">${TTS.rate.toFixed(2).replace('.',',')}×</span>
+    </div>
+    <input class="aud-range" type="range" id="ttsRate" min="0.5" max="2" step="0.05" value="${TTS.rate}" aria-label="Vitesse de lecture" style="width:100%;">
+    <div class="aud-presets" style="margin-top:10px;">
+      ${presets.map(x=>'<button data-rate="'+x+'" class="'+(Math.abs(x-TTS.rate)<0.001?'on':'')+'">'+x.toFixed(2).replace('.',',')+'×</button>').join('')}
+    </div>
+    <div class="set-row" style="margin-top:6px;">
+      <div class="set-label"><b>Enchaîner les chapitres</b><span>Passe au chapitre suivant à la fin du précédent.</span></div>
+      ${sw('ttsCont', TTS.continuous, 'Enchaîner les chapitres')}
+    </div>
+    <div class="set-row">
+      <div class="set-label"><b>Suivre le texte</b><span>Surligne la phrase lue dans le cours et fait défiler jusqu'à elle.</span></div>
+      ${sw('ttsFollow', TTS.follow, 'Suivre le texte')}
+    </div>
+    <div class="set-row">
+      <div class="set-label"><b>Garder l'écran allumé</b><span>À n'activer que si la lecture s'interrompt
+        écran verrouillé. Consomme davantage de batterie.</span></div>
+      ${sw('ttsAwake', TTS.keepAwake, "Garder l'écran allumé")}
+    </div>
+    <button class="btn ghost wide" id="ttsDiagBtn" style="margin-top:14px;">🔊 Aucun son ne sort ? Tester et réparer</button>
+    <p class="lede" style="font-size:13px;margin-top:12px;"><b>Raccourcis</b> · espace : lecture/pause ·
+      ← → : phrase précédente/suivante · maj + ← → : chapitre · + / − : vitesse.</p>`}
   </div>
+
   <div class="card">
-    <h2 style="font-size:17px;">Échéances fermes</h2>
-    <div class="warn-box">Diplômes et certificats à déposer au plus tard le <b>7 octobre 2026, 12h00 (heure de Bruxelles)</b>, liés à ton profil EPSO.</div>
-    <div class="info-box">Liste de réserve : reportée avec le passage à un concours en deux parties (partie 2 en 2027), date exacte non communiquée par EPSO. Elle n'est pas une offre d'emploi : les institutions y puisent pour leurs entretiens de recrutement. C'est là que ton profil français, PSE et trilingue redevient un argument actif.</div>
+    <div class="section-title"><h2>File d'attente</h2>
+      <span class="eyebrow">${TTS.queue.length} en attente</span></div>
+    <p class="lede" style="font-size:14px;">Les chapitres empilés ici passent avant l'enchaînement automatique.</p>
+    <div id="ttsQueue"></div>
   </div>
-  <footer class="reset-zone"><button id="resetBtn">Réinitialiser ma progression</button></footer>`;
-  document.getElementById('resetBtn').addEventListener('click', async ()=>{
-    if(confirm('Réinitialiser toutes tes statistiques de progression ?')){
-      PROGRESS = DEFAULT_PROGRESS();
-      await saveProgress(); renderStreak(); goTo('dashboard');
-    }
+
+  <div class="card">
+    <div class="section-title"><h2>Progression</h2></div>
+    <div class="set-row">
+      <div class="set-label"><b>Réinitialiser les scores</b>
+        <span>Efface les statistiques de tous les modules, la série de jours et les sessions EUFTE.
+        Les positions de lecture audio ne sont pas touchées.</span></div>
+      <button class="btn ghost danger" id="resetScores">Réinitialiser</button>
+    </div>
+    <div class="set-row">
+      <div class="set-label"><b>Réinitialiser la lecture audio</b>
+        <span>Oublie la position de chaque chapitre, la file d'attente et le chapitre en cours.</span></div>
+      <button class="btn ghost danger" id="resetAudio">Réinitialiser</button>
+    </div>
+  </div>`;
+
+  document.querySelectorAll('#themeSeg button').forEach(b=>b.addEventListener('click',()=>{
+    applyTheme(b.dataset.th); renderParams();
+  }));
+
+  if(TTS_SUPPORT){
+    const sel = document.getElementById('ttsVoiceSel');
+    if(sel) sel.addEventListener('change',()=>{
+      TTS.voiceURI = sel.value; TTS.tried = []; ttsSave();
+      if(TTS.playing){ ttsKill(); ttsSpeak(0); }
+    });
+    const rg = document.getElementById('ttsRate');
+    rg.addEventListener('input',()=>{
+      document.getElementById('ttsRateVal').textContent = (+rg.value).toFixed(2).replace('.',',');
+    });
+    rg.addEventListener('change',()=>ttsSetRate(+rg.value));
+    app.querySelectorAll('[data-rate]').forEach(b=>b.addEventListener('click',()=>ttsSetRate(+b.dataset.rate)));
+    document.getElementById('ttsCont').addEventListener('change',e=>{ TTS.continuous = e.target.checked; ttsSave(); });
+    document.getElementById('ttsFollow').addEventListener('change',e=>{ TTS.follow = e.target.checked; ttsSave(); });
+    document.getElementById('ttsAwake').addEventListener('change',e=>{
+      TTS.keepAwake = e.target.checked; ttsSave(); ttsWakeLock(TTS.keepAwake && TTS.playing);
+    });
+    document.getElementById('ttsDiagBtn').addEventListener('click', ttsDiagOpen);
+  }
+
+  const qz = document.getElementById('ttsQueue');
+  qz.innerHTML = TTS.queue.length ? TTS.queue.map((id,k)=>{
+    const c = AUDIO_BY_ID.get(id);
+    return '<div class="aud-row"><span class="at">'+(k+1)+'. '+c.title
+      +'<small>'+AUDIO_GROUP_LABEL[c.g]+'</small></span>'
+      +'<button data-up="'+k+'" aria-label="Monter">↑</button>'
+      +'<button data-down="'+k+'" aria-label="Descendre">↓</button>'
+      +'<button data-rm="'+k+'" aria-label="Retirer">✕</button></div>';
+  }).join('') : '<p class="aud-empty">Vide. La lecture enchaînera simplement le chapitre suivant.</p>';
+  qz.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>{
+    const k=+b.dataset.up, a=TTS.queue; if(k>0){ [a[k-1],a[k]]=[a[k],a[k-1]]; ttsSave(); renderParams(); }
+  }));
+  qz.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',()=>{
+    const k=+b.dataset.down, a=TTS.queue; if(k<a.length-1){ [a[k+1],a[k]]=[a[k],a[k+1]]; ttsSave(); renderParams(); }
+  }));
+  qz.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{
+    TTS.queue.splice(+b.dataset.rm,1); ttsSave(); renderParams();
+  }));
+
+  document.getElementById('resetScores').addEventListener('click', async ()=>{
+    if(!confirm('Effacer toutes les statistiques de progression ?')) return;
+    PROGRESS = DEFAULT_PROGRESS();
+    await saveProgress(); renderStreak(); renderParams();
+  });
+  document.getElementById('resetAudio').addEventListener('click', ()=>{
+    if(!confirm('Oublier toutes les positions de lecture audio ?')) return;
+    ttsStop();
+    TTS.pos = {}; TTS.queue = []; TTS.last = null;
+    ttsFlush(); renderParams();
   });
 }
 
 /* ================= INIT ================= */
 const RENDERERS = {
   dashboard: renderDashboard, verbal: renderVerbal, numabs: renderNumAbs,
-  euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte, annexe: renderAnnexe,
-  audio: renderAudio, strategy: renderStrategy,
+  euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte,
+  cours: renderCours, concours: renderConcours, params: renderParams,
 };
 loadProgress().then(ttsInit).then(()=>{ renderTabs(); renderDashboard(); });
 </script>
