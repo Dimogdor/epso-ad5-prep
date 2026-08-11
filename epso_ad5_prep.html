@@ -1465,7 +1465,10 @@ function mkNum(q,correct,distractors,ex,unit,table){
   // premiere lecture de l'epreuve blanche, la cinquieme n'est PAS toujours
   // « Aucune de ces reponses » : beaucoup de questions alignent cinq valeurs
   // numeriques. On tire donc au sort la presence de la sentinelle.
-  const useNone = num ? ri(0,1)===1 : true;
+  /* La sentinelle n'était jamais la bonne réponse sur les questions à réponse
+     textuelle ; l'y afficher systématiquement entraînait le réflexe même que sa
+     présence aléatoire est censée casser. */
+  const useNone = ri(0,1)===1;
   const nVals = useNone ? 4 : 5;
   const vals=[correct];
   distractors.forEach(x=>{ const v=round(x); if(vals.indexOf(v)===-1) vals.push(v); });
@@ -1484,11 +1487,16 @@ function mkNum(q,correct,distractors,ex,unit,table){
   let picked = vals.slice(0,nVals);
   // La sentinelle n'est la bonne reponse que lorsqu'elle est presente : on retire
   // alors la valeur exacte des propositions chiffrees.
-  const noneIsRight = useNone && num && ri(1,6)===1;
+  let noneIsRight = useNone && num && ri(1,6)===1;
   if(noneIsRight){
-    let sub = correct, k=1;
-    while(picked.indexOf(sub)!==-1 && k<=20){ sub = round(correct*(1+0.11*k)); k++; }
-    picked = picked.map(v=>v===correct ? sub : v);
+    /* Le décalage doit être ADDITIF : multiplier une réponse exacte de zéro
+       laisse zéro, la valeur exacte restait affichée et l'explication annonçait
+       pourtant qu'elle ne figurait pas parmi les propositions. */
+    const pas = Math.max(Math.abs(correct)*0.11, step);
+    let sub = correct, k = 1;
+    while(picked.indexOf(sub)!==-1 && k<=40){ sub = round(correct + k*pas); k++; }
+    if(picked.indexOf(sub)!==-1) noneIsRight = false;   // on renonce plutôt que de mentir
+    else picked = picked.map(v=>v===correct ? sub : v);
   }
   const opts = picked.map(v=>frNum(v)+u);
   if(useNone) opts.push(NONE_OPT);
@@ -1604,7 +1612,6 @@ const NUMERIC_TEMPLATES = [
    deux ou trois opérations enchaînées, cinq options dont « Aucune de ces
    réponses ». Le tableau contient toujours des colonnes inutiles : savoir
    ignorer une colonne fait partie de l'exercice. */
-const absPick2 = a => a[ri(0,a.length-1)];
 const PAYS = ['Belgique','Danemark','Espagne','Finlande','France','Grèce','Irlande','Italie','Pays-Bas','Pologne','Portugal','Suède','Tchéquie','Autriche','Allemagne','Hongrie'];
 function pickN(arr,n){ return shuffle(arr).slice(0,n); }
 
@@ -1690,7 +1697,10 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Comparaison de croissances relatives entre lignes : la plus forte progression. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(n=>{ const v0=ri(20,90)*10, pct=[5,8,10,12,15,20,25,30][ri(0,7)]; return {n, v0, v1:Math.round(v0*(100+pct)/100), pct}; });
+    /* Taux tirés SANS remise : deux pays à la même progression donneraient deux
+       bonnes réponses, et l'une des deux serait comptée fausse. */
+    const taux = shuffle([5,8,10,12,15,20,25,30]).slice(0,5);
+    const rows = p.map((n,i)=>{ const v0=ri(20,90)*10, pct=taux[i]; return {n, v0, v1:Math.round(v0*(100+pct)/100), pct}; });
     const best = rows.reduce((a,b)=>b.pct>a.pct?b:a);
     const table = dataTable('Exportations de biens, 2019 et 2024',
       ['Pays','Exportations 2019 (M€)','Exportations 2024 (M€)','Part dans le PIB (%)'],
@@ -1764,8 +1774,8 @@ const NUMERIC_TABLE_TEMPLATES = [
   },
   /* Croissance annuelle moyenne sur une période. */
   ()=>{
-    const p = pickN(PAYS,5), n = absPick2([2,3,4]);
-    const rows = p.map(x=>{ const v0=ri(10,90)*100, t=absPick2([5,10,20,25]); return {x, v0, t, v1:Math.round(v0*Math.pow(1+t/100,n))}; });
+    const p = pickN(PAYS,5), n = absPick([2,3,4]);
+    const rows = p.map(x=>{ const v0=ri(10,90)*100, t=absPick([5,10,20,25]); return {x, v0, t, v1:Math.round(v0*Math.pow(1+t/100,n))}; });
     const r = rows[ri(0,4)];
     const totale = +(100*(r.v1/r.v0-1)).toFixed(1);
     const naif = +(totale/n).toFixed(1);
@@ -1780,7 +1790,10 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Passer d'un montant total à un montant par habitant, puis comparer. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(x=>{ const pop=ri(3,60), par=ri(50,400); return {x, pop, par, tot:pop*par}; });
+    /* Dépenses par habitant distinctes : un ex aequo au sommet rendrait la
+       question ambiguë et la réponse de l'utilisateur arbitrairement fausse. */
+    const pars = []; while(pars.length<5){ const v=ri(50,400); if(pars.indexOf(v)<0) pars.push(v); }
+    const rows = p.map((x,i)=>{ const pop=ri(3,60), par=pars[i]; return {x, pop, par, tot:pop*par}; });
     const best = rows.reduce((a,b)=>b.par>a.par?b:a);
     const gros = rows.reduce((a,b)=>b.tot>a.tot?b:a);
     const table = dataTable('Dépenses culturelles',
@@ -1797,7 +1810,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const p = pickN(PAYS,5);
     const rows = p.map(x=>{ const pib=ri(2,20)*100, act=+(ri(80,250)/100).toFixed(2); return {x, pib, act, dep:+(pib*act/100).toFixed(1)}; });
     const r = rows[ri(0,4)];
-    const cible = absPick2([3,3.5,4]);
+    const cible = absPick([3,3.5,4]);
     const manque = +(r.pib*(cible-r.act)/100).toFixed(1);
     const table = dataTable('Dépense de recherche',
       ['Pays','PIB (Md€)','Dépense R&D (% du PIB)','Chercheurs (milliers)'],
@@ -1810,7 +1823,9 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Rapport entre deux colonnes, à comparer entre lignes. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(x=>{ const d=ri(20,90), e=ri(2,9); return {x, dossiers:d*e*10, agents:e*10, ratio:d}; });
+    /* Même précaution : le rapport dossiers/agents doit avoir un maximum unique. */
+    const ratios = []; while(ratios.length<5){ const v=ri(20,90); if(ratios.indexOf(v)<0) ratios.push(v); }
+    const rows = p.map((x,i)=>{ const d=ratios[i], e=ri(2,9); return {x, dossiers:d*e*10, agents:e*10, ratio:d}; });
     const best = rows.reduce((a,b)=>b.ratio>a.ratio?b:a);
     const table = dataTable('Charge de travail par service',
       ['Pays','Dossiers traités','Agents affectés','Délai moyen (jours)'],
@@ -1823,7 +1838,7 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Appliquer une prévision de croissance à une valeur du tableau. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(x=>({x, v:ri(15,90)*100, t:absPick2([-4,-2,2,3,5,8])}));
+    const rows = p.map(x=>({x, v:ri(15,90)*100, t:absPick([-4,-2,2,3,5,8])}));
     const r = rows[ri(0,4)];
     const prev = Math.round(r.v*(100+r.t)/100);
     const table = dataTable('Trafic de fret et prévision de croissance',
@@ -1853,7 +1868,7 @@ const NUMERIC_TABLE_TEMPLATES = [
   ()=>{
     const p = pickN(PAYS,5);
     const base = ri(80,140)*10;
-    const rows = p.map(x=>{ const idx=absPick2([85,90,100,110,120,125,140,150]); return {x, idx, v:Math.round(base*idx/100)}; });
+    const rows = p.map(x=>{ const idx=absPick([85,90,100,110,120,125,140,150]); return {x, idx, v:Math.round(base*idx/100)}; });
     const r = rows[ri(0,4)];
     const table = dataTable('Prix de l\'immobilier, indice base 100 en année de référence (valeur de référence : '+fmtN(base)+' €/m²)',
       ['Pays','Indice année courante','Prix courant (€/m²)','Loyers (indice)'],
@@ -1866,7 +1881,7 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Deux remises ou deux hausses successives lues dans le tableau. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(x=>({x, prix:ri(2,20)*100, r1:absPick2([10,15,20,25]), r2:absPick2([5,10,20])}));
+    const rows = p.map(x=>({x, prix:ri(2,20)*100, r1:absPick([10,15,20,25]), r2:absPick([5,10,20])}));
     const r = rows[ri(0,4)];
     const fin = Math.round(r.prix*(100-r.r1)/100*(100-r.r2)/100);
     const naif = Math.round(r.prix*(100-r.r1-r.r2)/100);
@@ -1881,7 +1896,7 @@ const NUMERIC_TABLE_TEMPLATES = [
   /* Somme d'une sous-population définie par deux colonnes. */
   ()=>{
     const p = pickN(PAYS,5);
-    const rows = p.map(x=>{ const t=ri(10,90)*100, s=absPick2([10,20,25,40,50]); return {x, t, s, n:t*s/100}; });
+    const rows = p.map(x=>{ const t=ri(10,90)*100, s=absPick([10,20,25,40,50]); return {x, t, s, n:t*s/100}; });
     const cible = rows.filter((_,i)=>i<3);
     const somme = cible.reduce((a,z)=>a+z.n,0);
     const table = dataTable('Bénéficiaires par pays',
@@ -1997,7 +2012,9 @@ const ABSTRACT_BANK = [
  opts:[{sides:6,scale:0.6,filled:false},{sides:6,scale:0.4,filled:false},{sides:6,scale:1.0,filled:false},{sides:6,scale:0.4,filled:true}], c:1,
  ex:`L'hexagone rétrécit d'un pas constant (0,2) en restant vide. Suite : 0,4 vide. L'option pleine est un piège.`},
 {title:`Côtés décroissants + rotation`, seq:[{sides:6,rot:0,marker:true},{sides:5,rot:45,marker:true},{sides:4,rot:90,marker:true}],
- opts:[{sides:3,rot:135},{sides:3,rot:90},{sides:4,rot:135},{sides:5,rot:135}], c:0,
+ /* Les propositions portent le repère comme la suite : sans lui la rotation est
+    invisible sur un polygone régulier, et la moitié de la règle devient invérifiable. */
+ opts:[{sides:3,rot:135,marker:true},{sides:3,rot:90,marker:true},{sides:4,rot:135,marker:true},{sides:5,rot:135,marker:true}], c:0,
  ex:`Côtés −1 ET rotation +45°. Résultat : triangle (3 côtés) à 135°.`},
 {title:`Alternance de deux formes`, seq:[{sides:0,scale:0.8},{sides:4,rot:0,scale:0.8},{sides:0,scale:0.8}],
  opts:[{sides:0,scale:0.8},{sides:4,rot:0,scale:0.8},{sides:3,rot:0,scale:0.8},{sides:5,rot:0,scale:0.8}], c:1,
@@ -2006,7 +2023,9 @@ const ABSTRACT_BANK = [
  opts:[{sides:4,hline:true},{sides:4},{sides:4,vline:true},{sides:4,hline:true,vline:true}], c:1,
  ex:`Alternance stricte avec/sans trait horizontal : la suite est sans trait. La forme ne change jamais.`},
 {title:`Trait constant + rotation`, seq:[{sides:3,rot:0,hline:true,filled:false,marker:true},{sides:3,rot:45,hline:true,filled:false,marker:true},{sides:3,rot:90,hline:true,filled:false,marker:true}],
- opts:[{sides:3,rot:60,hline:true},{sides:3,rot:90,hline:true},{sides:3,rot:90},{sides:3,rot:120,hline:true}], c:1,
+ /* La suite va 0, 45, 90 : la continuation est 135, que l'explication annonce.
+    Les propositions ne la contenaient pas et la clé pointait sur 90. */
+ opts:[{sides:3,rot:90,hline:true,filled:false,marker:true},{sides:3,rot:135,hline:true,filled:false,marker:true},{sides:3,rot:135,filled:false,marker:true},{sides:3,rot:180,hline:true,filled:false,marker:true}], c:1,
  ex:`Rotation du repère de +45° à chaque étape, le trait horizontal est un attribut stable qui ne sert qu'à distraire. Résultat : 135° avec trait.`},
 {title:`Alternance de traits`, seq:[{sides:0,hline:true},{sides:0,vline:true},{sides:0,hline:true}],
  opts:[{sides:0,hline:true},{sides:0,vline:true},{sides:0,hline:true,vline:true},{sides:0}], c:1,
@@ -2271,8 +2290,7 @@ function genAbstractSet(){
     if(opts.length<ABS_OPTS) continue;
     if(opts.filter(f.test).length!==1) continue;      // invariant : une seule conforme
     const p = shuffle(opts.map((_,i)=>i));
-    return {kind:'set', title:f.title, seq:set, opts:p.map(i=>opts[i]), c:p.indexOf(0), ex:f.ex,
-            _conform:p.map(i=>f.test(opts[i]))};
+    return {kind:'set', title:f.title, seq:set, opts:p.map(i=>opts[i]), c:p.indexOf(0), ex:f.ex};
   }
   return genAbstract();   // repli, jamais atteint en pratique
 }
@@ -4451,7 +4469,10 @@ function ttsNormalize(t){
   t = t.replace(/(\d) (?=\d{3}(?!\d))/g,'$1').replace(/(\d) (?=\d{3}(?!\d))/g,'$1');
   TTS_ACRO.forEach(r=>{ t = t.replace(r[0], r[1]); });
   t = t.replace(/Md€/g,` milliards d'euros`).replace(/M€/g,` millions d'euros`).replace(/€/g,` euros`);
-  t = t.replace(/[−–-]\s?(\d[\d,.]*)\s*%/g,`moins $1 pour cent`);
+  /* Une plage se lit « de X à Y » ; le tiret n'est un signe négatif que s'il
+     n'est pas précédé d'un chiffre, sinon « 10-20 % » devenait « 10moins 20 ». */
+  t = t.replace(/(\d)\s*[-–—]\s*(\d[\d,.]*)\s*%/g,`$1 à $2 pour cent`);
+  t = t.replace(/(^|[^\d\w])[−–-]\s?(\d[\d,.]*)\s*%/g,`$1moins $2 pour cent`);
   t = t.replace(/\+\s?(\d[\d,.]*)\s*%/g,`plus $1 pour cent`);
   t = t.replace(/\s*%/g,` pour cent`).replace(/\s*‰/g,` pour mille`);
   t = t.replace(/\b1er\b/g,`premier`).replace(/\b1re\b/g,`première`);
@@ -4712,8 +4733,11 @@ function ttsRefreshVoices(){
   try{ all = speechSynthesis.getVoices() || []; }catch(e){ all = []; }
   const fr = all.filter(v=>/^fr/i.test(v.lang||''));
   TTS_VOICES = (fr.length ? fr : all).slice().sort((a,b)=>ttsScore(b)-ttsScore(a));
-  if(TTS_VOICES.length && !TTS_VOICES.some(v=>v.voiceURI===TTS.voiceURI))
-    TTS.voiceURI = TTS_VOICES[0].voiceURI;
+  /* On ne comble qu'une absence de choix. Remplacer une voix simplement absente
+     de l'instantané courant écrasait la sélection de l'utilisateur, car Chrome
+     publie sa liste en plusieurs fois. Une voix disparue est de toute façon
+     rattrapée par la bascule automatique en cas de silence. */
+  if(!TTS.voiceURI && TTS_VOICES.length) TTS.voiceURI = TTS_VOICES[0].voiceURI;
 }
 function ttsVoice(){
   try{ return (speechSynthesis.getVoices()||[]).find(v=>v.voiceURI===TTS.voiceURI) || null; }
@@ -4928,6 +4952,9 @@ function ttsToggle(){ if(TTS.playing) ttsPause(); else ttsPlay(); }
 function ttsStop(){
   ttsKill(); ttsKeepAlive(false); ttsHoldAudio(false); ttsWakeLock(false);
   TTS.playing = false; TTS.paused = false; TTS.chap = null; TTS.chunks = []; TTS.i = 0;
+  /* Sans oublier le dernier chapitre, la barre refermée revenait au rechargement
+     et réarmait au passage la capture de la barre d'espace. */
+  TTS.last = null; ttsFlush();
   if(CURRENT==='params') renderParams(); else ttsBarSync();
 }
 function ttsSetRate(r){
@@ -5189,6 +5216,11 @@ function ttsKey(e){
   if(t && (t.tagName==='INPUT' || t.tagName==='TEXTAREA' || t.tagName==='SELECT' || t.isContentEditable)) return;
   if(e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key;
+  /* Espace active le contrôle qui a le focus : le détourner empêchait de
+     répondre au clavier pendant une session, et lançait la lecture d'un cours
+     au milieu d'un test. */
+  const actif = document.activeElement;
+  if(k===' ' && actif && /^(BUTTON|A|SUMMARY|SELECT|LABEL)$/.test(actif.tagName)) return;
   if(k===' '){ e.preventDefault(); ttsToggle(); }
   else if(k==='ArrowRight'){ e.preventDefault(); e.shiftKey ? ttsChapter(1) : ttsSeek(1); }
   else if(k==='ArrowLeft'){ e.preventDefault(); e.shiftKey ? ttsChapter(-1) : ttsSeek(-1); }
@@ -5312,19 +5344,36 @@ const ACRONYMS = [
 const DEFAULT_PROGRESS = ()=>({
   verbal:{att:0,cor:0}, numeric:{att:0,cor:0}, abstract:{att:0,cor:0},
   euknow:{att:0,cor:0}, digital:{att:0,cor:0}, eufte:{sessions:0},
-  streak:{count:0,last:null}, firstVisit:new Date().toISOString().slice(0,10)
+  streak:{count:0,last:null}, firstVisit:jourLocal()
 });
 let PROGRESS = DEFAULT_PROGRESS();
 async function loadProgress(){
+  /* Fusion champ par champ : Object.assign remplaçait un objet imbriqué en bloc,
+     si bien qu'un « streak » à null survivait au défaut et faisait échouer le
+     démarrage — la page restait vide, sans onglets ni moyen d'aller réinitialiser. */
+  PROGRESS = DEFAULT_PROGRESS();
   try{
     const r = await window.storage.get('epso-progress');
-    if(r && r.value) PROGRESS = Object.assign(DEFAULT_PROGRESS(), JSON.parse(r.value));
+    const st = r && r.value ? JSON.parse(r.value) : null;
+    if(st && typeof st === 'object'){
+      Object.keys(PROGRESS).forEach(k=>{
+        const v = st[k], d = PROGRESS[k];
+        if(d && typeof d === 'object'){ if(v && typeof v === 'object') PROGRESS[k] = Object.assign(d, v); }
+        else if(v !== undefined && v !== null && typeof v === typeof d) PROGRESS[k] = v;
+      });
+    }
   }catch(e){ PROGRESS = DEFAULT_PROGRESS(); }
-  updateStreak(); renderStreak();
+  try{ updateStreak(); renderStreak(); }catch(e){}
 }
 async function saveProgress(){ try{ await window.storage.set('epso-progress', JSON.stringify(PROGRESS)); }catch(e){} }
+/* Date CIVILE locale : toISOString bascule sur UTC, ce qui décalait la série
+   d'un jour pour toute session tardive en Europe continentale. */
+function jourLocal(d){
+  const x = d || new Date();
+  return new Date(x.getTime() - x.getTimezoneOffset()*60000).toISOString().slice(0,10);
+}
 function updateStreak(){
-  const today = new Date().toISOString().slice(0,10);
+  const today = jourLocal();
   const last = PROGRESS.streak.last;
   if(last === today) return;
   if(last){
@@ -6092,7 +6141,10 @@ function renderKbList(container, items, idPrefix, grp){
 }
 /* Ouvre la section en cours de lecture et y pose les repères de phrase. */
 function ttsSyncCours(){
-  if(CURRENT!=='cours') return;
+  /* Les chapitres du groupe « cours » sont rendus par l'onglet Connaissances UE,
+     pas par l'onglet Cours : s'y limiter rendait le surlignage et le clic sur une
+     phrase inopérants pour les neuf sections du cours. */
+  if(CURRENT!=='cours' && CURRENT!=='euknow') return;
   document.querySelectorAll('.kb-body[data-marked]').forEach(bd=>{
     if(!TTS.chap || bd.dataset.audio !== TTS.chap.id){
       const ch = AUDIO_BY_ID.get(bd.dataset.audio);
@@ -6117,7 +6169,7 @@ function renderCours(){
   const ficheSections = [...new Set(ANNEXE_FICHES.map(f=>f.section))];
   app.innerHTML = `
   <div class="card">
-    <span class="eyebrow">Cours · ${AUDIO_LIB.length} chapitres</span>
+    <span class="eyebrow">Cours · ${piliers.length+themes.length+actus.length+ANNEXE_FICHES.length} chapitres</span>
     <h2>Connaissances européennes</h2>
     <p class="lede">Condensés de référence vérifiés contre les sources officielles des institutions.
     Ils complètent le module Connaissances UE sans le répéter, et nourrissent l'essai EUFTE : chaque
@@ -6359,7 +6411,10 @@ const RENDERERS = {
   euknow: renderEuKnow, digital: renderDigital, eufte: renderEufte,
   cours: renderCours, concours: renderConcours, params: renderParams,
 };
-loadProgress().then(ttsInit).then(()=>{ renderTabs(); syncHeaderH(); renderDashboard(); });
+/* Quoi qu'il arrive en amont, l'interface se dessine : une exception silencieuse
+   laisserait l'utilisateur devant une page blanche sans recours. */
+loadProgress().then(ttsInit).catch(e=>{ try{ console.error(e); }catch(_){} })
+  .then(()=>{ renderTabs(); syncHeaderH(); renderDashboard(); });
 </script>
 </body>
 </html>
