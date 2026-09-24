@@ -10,7 +10,7 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 - **Connaissances UE** · cours en 9 sections et 354 questions.
 - **Compétences numériques** · cadre DigComp et 193 questions.
 - **EUFTE** · six consignes au format réel, chacune avec une correction visant le haut de la grille et une explication critère par critère sur les cinq « anchors » publiés par EPSO.
-- **Cours** · 30 sections de référence, 169 fiches thématiques et un glossaire repliable de 59 sigles développés puis expliqués. Chaque section est écoutable sur place.
+- **Cours** · 31 sections de référence, 169 fiches thématiques et un glossaire repliable de 59 sigles développés puis expliqués. Chaque section est écoutable sur place.
 - **Le concours** · modalités, calendrier, choix des deux langues, dix règles stratégiques et plan de préparation en deux parties.
 - **Paramètres** · thème, réglages de lecture audio, file d'attente, diagnostic vocal, réinitialisation.
 
@@ -18,7 +18,7 @@ Dans les trois moteurs de session, l'ordre des options est permuté à l'afficha
 
 ## Lecture audio
 
-Le cours et l'ensemble des fiches forment 208 chapitres écoutables dans n'importe quel ordre, chacun retenant la phrase exacte où la lecture s'est arrêtée. Pendant l'écoute, **la phrase lue est surlignée dans le texte du cours** et un clic sur une phrase y déplace la lecture.
+Le cours et l'ensemble des fiches forment 209 chapitres écoutables dans n'importe quel ordre, chacun retenant la phrase exacte où la lecture s'est arrêtée. Pendant l'écoute, **la phrase lue est surlignée dans le texte du cours** et un clic sur une phrase y déplace la lecture.
 
 La synthèse est celle du système (API `speechSynthesis`) : aucun texte n'est envoyé à un service externe, et tout fonctionne hors ligne une fois la voix installée. La qualité dépend entièrement de la voix : les voix neuronales sont remontées en tête du sélecteur. La lecture continue écran verrouillé, avec les commandes sur l'écran de verrouillage.
 
