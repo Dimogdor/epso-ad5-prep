@@ -252,6 +252,8 @@ main{padding-top:28px;}
 .mth ul,.mth ol{padding-left:21px;margin:0 0 13px;}
 .mth li{margin-bottom:8px;}
 .mth p:last-child{margin-bottom:15px;}
+.jj{padding-left:21px;margin:0 0 8px;}
+.jj li{font-size:15px;line-height:1.6;margin-bottom:7px;}
 
 /* ---------- SIGLES ---------- */
 .acr-search{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px;
@@ -5380,7 +5382,7 @@ const ACRONYMS = [
 {a:`SEAE`, f:`Service européen pour l'action extérieure`, en:`EEAS`, d:`Diplomatie de l'Union, placée sous l'autorité du Haut représentant. Il anime les délégations de l'Union dans le monde.`},
 {a:`SEBC`, f:`Système européen de banques centrales`, en:`ESCB`, d:`La Banque centrale européenne et l'ensemble des banques centrales nationales, y compris celles des États hors zone euro.`},
 {a:`SEQE`, f:`Système d'échange de quotas d'émission`, en:`EU ETS`, d:`Marché du carbone européen : un plafond d'émissions décroissant et des quotas échangeables. Le principal instrument climatique de l'Union.`},
-{a:`TAO`, f:`Plateforme d'examen à distance utilisée par EPSO`, d:`Environnement de passation surveillé à distance : identité vérifiée, écran unique, connexion stable exigée.`},
+{a:`TAO`, f:`Plateforme d'examen à distance utilisée par EPSO`, d:`Plateforme de test d'Open Assessment Technologies, couplée à l'extension de surveillance Proctorio : identité vérifiée, écran unique, enregistrement vidéo, audio et écran.`},
 {a:`TFUE`, f:`Traité sur le fonctionnement de l'Union européenne`, en:`TFEU`, d:`Avec le traité sur l'Union européenne, l'un des deux traités en vigueur. Il détaille les compétences, les politiques et les procédures.`},
 {a:`TUE`, f:`Traité sur l'Union européenne`, en:`TEU`, d:`Fixe les valeurs, les objectifs et le cadre institutionnel. Contient l'article 2 sur les valeurs, l'article 7 sur leur violation et l'article 50 sur le retrait.`},
 {a:`TVA`, f:`Taxe sur la valeur ajoutée`, en:`VAT`, d:`Une fraction de son assiette harmonisée constitue l'une des ressources propres du budget de l'Union.`},
@@ -5559,8 +5561,8 @@ const CAL = [
   {fin:'2026-09-30', t:`Diplôme délivré`, d:`au plus tard le 30 septembre 2026 · condition d'admissibilité`},
   {fin:'2026-10-07', t:`Dépôt des diplômes et certificats`, d:`au plus tard le 7 octobre 2026, 12h00 heure de Bruxelles · aucune réouverture pour un dépôt tardif`},
   {fin:'2026-10-19', t:`Lettre d'invitation à la partie 1`, d:`le <b>19 octobre 2026</b>, dans le Single Candidate Portal · elle confirme la semaine de passage et donne les instructions, pas le jour ni l'heure`},
-  {debut:'2026-10-20', fin:'2026-11-06', t:`Test prérequis obligatoire sur la plateforme TAO`, d:`du <b>20 octobre au 6 novembre 2026</b> · contrôle de l'installation technique ; le jour et l'heure exacts du test s'affichent sur la plateforme`},
-  {debut:'2026-11-09', fin:'2026-11-13', t:`Partie 1 à distance · verbal, numérique et abstrait, <b>le même jour</b>`, d:`semaine du <b>9 au 13 novembre 2026</b> (annonce EPSO du 13 octobre 2026) · aucun report possible`},
+  {debut:'2026-10-20', fin:'2026-11-06', t:`Vérification technique préalable sur la plateforme TAO`, d:`du <b>20 octobre au 6 novembre 2026</b> · <b>une seule tentative</b>, sur le matériel du jour J · le jour et l'heure exacts du test s'affichent sur la plateforme`},
+  {debut:'2026-11-09', fin:'2026-11-13', t:`Partie 1 à distance · verbal, numérique et abstrait, <b>le même jour</b>`, d:`du <b>9 au 13 novembre 2026</b>, confirmé par la lettre d'invitation · aucun report possible`},
   {t:`Résultats de la partie 1`, d:`après correction des tests de raisonnement · date non communiquée`},
   {t:`Publication du référentiel officiel du test UE`, d:`environ 2 mois avant la partie 2`},
   {t:`Partie 2 à distance · connaissances UE, compétences numériques et EUFTE`, d:`2027 · dates non communiquées à ce jour · réservée aux candidats ayant franchi les seuils de la partie 1 · l'ordre des trois tests peut varier`},
@@ -5583,16 +5585,16 @@ function renderConcours(){
     {n:'4',t:'Deux tiers de la note finale en Langue 2',d:`Connaissances UE (25 %) + compétences numériques (25 %) + EUFTE (15 %) se passent en Langue 2, soit 65 % du total. Réviser le vocabulaire institutionnel dans cette langue, et y rédiger ses essais d'entraînement.`},
     {n:'5',t:'Le référentiel UE officiel change la donne',d:`EPSO publie la liste des sources du test de connaissances environ deux mois avant la partie 2. Dès sa sortie, il devient la matière prioritaire : le test est construit dessus.`},
     {n:'6',t:'EUFTE : travailler sur sources',d:`La documentation est mise en ligne par EPSO avant l'épreuve et fournie de nouveau pendant, et les correcteurs notent explicitement l'usage qui en est fait. L'essai se rédige pendant la partie 2, avant de connaître son classement : tout candidat de la partie 2 doit donc s'y être préparé. Écrire de mémoire entraîne la mauvaise compétence.`},
-    {n:'7',t:'Deux sessions à distance, pas une',d:`Partie 1 (verbal + num/abstrait), puis partie 2 (connaissances UE, numériques et EUFTE ; l'essai n'est corrigé que pour les mieux classés au classement préliminaire). Verbal, numérique et abstrait se passent le même jour : l'endurance compte autant que la vitesse. Chaque session est surveillée à distance : un seul écran, pièce calme, pièce d'identité, connexion stable. Le test prérequis est obligatoire : le passer dès son ouverture, sur le matériel du jour J.`},
+    {n:'7',t:'Deux sessions à distance, pas une',d:`Partie 1 (verbal + num/abstrait), puis partie 2 (connaissances UE, numériques et EUFTE ; l'essai n'est corrigé que pour les mieux classés au classement préliminaire). Verbal, numérique et abstrait se passent le même jour : l'endurance compte autant que la vitesse. Surveillance automatisée par l'extension Proctorio, enregistrement vidéo, audio et écran, relu ensuite par des humains. Aucun papier ni stylo : calculatrice et bloc-notes à l'écran. Voir la carte « Le jour J ».`},
     {n:'8',t:'Surveiller son compte, pas sa boîte mail',d:`Invitations et résultats passent par le Single Candidate Portal EPSO, et le créneau exact par la plateforme TAO. Les courriels sont secondaires ; vérifier le compte plusieurs fois par semaine en période de convocation.`},
     {n:'9',t:`Les ressources gratuites d'abord`,d:`Exemples officiels sur eu-careers.europa.eu et comptes d'entraînement gratuits. Aucun coaching payant n'est requis ni approuvé par EPSO.`},
     {n:'10',t:'La liste de réserve n\'est pas un emploi',d:`Y figurer ouvre la porte aux entretiens de recrutement des institutions, qui y puisent selon leurs besoins et recherchent un équilibre géographique. Les nationalités sous-représentées y trouvent un avantage.`},
   ];
   const planPart1 = [
-    {w:`19-25 oct.`,d:`Lire la lettre d'invitation en entier. Passer le test prérequis dès son ouverture le 20 octobre, sur l'ordinateur, la connexion et dans la pièce du jour J, et noter le créneau affiché. Diagnostic : une session complète de verbal et une de num/abstrait. Verbal chronométré chaque jour, dans la Langue 1 déclarée.`},
+    {w:`19-25 oct.`,d:`Lire la lettre d'invitation en entier. Installer l'extension Proctorio dans Chrome ou Edge, puis passer la vérification technique préalable dès le 20 octobre, une seule tentative, sur l'ordinateur, la connexion et dans la pièce du jour J ; noter le créneau affiché. Essayer les sessions publiques de TAO pour se familiariser avec les outils. Diagnostic : une session complète de verbal et une de num/abstrait. Verbal chronométré chaque jour, dans la Langue 1 déclarée.`},
     {w:`26 oct.-1er nov.`,d:`Verbal quotidien, 20 textes en 35 minutes, en ciblant le piège « faux » contre « ne peut pas dire ». Num + abstrait trois fois dans la semaine, jusqu'à 13/20 cumulés de façon régulière : au-delà, aucun point de classement.`},
-    {w:`2-6 nov.`,d:`Conditions réelles : les trois tests à la suite, le même jour, à l'heure du créneau. Le test prérequis ferme le 6 novembre : s'il n'est pas fait, c'est la priorité absolue.`},
-    {w:`Semaine du test`,d:`Une session courte de verbal par jour pour garder le rythme, rien de nouveau. Réduire l'intensité la veille. Le jour J : pièce d'identité, pièce calme, un seul écran, connexion stable, appareil branché.`},
+    {w:`2-6 nov.`,d:`Conditions réelles : les trois tests à la suite, à l'heure du créneau, sans papier ni stylo, calculs sur une calculatrice à l'écran. La vérification technique ferme le 6 novembre : si elle n'est pas faite, c'est la priorité absolue.`},
+    {w:`Semaine du test`,d:`Une session courte de verbal par jour pour garder le rythme, rien de nouveau. Réduire l'intensité la veille. Le jour J : suivre la liste de la carte « Le jour J », chargeur branché <b>avant</b> le début.`},
   ];
   const planPart2 = [
     {w:`Dès les résultats`,d:`Si les seuils de la partie 1 sont franchis : bascule sur les connaissances UE et le cadre DigComp. Une section de cours par jour, quiz à la fin de chaque section, vocabulaire de la Langue 2 en parallèle.`},
@@ -5619,9 +5621,50 @@ function renderConcours(){
   <div class="card">
     <div class="section-title"><h2>Calendrier</h2></div>
     ${CAL.map(e=>'<div class="timeline-item '+calEtat(e)+'"><div class="dot"></div><div><div class="td">'+e.t+'</div><div class="tdate">'+e.d+'</div></div></div>').join('')}
-    <div class="warn-box">Le test prérequis est <b>obligatoire</b> : il vérifie l'installation technique, et
-    c'est sur la plateforme TAO que s'affichent le jour et l'heure exacts. Ne pas passer ou ne pas
-    terminer un test met fin à la participation.</div>
+    <div class="warn-box">La lettre d'invitation qualifie la vérification technique préalable
+    d'<b>obligatoire</b>. Elle ne se fait qu'<b>une fois</b> par concours, et sans elle toute réclamation
+    pour problème technique le jour du test est rejetée. Ne pas passer ou ne pas terminer un test met
+    fin à la participation.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>Le jour J</h2><span class="eyebrow">instructions EPSO TAO 427-26</span></div>
+    <p class="lede" style="font-size:14.5px;">Synthèse des instructions jointes à la lettre d'invitation.
+    Les lire en entier : leur non-respect peut mettre fin à la participation.</p>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Avant le jour J</p>
+    <ul class="jj">
+      <li>Ordinateur fixe ou portable, avec <b>droits administrateur</b> ; ni téléphone ni tablette. Un ordinateur professionnel est déconseillé.</li>
+      <li>Navigateur <b>Chrome ou Edge</b> à jour, extension <b>Proctorio</b> installée depuis getproctorio.com.</li>
+      <li>Antivirus, pare-feu, VPN et proxy désactivés ; heure du système réglée sur le bon fuseau ; disposition du clavier adaptée à la langue du test.</li>
+      <li>Pièce d'identité avec <b>nom et photo sur la même face</b>. Sinon, téléverser un PDF des deux faces dans le Single Candidate Portal avant 23h59 le lendemain du test.</li>
+      <li>Vérification technique préalable faite, une seule tentative : diagnostic, webcam, pièce d'identité, scan de la pièce de 20 à 60 secondes.</li>
+      <li>Enregistrer le numéro du support TAO : <b>+351 211 554 559</b>, de 9h à 18h, du lundi au vendredi, en anglais et en français.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Autorisé</p>
+    <ul class="jj">
+      <li>Portable <b>branché avant le début</b> ; un seul écran, ou un écran externe avec le portable fermé ; souris, clavier, pavé numérique, adaptateur USB multiport.</li>
+      <li>Deux mouchoirs au plus, une boisson dans un récipient transparent sans étiquette.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Interdit, sous peine d'exclusion</p>
+    <ul class="jj">
+      <li>Téléphone sur le bureau ou à portée de main, montre connectée, second écran, station d'accueil, calculatrice externe.</li>
+      <li>Papier, stylo, notes ; écouteurs, casque, bouchons d'oreilles ; nourriture, couvre-chef, sac ; toute autre personne ou animal dans la pièce.</li>
+      <li>Parler ou lire à voix haute, se lever, quitter le champ de la caméra, se couvrir le visage.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Ce qui coupe le test automatiquement</p>
+    <ul class="jj">
+      <li>Brancher le chargeur après le début, connecter un écran, fermer ou recharger l'onglet, ouvrir un autre onglet, quitter le plein écran, changer de réseau, révoquer une autorisation, plus de 2 minutes de déconnexion.</li>
+      <li>En cas de coupure : revenir à l'accueil TAO et cliquer sur « Continue testing » ; si le bouton est inactif, appeler le support.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Pendant le test</p>
+    <ul class="jj">
+      <li>Navigation libre entre les questions d'une même partie, marque-page pour y revenir, panneau de synthèse des réponses : répondre à tout avant de valider.</li>
+      <li>Outils à l'écran : calculatrice (décimales avec un <b>point</b>), bloc-notes, surligneur, élimination de réponses, règle de lecture, zoom et contraste.</li>
+      <li>Les pages d'instructions ont leur propre compte à rebours, puis le test démarre seul.</li>
+    </ul>
+    <div class="info-box">Problème technique : appeler le support TAO pendant le créneau, puis déposer une
+    réclamation écrite dans le Single Candidate Portal avec une preuve de l'appel. Sans vérification
+    préalable ni appel au support, la réclamation est irrecevable.</div>
   </div>
 
   <div class="card">
@@ -5899,7 +5942,8 @@ function renderNumAbs(){
       <tr><td>Abstrait (réel)</td><td>10 questions · 10 minutes</td></tr>
       <tr><td>Seuil éliminatoire</td><td>10/20 sur le total des deux</td></tr>
       <tr><td>Poids dans le classement</td><td>zéro, pass/fail uniquement</td></tr>
-      <tr><td>Calculatrice</td><td>basique, à l'écran, fournie (numérique)</td></tr>
+      <tr><td>Calculatrice</td><td>à l'écran, fournie ; séparateur décimal : le <b>point</b>, pas la virgule</td></tr>
+      <tr><td>Brouillon</td><td>aucun papier ni stylo : bloc-notes à l'écran uniquement</td></tr>
       <tr><td>Options par question</td><td><b>cinq</b> (A à E) dans les deux tests</td></tr>
     </table>
     <div class="warn-box"><b>Vérifié sur l'épreuve blanche officielle.</b> Les deux tests proposent <b>cinq</b> options, pas quatre. En numérique, la cinquième est toujours « Aucune de ces réponses » et elle est parfois la bonne : ne jamais la cocher est un réflexe qui coûte des points. Chaque question numérique repose sur un <b>tableau de données</b> et demande deux ou trois opérations enchaînées, avec des colonnes présentes uniquement pour t'égarer. En abstrait, les cinq figures candidates sont étiquetées A à E.</div>
