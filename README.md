@@ -7,12 +7,14 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 
 - **Verbal** · 181 textes au format réel, tous au niveau de l'examen : un passage de 150 à 185 mots, quatre affirmations A/B/C/D, une seule pleinement démontrée par le texte. La correction donne le verdict de chaque affirmation (vrai, faux, ne peut pas dire) et sa raison. Les sessions tirent en priorité des textes pas encore vus. Chronomètre global de session. La moitié des textes sont hors sujet européen, comme au concours.
 - **Numérique + abstrait** · cinq options par question. Session numérique niveau examen : douze familles de séries où un jeu de données (tableaux, graphique en barres ou en courbes) sert à trois questions de quatre à six opérations : unités, cellules manquantes, tendances, décalage horaire, taux de change. Session abstraite niveau examen : séries de cinq cadres à éléments multiples (deux ou trois règles indépendantes, règles conditionnelles, alternances) et items « même ensemble » à deux règles, avec la règle enfreinte par chaque option fausse. Les anciennes questions courtes restent disponibles en échauffement.
-- **Connaissances UE** · cours en 9 sections et 354 questions.
-- **Compétences numériques** · cadre DigComp et 193 questions.
-- **EUFTE** · six consignes au format réel, chacune avec une correction visant le haut de la grille et une explication critère par critère sur les cinq « anchors » publiés par EPSO.
+- **Connaissances UE** · cours en 9 sections et 354 questions, jouables en anglais ou en français.
+- **Compétences numériques** · cadre DigComp et 193 questions, jouables en anglais ou en français.
+- **EUFTE** · six consignes au format réel, avec consigne et document source en anglais ou en français, chacune avec une correction visant le haut de la grille et une explication critère par critère sur les cinq « anchors » publiés par EPSO.
 - **Cours** · 31 sections de référence, 169 fiches thématiques et un glossaire repliable de 59 sigles développés puis expliqués. Chaque section est écoutable sur place.
 - **Le concours** · modalités, calendrier, choix des deux langues, dix règles stratégiques et plan de préparation en deux parties.
 - **Paramètres** · thème, réglages de lecture audio, file d'attente, diagnostic vocal, réinitialisation.
+
+Les tests 3 à 5 se passent en Langue 2 : un sélecteur « English / Français » sur chacun de ces onglets bascule les questions, les explications et les sujets EUFTE. L'anglais est proposé par défaut, et le choix est mémorisé.
 
 Dans les trois moteurs de session, l'ordre des options est permuté à l'affichage : la bonne réponse ne reste jamais à la même place. En numérique, « Aucune de ces réponses » reste épinglée en dernière position, comme au concours.
 
