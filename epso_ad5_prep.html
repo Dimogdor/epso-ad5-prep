@@ -199,7 +199,7 @@ main{padding-top:28px;}
 .session-end .btn{margin-top:8px;}
 
 /* ---------- ABSTRAIT ---------- */
-.abs-sequence{display:flex;align-items:center;justify-content:center;gap:11px;margin:24px 0;flex-wrap:wrap;}
+.abs-sequence{display:flex;align-items:center;justify-content:center;gap:24px 11px;margin:28px 0 24px;flex-wrap:wrap;}
 .abs-shape-box,.abs-q{width:92px;height:92px;border-radius:var(--r-sm);display:flex;align-items:center;
   justify-content:center;padding:9px;flex-shrink:0;}
 .abs-caption{font-size:14px;font-weight:650;color:var(--muted);margin:20px 0 2px;}
@@ -212,6 +212,10 @@ main{padding-top:28px;}
   position:relative;aspect-ratio:1;}
 .abs-opt:hover:not(:disabled){border-color:var(--accent);}
 .abs-letter{position:absolute;top:5px;left:7px;font-size:14px;font-weight:700;color:#4A5058;}
+/* Séries à éléments multiples : le cadre est dans la figure, on réduit la marge. */
+.abs-shape-box.ax{padding:3px;position:relative;}
+.abs-opt.ax{padding:24px 6px 6px;}
+.ax-n{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:12px;font-weight:700;color:var(--muted);}
 .abs-opt.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);}
 .abs-opt.correct{border-color:var(--good);box-shadow:0 0 0 2px var(--good);}
 .abs-opt.incorrect{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad);}
@@ -2786,11 +2790,11 @@ const ABS_HORIZ = f => f.arrow==='left' || f.arrow==='right';
 
 /* Chaque famille fournit : de quoi tirer une figure au hasard, un test de conformité,
    et le moyen de forcer la conformité ou la violation. */
-function absSetFamily(){
+function absSetFamily(deuxRegles){
   const inv = ri(0,1)===1;             // le sens de la règle est tiré au sort
   const oui = b => inv ? !b : b;
   const C = ABS_COLORS;
-  switch(ri(0,5)){
+  switch(deuxRegles ? 5 : ri(0,5)){
     case 0: return {
       title:`Orientation et remplissage`,
       rand:()=>({sides:absPick([3,4,5,6]), scale:0.72, rot:0, color:C[ri(0,3)], arrow:absPick(['left','right','up','down'])}),
@@ -2848,9 +2852,9 @@ function absSetSafe(set, ans){
   return true;
 }
 
-function genAbstractSet(){
+function genAbstractSet(deuxRegles){
   for(let essai=0; essai<60; essai++){
-    const f = absSetFamily();
+    const f = absSetFamily(deuxRegles);
     const vus = new Set(), set = [];
     for(let g=0; g<400 && set.length<5; g++){
       const x = f.apply(f.rand(), true);
@@ -2936,6 +2940,282 @@ function mkAbsSeries(n){
     seen.add(k); out.push(g);
   }
   while(out.length<n) out.push(genAbstract());
+  return shuffle(out);
+}
+
+/* ================= ABSTRAIT · NIVEAU EXAMEN =================
+   Séries de cinq cadres, la sixième figure à trouver parmi cinq. Chaque cadre
+   porte plusieurs éléments qui obéissent chacun à leur propre règle (pas de
+   rotation différents, apparition un cadre sur deux, règles qui alternent selon
+   la parité, déplacement conditionné par la couleur d'un autre élément...).
+   Chaque proposition fausse enfreint une règle précise, que la correction
+   nomme. Familles génériques, dessinées en SVG : aucune figure n'est reprise
+   d'un recueil. */
+const AX = {ink:'#1B2438', grey:'#9AA0A8', white:'#FFFFFF', line:'#1B2438'};
+let AX_UID = 0;
+function axFrame(inner){
+  const id = 'axh'+(++AX_UID);
+  return '<svg viewBox="0 0 100 100" width="100%" height="100%"><defs>'
+    +'<pattern id="'+id+'" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+    +'<rect width="6" height="6" fill="#FFFFFF"/><line x1="0" y1="0" x2="0" y2="6" stroke="'+AX.ink+'" stroke-width="2.6"/></pattern></defs>'
+    +'<rect x="2" y="2" width="96" height="96" fill="#FFFFFF" stroke="'+AX.ink+'" stroke-width="1.6"/>'
+    + inner.replace(/HATCH/g,'url(#'+id+')') + '</svg>';
+}
+const axFill = f => f==='noir' ? AX.ink : f==='gris' ? AX.grey : f==='hachuré' ? 'HATCH' : AX.white;
+const axMod = (a,n) => ((a%n)+n)%n;
+const axSens = s => s>0 ? 'dans le sens horaire' : 'dans le sens antihoraire';
+const axPas = s => Math.abs(s)===1 ? 'd\'un cran' : 'de '+Math.abs(s)+' crans';
+
+/* 1. Hexagone de six triangles : deux couleurs tournent à des pas différents,
+      une troisième n'apparaît qu'un cadre sur deux. */
+function axHexa(){
+  for(let essai=0; essai<200; essai++){
+    const sb = absPick([1,-1]), sg = absPick([2,-2,1,-1].filter(x=>x!==sb)), sh = absPick([1,-1,2,-2,3]);
+    const b0=ri(0,5), g0=ri(0,5), h0=ri(0,5), hOn = ri(0,1);   // hachuré présent aux cadres de parité hOn
+    const st = k => ({b:axMod(b0+sb*k,6), g:axMod(g0+sg*k,6), h:(k%2===hOn)?axMod(h0+sh*Math.floor(k/2),6):-1});
+    const fr = [0,1,2,3,4,5].map(st);
+    if(fr.some(f=>f.b===f.g || f.b===f.h || f.g===f.h)) continue;
+    const ans = fr[5];
+    const wrong = [
+      [{...ans,b:axMod(ans.b+sb,6)}, `le triangle noir a avancé d'un cran de trop (règle 1)`],
+      [{...ans,b:axMod(ans.b-2*sb,6)}, `le triangle noir tourne dans le mauvais sens (règle 1)`],
+      [{...ans,g:axMod(ans.g-sg,6)}, `le triangle gris n'a pas bougé depuis la cinquième figure (règle 2)`],
+      [{...ans,g:axMod(ans.g+sg,6)}, `le triangle gris a avancé de deux pas au lieu d'un (règle 2)`],
+      [ans.h<0 ? {...ans,h:axMod(fr[4].h+sh,6)} : {...ans,h:-1}, ans.h<0 ? `le triangle hachuré est présent alors qu'il ne revient qu'un cadre sur deux (règle 3)` : `le triangle hachuré manque alors que c'est son tour d'apparaître (règle 3)`],
+      [{...ans,b:ans.g,g:ans.b}, `les triangles noir et gris sont inversés (règles 1 et 2)`],
+    ].filter(([w])=>w.b!==w.g && w.b!==w.h && w.g!==w.h);
+    const sect = (i,fill) => { const a=(-90+i*60)*Math.PI/180, c=(-90+(i+1)*60)*Math.PI/180;
+      return '<polygon points="50,50 '+(50+40*Math.cos(a)).toFixed(1)+','+(50+40*Math.sin(a)).toFixed(1)+' '+(50+40*Math.cos(c)).toFixed(1)+','+(50+40*Math.sin(c)).toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>'; };
+    return {title:`Hexagone : trois éléments, trois règles`,
+      frames:fr, wrong,
+      draw:s=>axFrame([0,1,2,3,4,5].map(i=>sect(i, i===s.b?AX.ink : i===s.g?AX.grey : i===s.h?'HATCH':AX.white)).join('')),
+      key:s=>s.b+'|'+s.g+'|'+s.h,
+      rules:[`Le triangle noir tourne ${axPas(sb)} ${axSens(sb)} à chaque figure.`,
+             `Le triangle gris tourne ${axPas(sg)} ${axSens(sg)} à chaque figure.`,
+             `Le triangle hachuré n'apparaît qu'une figure sur deux ; à chaque apparition, il a tourné ${axPas(sh)} ${axSens(sh)}.`],
+      tip:`Suivre chaque couleur séparément. Chercher une règle qui lierait les trois triangles fait perdre du temps : ils sont indépendants.`};
+  }
+}
+
+/* 2. Carrés concentriques : une bande noire rentre, une bande grise sort ;
+      quand elles se superposent, la bande apparaît hachurée. */
+function axBandes(){
+  const N = 5, dn = 1, dg = -1;
+  const n0 = ri(0,4), g0 = ri(0,4);
+  const st = k => ({n:axMod(n0+dn*k,N), g:axMod(g0+dg*k,N)});
+  const fr = [0,1,2,3,4,5].map(st);
+  if(!fr.slice(0,5).some(f=>f.n===f.g)) return axBandes();      // la superposition doit se voir
+  const ans = fr[5];
+  const wrong = [
+    [{...ans,n:axMod(ans.n-dn,N)}, `la bande noire n'a pas bougé (règle 1)`],
+    [{...ans,n:axMod(ans.n+dn,N)}, `la bande noire a avancé de deux crans (règle 1)`],
+    [{...ans,g:axMod(ans.g-dg,N)}, `la bande grise n'a pas bougé (règle 2)`],
+    [{...ans,g:axMod(ans.g+2*dg,N)}, `la bande grise a avancé de trois crans au lieu d'un (règle 2)`],
+    [{n:ans.g,g:ans.n}, `les bandes noire et grise ont échangé leur sens de déplacement (règles 1 et 2)`],
+  ];
+  const draw = s => { let o=''; for(let i=0;i<N;i++){ const m=8+i*8.4, w=84-2*i*8.4;
+      const fill = (i===s.n && i===s.g) ? 'HATCH' : i===s.n ? AX.ink : i===s.g ? AX.grey : AX.white;
+      o += '<rect x="'+m.toFixed(1)+'" y="'+m.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+w.toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'; }
+    return axFrame(o); };
+  return {title:`Carrés concentriques : bandes en mouvement`, frames:fr, wrong, draw,
+    key:s=>s.n+'|'+s.g,
+    rules:[`La bande noire se déplace d'un cran vers le centre à chaque figure ; arrivée au centre, elle repart du bord extérieur.`,
+           `La bande grise se déplace d'un cran vers l'extérieur à chaque figure ; arrivée au bord, elle repart du centre.`,
+           `Quand les deux bandes occupent la même position, elle apparaît hachurée.`],
+    tip:`La bande hachurée n'est pas un troisième élément : c'est la superposition des deux autres. Le comprendre tôt évite de chercher une règle qui n'existe pas.`};
+}
+
+/* 3. Une ligne et une colonne : les couleurs de la ligne glissent vers la droite
+      aux transitions impaires, les formes de la colonne descendent aux transitions paires. */
+const AX_FORMES = ['cercle','carré','triangle','losange','pentagone'];
+function axForme(f, x, y, fill){
+  const r = 8.5;
+  if(f==='cercle') return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>';
+  if(f==='carré') return '<rect x="'+(x-r+1)+'" y="'+(y-r+1)+'" width="'+(2*r-2)+'" height="'+(2*r-2)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>';
+  const n = f==='triangle'?3 : f==='losange'?4 : 5, rot = f==='losange'?0:0;
+  const pts = []; for(let i=0;i<n;i++){ const a=(-90+rot+i*360/n)*Math.PI/180; pts.push((x+r*Math.cos(a)).toFixed(1)+','+(y+r*Math.sin(a)).toFixed(1)); }
+  return '<polygon points="'+pts.join(' ')+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>';
+}
+function axLigneColonne(){
+  const fills0 = shuffle(['noir','gris','blanc','hachuré']);
+  const col0 = shuffle(AX_FORMES.slice()).slice(0,3);
+  const rowShape = absPick(AX_FORMES);
+  const fr = [{f:fills0, c:col0}];
+  for(let t=1;t<=5;t++){
+    const p = fr[t-1];
+    fr.push(t%2===1 ? {f:[p.f[3],p.f[0],p.f[1],p.f[2]], c:p.c} : {f:p.f, c:[p.c[2],p.c[0],p.c[1]]});
+  }
+  const ans = fr[5], prev = fr[4];
+  const wrong = [
+    [{f:ans.f, c:[ans.c[2],ans.c[0],ans.c[1]]}, `la colonne est descendue alors que la transition 5 → 6 est impaire (règle 2)`],
+    [{f:[prev.f[1],prev.f[2],prev.f[3],prev.f[0]], c:ans.c}, `les couleurs de la ligne ont glissé vers la gauche (règle 1)`],
+    [{f:prev.f, c:ans.c}, `les couleurs de la ligne n'ont pas glissé (règle 1)`],
+    [{f:[ans.f[3],ans.f[0],ans.f[1],ans.f[2]], c:ans.c}, `les couleurs ont glissé de deux places (règle 1)`],
+    [{f:ans.f, c:[ans.c[1],ans.c[2],ans.c[0]]}, `la colonne est remontée (règle 2)`],
+  ];
+  const draw = s => axFrame(
+      [0,1,2,3].map(i=>axForme(rowShape, 18+i*21.5, 18, axFill(s.f[i]))).join('')
+    + [0,1,2].map(i=>axForme(s.c[i], 18, 40+i*21, AX.white)).join(''));
+  return {title:`Ligne et colonne : deux règles qui alternent`, frames:fr, wrong, draw,
+    key:s=>s.f.join(',')+'|'+s.c.join(','),
+    rules:[`Aux transitions impaires (1 → 2, 3 → 4, 5 → 6), les couleurs de la ligne du haut glissent d'une place vers la droite ; la dernière revient en tête.`,
+           `Aux transitions paires (2 → 3, 4 → 5), les formes de la colonne descendent d'une place ; la dernière remonte en haut.`,
+           `Une seule des deux règles s'applique à chaque transition ; la forme des éléments de la ligne ne change jamais.`],
+    tip:`Repérer d'abord ce qui change entre 1 et 2, puis entre 2 et 3 : si ce n'est pas le même élément, la série alterne deux règles.`};
+}
+
+/* 4. Flèche qui tourne et traits ajoutés alternativement dans deux coins. */
+function axFlecheTraits(){
+  const pas = absPick([45,90,-45,-90,135]), a0 = ri(0,7)*45;
+  const coin1 = ri(0,1);   // 0 : bas-gauche d'abord ; 1 : haut-droit d'abord
+  const st = k => { const n = k+1; const premier = Math.ceil(n/2), second = Math.floor(n/2);
+    return {a:axMod(a0+pas*k,360), bg: coin1===0?premier:second, hd: coin1===0?second:premier}; };
+  const fr = [0,1,2,3,4,5].map(st);
+  const ans = fr[5];
+  const wrong = [
+    [{...ans,a:axMod(ans.a+pas,360)}, `la flèche a tourné de deux pas (règle 1)`],
+    [{...ans,a:axMod(ans.a-2*pas,360)}, `la flèche tourne dans le mauvais sens (règle 1)`],
+    [{...ans,bg:ans.bg+(ans.bg>=ans.hd?1:0), hd:ans.hd+(ans.hd>ans.bg?1:0)}, `il y a un trait de trop (règle 2)`],
+    [{...ans,bg:ans.hd+(ans.bg===ans.hd?1:0), hd:ans.bg-(ans.bg===ans.hd?1:0)}, `le nouveau trait est dans le mauvais coin (règle 3)`],
+    [{...ans,bg:Math.max(0,ans.bg-1)}, `il manque un trait (règle 2)`],
+  ];
+  const traits = (n, coin) => { let o=''; for(let i=0;i<n;i++){ const d = 14+i*7.5;
+      o += coin==='bg' ? '<line x1="2" y1="'+(100-d).toFixed(1)+'" x2="'+d.toFixed(1)+'" y2="98" stroke="'+AX.ink+'" stroke-width="2.2"/>'
+                       : '<line x1="'+(100-d).toFixed(1)+'" y1="2" x2="98" y2="'+d.toFixed(1)+'" stroke="'+AX.ink+'" stroke-width="2.2"/>'; } return o; };
+  const draw = s => { const r = s.a*Math.PI/180, x2 = 50+22*Math.sin(r), y2 = 50-22*Math.cos(r), x1 = 50-16*Math.sin(r), y1 = 50+16*Math.cos(r);
+    const hl = (s.a-150)*Math.PI/180, hr = (s.a+150)*Math.PI/180;
+    return axFrame(traits(s.bg,'bg')+traits(s.hd,'hd')
+      +'<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+AX.ink+'" stroke-width="3"/>'
+      +'<polygon points="'+x2.toFixed(1)+','+y2.toFixed(1)+' '+(x2+9*Math.sin(hl)).toFixed(1)+','+(y2-9*Math.cos(hl)).toFixed(1)+' '+(x2+9*Math.sin(hr)).toFixed(1)+','+(y2-9*Math.cos(hr)).toFixed(1)+'" fill="'+AX.ink+'"/>'); };
+  return {title:`Flèche et traits : rotation et comptage`, frames:fr, wrong, draw,
+    key:s=>s.a+'|'+s.bg+'|'+s.hd,
+    rules:[`La flèche tourne de ${Math.abs(pas)}° ${axSens(pas)} à chaque figure.`,
+           `Un trait diagonal s'ajoute à chaque figure : la sixième en compte six.`,
+           `Les traits s'ajoutent alternativement dans le coin ${coin1===0?'bas gauche puis haut droit':'haut droit puis bas gauche'} ; la sixième figure a donc trois traits dans chaque coin.`],
+    tip:`Compter d'abord les traits : c'est le critère le plus rapide pour éliminer deux options, avant de vérifier l'orientation de la flèche.`};
+}
+
+/* 5. Règles conditionnelles : la couleur d'une forme décide du comportement de la flèche
+      dans la figure suivante. */
+function axConditionnel(){
+  for(let essai=0; essai<400; essai++){
+    const ext = [0,1,2,3,4,5].map(()=>ri(0,1)===1), int = [0,1,2,3,4,5].map(()=>ri(0,1)===1);
+    const tr = [0,1,2,3];   // transitions observables 1→2 … 4→5
+    const ok = tr.some(t=>int[t]) && tr.some(t=>!int[t]) && tr.some(t=>ext[t]) && tr.some(t=>!ext[t]) && tr.some(t=>int[t]!==ext[t]);
+    if(!ok) continue;
+    const d0 = ri(0,3), t0 = ri(0,1);   // direction (0 = haut droit, sens horaire) et pointe (0 flèche, 1 rond)
+    const fr = [{d:d0, p:t0, e:ext[0], i:int[0]}];
+    for(let k=1;k<=5;k++){ const q=fr[k-1]; fr.push({d: q.i ? axMod(q.d+1,4) : q.d, p: q.e ? 1-q.p : q.p, e:ext[k], i:int[k]}); }
+    const ans = fr[5];
+    const wrong = [];
+    for(let d=0; d<4; d++) for(let p=0; p<2; p++){
+      if(d===ans.d && p===ans.p) continue;
+      const msg = d!==ans.d && p!==ans.p ? `la direction et la pointe de la flèche sont fausses (règles 1 et 2)`
+        : d!==ans.d ? `la flèche n'a pas la bonne direction (règle 1)` : `la pointe de la flèche n'a pas la bonne forme (règle 2)`;
+      wrong.push([{d, p, e:ri(0,1)===1, i:ri(0,1)===1}, msg]);
+    }
+    const draw = s => { const ang = [45,135,225,315][s.d]*Math.PI/180;
+      const x2 = 50+40*Math.sin(ang), y2 = 50-40*Math.cos(ang);
+      const head = s.p===1 ? '<circle cx="'+x2.toFixed(1)+'" cy="'+y2.toFixed(1)+'" r="5" fill="'+AX.ink+'"/>'
+        : '<polygon points="'+x2.toFixed(1)+','+y2.toFixed(1)+' '+(x2-11*Math.sin(ang-0.45)).toFixed(1)+','+(y2+11*Math.cos(ang-0.45)).toFixed(1)+' '+(x2-11*Math.sin(ang+0.45)).toFixed(1)+','+(y2+11*Math.cos(ang+0.45)).toFixed(1)+'" fill="'+AX.ink+'"/>';
+      return axFrame('<polygon points="'+regularPoly(50,50,34,6,0).split(' ').map(p=>p).join(' ')+'" fill="'+(s.e?AX.grey:AX.white)+'" stroke="'+AX.ink+'" stroke-width="2"/>'
+        +'<circle cx="50" cy="50" r="14" fill="'+(s.i?AX.grey:AX.white)+'" stroke="'+AX.ink+'" stroke-width="2"/>'
+        +'<line x1="50" y1="50" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+AX.ink+'" stroke-width="2.6"/>'+head); };
+    return {title:`Règles conditionnelles`, frames:fr, wrong, draw, cond:true,
+      key:s=>s.d+'|'+s.p+'|'+s.e+'|'+s.i,
+      rules:[`Si le disque central est gris, la flèche tourne de 90° dans le sens horaire dans la figure suivante ; s'il est blanc, elle ne bouge pas.`,
+             `Si l'hexagone est gris, la pointe de la flèche change de forme (flèche ou rond) dans la figure suivante ; s'il est blanc, elle reste identique.`,
+             `Les couleurs elles-mêmes ne suivent aucune règle : dans la sixième figure, elles peuvent être quelconques. Seule la flèche se déduit de la cinquième figure.`],
+      tip:`Quand aucune suite ne se dégage dans les couleurs, se demander si elles ne commandent pas autre chose. Ici, il suffit de regarder la cinquième figure pour connaître la flèche de la sixième.`};
+  }
+}
+
+/* 6. Comptage par zones : des anneaux à l'intérieur et à l'extérieur d'une zone grise. */
+function axZones(){
+  const cats = ['ni','bi','ne','be'];   // noirs intérieurs, blancs intérieurs, noirs extérieurs, blancs extérieurs
+  const base = {ni:ri(1,2), bi:ri(1,2), ne:ri(1,2), be:ri(1,2)};
+  const inc = shuffle(cats.slice()).slice(0,2);
+  const st = k => { const s = {...base}; inc.forEach(c=>s[c]+=k); return s; };
+  const fr = [0,1,2,3,4,5].map(st);
+  if(fr[5].ni+fr[5].bi>9 || fr[5].ne+fr[5].be>11) return axZones();
+  const ans = fr[5];
+  const nomCat = {ni:'anneaux noirs dans la zone grise', bi:'anneaux blancs dans la zone grise', ne:'anneaux noirs hors de la zone grise', be:'anneaux blancs hors de la zone grise'};
+  const fixes = cats.filter(c=>inc.indexOf(c)<0);
+  const wrong = [
+    [{...ans,[inc[0]]:ans[inc[0]]-1}, `il manque un des ${nomCat[inc[0]]} (règle 1)`],
+    [{...ans,[inc[1]]:ans[inc[1]]+1}, `il y a un ${nomCat[inc[1]].replace('anneaux','anneau').replace('noirs','noir').replace('blancs','blanc')} de trop (règle 2)`],
+    [{...ans,[fixes[0]]:ans[fixes[0]]+1}, `le nombre d'${nomCat[fixes[0]]} devait rester constant (règle 3)`],
+    [{...ans,[inc[0]]:ans[inc[1]],[inc[1]]:ans[inc[0]]}, `les deux catégories qui augmentent sont interverties (règles 1 et 2)`],
+    [{...ans,[fixes[1]]:Math.max(0,ans[fixes[1]]-1)}, `le nombre d'${nomCat[fixes[1]]} devait rester constant (règle 3)`],
+  ].filter(([w])=>w.ni+w.bi<=9 && w.ne+w.be<=11);
+  const IN = [[34,34],[50,34],[66,34],[34,50],[50,50],[66,50],[34,66],[50,66],[66,66]];
+  const OUT = [[11,11],[30,11],[50,11],[70,11],[89,11],[89,50],[89,89],[70,89],[50,89],[30,89],[11,89]];
+  const draw = s => { let o = '<rect x="22" y="22" width="56" height="56" rx="14" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.4"/>';
+    const ring = ([x,y],noir) => noir
+      ? '<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="'+AX.ink+'"/><circle cx="'+x+'" cy="'+y+'" r="2.6" fill="#FFFFFF"/>'
+      : '<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="#FFFFFF" stroke="'+AX.ink+'" stroke-width="1.6"/><circle cx="'+x+'" cy="'+y+'" r="2.6" fill="none" stroke="'+AX.ink+'" stroke-width="1.2"/>';
+    const pin = shuffle(IN.slice()), pout = shuffle(OUT.slice());
+    for(let i=0;i<s.ni;i++) o+=ring(pin.pop(),true);
+    for(let i=0;i<s.bi;i++) o+=ring(pin.pop(),false);
+    for(let i=0;i<s.ne;i++) o+=ring(pout.pop(),true);
+    for(let i=0;i<s.be;i++) o+=ring(pout.pop(),false);
+    return axFrame(o); };
+  return {title:`Comptage par zones`, frames:fr, wrong, draw,
+    key:s=>cats.map(c=>s[c]).join('|'),
+    rules:[`Le nombre d'${nomCat[inc[0]]} augmente de 1 à chaque figure.`,
+           `Le nombre d'${nomCat[inc[1]]} augmente de 1 à chaque figure.`,
+           `Le nombre d'${nomCat[fixes[0]]} et celui d'${nomCat[fixes[1]]} restent constants ; la position des anneaux ne compte pas.`],
+    tip:`Les anneaux changent de place d'une figure à l'autre pour brouiller la lecture : seule leur répartition par zone et par couleur compte. Compter le total d'abord élimine vite deux options.`};
+}
+
+const AX_FAMILLES = [axHexa, axBandes, axLigneColonne, axFlecheTraits, axConditionnel, axZones];
+
+/* Un item : cinq cadres visibles, la bonne sixième figure et quatre distracteurs
+   distincts, chacun accompagné de la règle qu'il enfreint. */
+function genAbstractExam(fam){
+  for(let essai=0; essai<50; essai++){
+    const f = (fam || absPick(AX_FAMILLES))();
+    if(!f) continue;
+    const ans = f.frames[5];
+    const vus = new Set([f.key(ans)]);
+    const opts = [{s:ans, why:`Vrai : respecte les trois règles.`}];
+    for(const [w,msg] of shuffle(f.wrong)){
+      if(opts.length>=ABS_OPTS) break;
+      const k = f.key(w);
+      if(vus.has(k)) continue;
+      /* Pour les règles conditionnelles, seule la flèche compte : deux options
+         qui ne diffèrent que par les couleurs seraient toutes deux justes. */
+      if(f.cond && w.d===ans.d && w.p===ans.p) continue;
+      vus.add(k); opts.push({s:w, why:`Faux : `+msg+`.`});
+    }
+    if(opts.length<ABS_OPTS) continue;
+    /* Le dessin est figé à la génération : certaines familles placent leurs éléments
+       au hasard, et la figure ne doit pas changer d'un affichage à l'autre. */
+    const svg = s => f.draw(s);
+    const p = shuffle(opts.map((_,i)=>i));
+    const ordered = p.map(i=>opts[i]);
+    return {kind:'multi', title:f.title,
+      seqSvg:f.frames.slice(0,5).map(svg),
+      opts:ordered.map(o=>svg(o.s)),
+      why:ordered.map(o=>o.why),
+      c:p.indexOf(0),
+      ex:'<b>'+f.title+'.</b><br>'+f.rules.map((r,i)=>'<b>Règle '+(i+1)+'.</b> '+r).join('<br>')+'<br><b>Méthode.</b> '+f.tip};
+  }
+  return genAbstract();
+}
+
+/* Session niveau examen : surtout des séries à éléments multiples, une famille
+   différente à chaque item tant que possible, plus quelques items « même ensemble »
+   à deux règles simultanées, l'autre type d'item du concours. */
+function mkAbsExam(n){
+  const out = [];
+  let fams = [];
+  const nSet = Math.round(n*0.3);
+  while(out.length < n-nSet){
+    if(!fams.length) fams = shuffle(AX_FAMILLES.slice());
+    out.push(genAbstractExam(fams.pop()));
+  }
+  for(let i=0;i<nSet;i++) out.push(genAbstractSet(true));
   return shuffle(out);
 }
 
@@ -6598,15 +6878,20 @@ function renderNumAbs(){
       </ul>
     </details>
     <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUM_COUNT} questions · 20 min au total · chiffres renouvelés)</button>
-    <button class="btn wide" id="startAbs">Session abstraite (${ABS_COUNT} séries · 10 min au total)</button>
+    <button class="btn wide" id="startAbsExam">Session abstraite niveau examen (${ABS_COUNT} séries · 10 min au total)</button>
+    <button class="btn ghost wide" id="startAbs" style="margin-top:8px;">Session abstraite d'échauffement (règles simples)</button>
   </div>`;
   document.getElementById('startNum').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
-  document.getElementById('startAbs').addEventListener('click', runAbstractSession);
+  document.getElementById('startAbsExam').addEventListener('click', ()=>runAbstractSession(mkAbsExam));
+  document.getElementById('startAbs').addEventListener('click', ()=>runAbstractSession(mkAbsSeries));
 }
-function runAbstractSession(){
+function runAbstractSession(mk){
   const app = document.getElementById('app');
   const count = ABS_COUNT;
-  let series = mkAbsSeries(count);
+  let series = mk(count);
+  /* Les items à éléments multiples arrivent déjà dessinés (chaînes SVG) ; les
+     autres décrivent une forme que shapeSVG dessine. */
+  const fig = o => typeof o==='string' ? o : shapeSVG(o);
   let order = series.map((_,i)=>i);
   let idx=0, score=0, timeLeft=count*ABS_SEC, timer=null, answered=false, ended=false, view=null;
   function startClock(){
@@ -6628,6 +6913,7 @@ function runAbstractSession(){
       +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
       +'<p style="font-size:16px;">'+(item.kind==='set'
           ? 'Ces cinq figures respectent toutes une même règle. Laquelle des propositions respecte la même règle ?'
+          : item.kind==='multi' ? 'Quelle figure doit venir en sixième position ?'
           : 'Quelle forme complète la séquence ?')+'</p>'
       /* Deux groupes de figures cohabitent : sans intitulés, on confond l'énoncé
          avec les propositions, et c'est le piège même de ce type d'item. */
@@ -6635,12 +6921,15 @@ function runAbstractSession(){
       +'<div class="abs-sequence">'
       + (item.kind==='set'
           ? item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('')
+          : item.kind==='multi'
+          ? item.seqSvg.map((s,i)=>'<div class="abs-shape-box ax"><span class="ax-n">'+(i+1)+'</span>'+s+'</div>').join('')
+            +'<div class="abs-q">?</div>'
           : item.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')
             +'<span class="abs-arrow">→</span><div class="abs-q">?</div>')
       +'</div>'
       +'<p class="abs-caption">Propositions</p>'
       +'<div class="abs-options" id="absOpts">'
-      + view.opts.map((o,i)=>'<button class="abs-opt" data-i="'+i+'"><span class="abs-letter">'+String.fromCharCode(65+i)+'</span>'+shapeSVG(o)+'</button>').join('')
+      + view.opts.map((o,i)=>'<button class="abs-opt'+(item.kind==='multi'?' ax':'')+'" data-i="'+i+'"><span class="abs-letter">'+String.fromCharCode(65+i)+'</span>'+fig(o)+'</button>').join('')
       +'</div><div id="fb"></div>'
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
@@ -6665,7 +6954,10 @@ function runAbstractSession(){
       if(i===view.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
-    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+item.ex+'</div>';
+    const detail = item.why
+      ? '<ul class="why-list">'+view.opts.map((o,i)=>'<li><b>'+String.fromCharCode(65+i)+'.</b> '+item.why[item.opts.indexOf(o)]+'</li>').join('')+'</ul>'
+      : '';
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+view.c)+'.<br>'+item.ex+detail+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
   function endSession(timedOut){
@@ -6676,7 +6968,7 @@ function runAbstractSession(){
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
     document.getElementById('againBtn').addEventListener('click',()=>{
-      series=mkAbsSeries(count); order=series.map((_,i)=>i); idx=0; score=0; timeLeft=count*ABS_SEC; ended=false;
+      series=mk(count); order=series.map((_,i)=>i); idx=0; score=0; timeLeft=count*ABS_SEC; ended=false;
       renderQ(); startClock();
     });
     document.getElementById('backBtn').addEventListener('click',()=>goTo('numabs'));
