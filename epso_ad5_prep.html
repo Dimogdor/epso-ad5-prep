@@ -254,6 +254,8 @@ main{padding-top:28px;}
 .mth p:last-child{margin-bottom:15px;}
 .jj{padding-left:21px;margin:0 0 8px;}
 .jj li{font-size:15px;line-height:1.6;margin-bottom:7px;}
+.why-list{padding-left:0;list-style:none;margin:8px 0 0;}
+.why-list li{margin:0 0 6px;}
 
 /* ---------- SIGLES ---------- */
 .acr-search{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px;
@@ -1412,6 +1414,494 @@ c:1,ex:`Le texte l'affirme et l'illustre par l'audit sans effet. L'audit dépass
 ];
 
 /* ================= BANQUE NUMÉRIQUE ================= */
+/* ================= VERBAL · NIVEAU EXAMEN =================
+   Quarante textes originaux de 150 à 175 mots, calibrés sur le niveau d'un
+   recueil d'entraînement récent : registre de presse, chiffres à recouper,
+   calculs simples cachés dans les affirmations, distinction fine entre faux
+   et « ne peut pas dire ». `why` donne le verdict de chaque affirmation, dans
+   l'ordre de `opts`. */
+const VERBAL_EXAM = [
+{passage:`Une municipalité du sud de l'Europe a équipé quarante rues de capteurs de température pendant trois étés consécutifs afin de mesurer l'effet des arbres d'alignement. Les rues bordées d'arbres adultes affichaient, en moyenne, des températures de surface inférieures de 4 à 6 °C à celles des rues sans végétation, aux heures les plus chaudes de la journée. L'écart de température de l'air était plus modeste, de l'ordre de 1 à 2 °C, et disparaissait presque entièrement la nuit. Les chercheurs associés au projet expliquent cette différence par le fait que les feuillages bloquent le rayonnement direct mais retiennent aussi, après le coucher du soleil, une partie de la chaleur accumulée au sol. « Planter n'est pas une solution miracle », prévient la responsable de l'étude, qui rappelle qu'un jeune arbre met une quinzaine d'années à offrir un ombrage comparable à celui des sujets mesurés. La ville a néanmoins décidé de planter 2 000 arbres supplémentaires d'ici cinq ans, en priorité dans les quartiers où les habitants âgés sont les plus nombreux.`,
+opts:[
+`Les arbres d'alignement abaissent la température de l'air de 4 à 6 °C pendant les heures chaudes.`,
+`L'effet rafraîchissant des arbres sur l'air est sensiblement plus faible la nuit que le jour.`,
+`Les 2 000 nouveaux arbres offriront un ombrage comparable à celui des arbres mesurés dans cinq ans.`,
+`Les quartiers où vivent de nombreuses personnes âgées sont les plus chauds de la ville.`],
+c:1,why:[
+`Faux : l'écart de 4 à 6 °C concerne la température de surface ; pour l'air, il n'est que de 1 à 2 °C.`,
+`Vrai : l'écart de température de l'air « disparaissait presque entièrement la nuit ».`,
+`Faux : un jeune arbre met une quinzaine d'années à offrir un tel ombrage ; cinq ans est l'échéance de plantation.`,
+`Ne peut pas dire : ces quartiers sont prioritaires, mais le texte ne dit pas pourquoi ni qu'ils sont les plus chauds.`]},
+
+{passage:`Des neuroscientifiques ont demandé à 120 volontaires d'apprendre une liste de quarante paires de mots le soir, puis de les restituer le lendemain matin. La moitié du groupe avait dormi normalement, l'autre moitié avait été maintenue éveillée en laboratoire. Les dormeurs ont restitué en moyenne 31 paires, contre 22 pour les participants privés de sommeil. Trois jours plus tard, après deux nuits de récupération pour tous, l'écart entre les deux groupes ne s'était pas réduit. Les auteurs y voient l'indice que le sommeil qui suit immédiatement un apprentissage joue un rôle particulier dans la consolidation des souvenirs, et que ce rôle ne peut pas être rattrapé par la suite. Ils restent toutefois prudents : l'expérience portait sur une tâche de mémorisation pure, très éloignée des apprentissages complexes, et tous les participants avaient entre 19 et 30 ans. « Rien ne permet encore d'affirmer que nos résultats s'appliquent aux personnes âgées, dont le sommeil est naturellement plus fragmenté », souligne l'auteur principal, qui prépare une seconde étude auprès de personnes de plus de 65 ans.`,
+opts:[
+`Les participants privés de sommeil ont retenu moitié moins de paires que les dormeurs.`,
+`Deux nuits de récupération ont permis aux participants privés de sommeil de rattraper leur retard.`,
+`Le sommeil améliore davantage la mémoire des jeunes adultes que celle des personnes âgées.`,
+`L'étude ne permet pas de conclure à l'effet du sommeil sur des apprentissages complexes.`],
+c:3,why:[
+`Faux : 22 paires contre 31, c'est environ 29 % de moins, loin de la moitié.`,
+`Faux : l'écart « ne s'était pas réduit » trois jours plus tard.`,
+`Ne peut pas dire : les personnes âgées n'ont pas été étudiées ; l'auteur dit justement que rien ne permet encore de conclure.`,
+`Vrai : les auteurs soulignent que la tâche, de mémorisation pure, est très éloignée des apprentissages complexes.`]},
+
+{passage:`Dans un grand port de la mer du Nord, l'automatisation d'un terminal à conteneurs a été achevée il y a deux ans. Les grues de quai restent pilotées à distance par des opérateurs, mais les véhicules qui transportent les conteneurs entre le quai et les zones de stockage circulent désormais sans conducteur. Selon l'exploitant, le nombre de conteneurs traités par heure a progressé de 18 % et les accidents du travail ont diminué de moitié. Les syndicats contestent la présentation de ces chiffres : ils rappellent que 340 postes de chauffeurs ont été supprimés, dont un peu moins de la moitié seulement ont donné lieu à une reconversion vers la maintenance ou la supervision. L'exploitant affirme qu'aucun licenciement sec n'a eu lieu, les autres départs ayant pris la forme de retraites anticipées et de départs volontaires indemnisés. Une étude commandée par l'autorité portuaire doit établir d'ici la fin de l'année si les gains de productivité compensent le coût de l'investissement, estimé à 600 millions d'euros.`,
+opts:[
+`Plus de la moitié des chauffeurs dont le poste a été supprimé ont été reconvertis.`,
+`L'automatisation du terminal a été rentable pour l'exploitant.`,
+`Selon l'exploitant, une partie des chauffeurs dont le poste a été supprimé a quitté l'entreprise.`,
+`Les grues de quai du terminal fonctionnent désormais sans intervention humaine.`],
+c:2,why:[
+`Faux : « un peu moins de la moitié seulement » ont été reconvertis.`,
+`Ne peut pas dire : une étude doit justement établir si les gains compensent l'investissement.`,
+`Vrai : ceux qui n'ont pas été reconvertis sont partis en retraite anticipée ou en départ volontaire indemnisé.`,
+`Faux : les grues restent pilotées à distance par des opérateurs.`]},
+
+{passage:`Les bibliothèques publiques prêtent de plus en plus de livres numériques, mais dans des conditions très différentes de celles du papier. Lorsqu'une bibliothèque achète un livre imprimé, elle peut le prêter autant de fois qu'elle le souhaite jusqu'à son usure. Pour un livre numérique, elle acquiert une licence, souvent limitée à un nombre de prêts, par exemple vingt-six, ou à une durée, généralement deux ans, au terme de laquelle elle doit la racheter. Le prix de ces licences peut atteindre trois à quatre fois celui de l'édition imprimée destinée aux particuliers. Les éditeurs justifient ce modèle par le fait qu'un fichier numérique ne s'abîme pas et qu'un prêt illimité concurrencerait directement les ventes. Les associations de bibliothécaires répondent que ces conditions épuisent des budgets d'acquisition qui stagnent depuis dix ans, et réclament un cadre légal garantissant un prêt numérique à des conditions raisonnables. Dans plusieurs pays, des négociations sont en cours, mais aucun accord n'a encore été conclu à l'échelle nationale.`,
+opts:[
+`Une bibliothèque doit racheter une licence de livre numérique au bout de vingt-six prêts.`,
+`Les licences de livres numériques coûtent toujours plus cher que l'édition imprimée vendue aux particuliers.`,
+`Les budgets d'acquisition des bibliothèques n'ont pas augmenté depuis dix ans, selon les associations de bibliothécaires.`,
+`Le prêt illimité de livres numériques ferait baisser les ventes des éditeurs.`],
+c:2,why:[
+`Ne peut pas dire : vingt-six prêts n'est qu'un exemple ; d'autres licences sont limitées dans le temps.`,
+`Ne peut pas dire : le prix « peut atteindre » trois à quatre fois celui de l'imprimé ; le texte ne dit pas qu'il est toujours supérieur.`,
+`Vrai : les associations parlent de budgets « qui stagnent depuis dix ans ».`,
+`Ne peut pas dire : c'est la justification avancée par les éditeurs, pas un fait établi par le texte.`]},
+
+{passage:`Face à des sécheresses de plus en plus fréquentes, une région côtière a mis en service une usine de dessalement d'eau de mer capable de produire 200 000 mètres cubes d'eau potable par jour, de quoi couvrir les besoins d'environ un million d'habitants. Le procédé retenu, l'osmose inverse, consiste à forcer l'eau à travers des membranes très fines qui retiennent le sel. Il consomme environ trois fois moins d'énergie que la distillation, longtemps utilisée, mais reste très énergivore : produire un mètre cube d'eau douce exige de 3 à 4 kilowattheures. L'usine est alimentée en partie par un parc solaire voisin, qui couvre un peu plus d'un tiers de ses besoins. Reste la question de la saumure, cette eau très concentrée en sel rejetée en mer. Les écologues craignent son effet sur les herbiers marins proches de l'émissaire, même si la concentration est diluée par un système de diffuseurs. Un programme de surveillance de cinq ans doit en mesurer les conséquences sur la faune et la flore locales.`,
+opts:[
+`La distillation consomme environ trois fois plus d'énergie que l'osmose inverse.`,
+`Le parc solaire voisin couvre la majorité des besoins énergétiques de l'usine.`,
+`Les rejets de saumure ont endommagé les herbiers marins proches de l'émissaire.`,
+`L'usine couvre désormais l'ensemble des besoins en eau potable de la région.`],
+c:0,why:[
+`Vrai : l'osmose inverse consomme environ trois fois moins que la distillation, ce qui revient au même.`,
+`Faux : il en couvre « un peu plus d'un tiers ».`,
+`Ne peut pas dire : les écologues le craignent, et la surveillance doit justement le mesurer.`,
+`Ne peut pas dire : l'usine dessert environ un million d'habitants, mais la population de la région n'est pas donnée.`]},
+
+{passage:`Les apiculteurs d'un pays d'Europe centrale ont perdu en moyenne 21 % de leurs colonies d'abeilles au cours de l'hiver dernier, contre 15 % l'hiver précédent, selon l'enquête annuelle de leur fédération, menée auprès de 3 400 exploitants. Les pertes varient fortement d'une région à l'autre : elles dépassent 30 % dans les zones de grandes cultures, mais restent inférieures à 12 % dans les vallées de montagne. La fédération attribue cette dégradation principalement au varroa, un acarien parasite qui affaiblit les colonies et leur transmet des virus, ainsi qu'à un automne particulièrement doux qui a prolongé l'activité des reines et favorisé la reproduction du parasite. Les apiculteurs interrogés citent aussi l'exposition à certains pesticides, sans que l'enquête permette d'en mesurer le poids. Un taux de pertes hivernales inférieur à 10 % est généralement considéré comme normal. La fédération rappelle que les colonies perdues peuvent être reconstituées au printemps, mais que cette opération a un coût et retarde la production de miel.`,
+opts:[
+`Les pesticides sont la principale cause des pertes de colonies relevées l'hiver dernier.`,
+`Le taux de pertes hivernales a augmenté de 6 % entre les deux derniers hivers.`,
+`Dans les vallées de montagne, les pertes de colonies sont restées dans des limites jugées normales.`,
+`Un automne doux peut favoriser la reproduction du varroa.`],
+c:3,why:[
+`Faux : la fédération attribue les pertes « principalement » au varroa et à l'automne doux ; le poids des pesticides n'est pas mesuré.`,
+`Faux : de 15 à 21 %, la hausse est de 6 points, soit 40 % en valeur relative, pas 6 %.`,
+`Ne peut pas dire : elles sont inférieures à 12 %, ce qui n'établit pas qu'elles soient sous le seuil normal de 10 %.`,
+`Vrai : l'automne doux a « favorisé la reproduction du parasite ».`]},
+
+{passage:`On estime qu'environ la moitié des quelque 7 000 langues parlées dans le monde pourraient disparaître d'ici la fin du siècle, faute de locuteurs. Certaines communautés parviennent pourtant à inverser la tendance. Dans une région insulaire, une langue que plus aucun enfant n'apprenait au foyer dans les années 1980 compte aujourd'hui près de 4 000 locuteurs de moins de vingt ans. Ce renouveau doit beaucoup aux « nids linguistiques », des crèches où les tout-petits ne sont accueillis que dans la langue locale, puis à des écoles qui l'utilisent comme langue d'enseignement. Les linguistes qui ont étudié l'expérience soulignent que la transmission scolaire ne suffit pas : beaucoup de jeunes locuteurs maîtrisent la langue en classe mais continuent d'utiliser la langue dominante entre eux et en ligne. Le gouvernement local a donc lancé des programmes de radio, de séries télévisées et de jeux vidéo dans la langue régionale. Il est encore trop tôt, selon les chercheurs, pour savoir si ces mesures suffiront à faire de la langue un moyen de communication quotidien.`,
+opts:[
+`La moitié des langues parlées dans le monde disparaîtront d'ici la fin du siècle.`,
+`La langue de la région insulaire n'était plus transmise aux enfants dans le cadre familial dans les années 1980.`,
+`Les jeunes locuteurs de la langue régionale l'utilisent surtout en ligne.`,
+`Les programmes audiovisuels ont fait de la langue régionale un moyen de communication quotidien.`],
+c:1,why:[
+`Ne peut pas dire : le texte présente une estimation au conditionnel (« pourraient »), pas une certitude.`,
+`Vrai : « plus aucun enfant n'apprenait au foyer » cette langue dans les années 1980.`,
+`Faux : ils utilisent la langue dominante entre eux et en ligne.`,
+`Ne peut pas dire : les chercheurs jugent trop tôt pour le savoir.`]},
+
+{passage:`Une soixantaine d'entreprises d'un même pays ont expérimenté pendant six mois la semaine de quatre jours, sans baisse de salaire, dans le cadre d'un programme suivi par des chercheurs en économie du travail. À l'issue de l'essai, 56 entreprises ont décidé de prolonger le dispositif et 18 l'ont rendu définitif. Le chiffre d'affaires des participantes a progressé en moyenne de 1,4 % sur la période, une évolution comparable à celle de leur secteur. Les salariés ont déclaré moins de fatigue et un meilleur équilibre entre vie professionnelle et vie privée, et le nombre de démissions a fortement diminué. Les chercheurs nuancent toutefois ces résultats : les entreprises participantes s'étaient portées volontaires, ce qui les rend peu représentatives, et la plupart appartenaient aux services, où l'organisation du travail est plus souple que dans l'industrie. Plusieurs dirigeants ont par ailleurs reconnu que la réduction du temps de travail avait exigé une réorganisation profonde, notamment la suppression de réunions jugées superflues.`,
+opts:[
+`La semaine de quatre jours a fait croître le chiffre d'affaires des entreprises participantes.`,
+`Moins d'un tiers des entreprises ayant prolongé l'essai ont rendu le dispositif définitif.`,
+`La semaine de quatre jours est moins adaptée à l'industrie qu'aux services.`,
+`Toutes les entreprises participantes ont supprimé des réunions pour réduire le temps de travail.`],
+c:1,why:[
+`Ne peut pas dire : la hausse de 1,4 % est comparable à celle du secteur ; le texte n'établit aucun lien de cause.`,
+`Vrai : 18 sur 56, c'est environ 32 %, soit moins d'un tiers.`,
+`Ne peut pas dire : le texte explique que l'échantillon comptait surtout des services, plus souples, mais ne compare pas l'efficacité du dispositif dans les deux secteurs.`,
+`Faux : seuls « plusieurs dirigeants » l'évoquent ; « toutes » est une généralisation.`]},
+
+{passage:`Le dernier gardien de phare d'une côte atlantique a quitté son poste au début des années 2000, lorsque l'ensemble des feux a été automatisé. Les phares continuent pourtant de fonctionner : leur lumière est commandée par des capteurs de luminosité et surveillée à distance depuis un centre régional, qui peut déclencher une intervention en cas de panne. Les systèmes de navigation par satellite ont réduit l'importance des phares pour la marine marchande, mais les autorités maritimes jugent qu'ils restent indispensables à la plaisance et à la pêche côtière, ainsi qu'en cas de défaillance des équipements électroniques. Leur entretien coûte cher : les tours, exposées au sel et aux tempêtes, exigent des travaux réguliers. Plusieurs collectivités ont donc proposé de reprendre certains bâtiments pour les ouvrir au public ou les transformer en gîtes, l'État conservant la responsabilité du feu lui-même. Une dizaine de phares accueillent déjà des visiteurs, et l'un d'eux propose des nuitées depuis l'an dernier.`,
+opts:[
+`Les phares ne servent plus à la marine marchande depuis l'arrivée de la navigation par satellite.`,
+`Lorsqu'une collectivité reprend un phare, elle devient responsable du fonctionnement de son feu.`,
+`Les phares automatisés peuvent faire l'objet d'une intervention à la suite d'une panne détectée à distance.`,
+`Plus de dix phares de cette côte proposent des nuitées aux visiteurs.`],
+c:2,why:[
+`Faux : la navigation par satellite a « réduit l'importance » des phares pour la marine marchande, ce qui ne veut pas dire qu'ils ne lui servent plus.`,
+`Faux : l'État conserve la responsabilité du feu.`,
+`Vrai : le centre régional surveille les feux à distance et peut déclencher une intervention en cas de panne.`,
+`Faux : une dizaine accueillent des visiteurs, et un seul propose des nuitées.`]},
+
+{passage:`Les volcanologues utilisent désormais des drones pour mesurer la composition des gaz émis par les volcans actifs, une tâche autrefois réalisée à pied au bord des cratères, au prix de risques importants. Équipés de capteurs, ces appareils peuvent survoler un panache pendant une vingtaine de minutes et mesurer en particulier le rapport entre le dioxyde de carbone et le dioxyde de soufre. Une hausse de ce rapport peut signaler la remontée de magma vers la surface, plusieurs semaines avant une éruption. Sur un volcan d'Amérique centrale, une équipe a ainsi relevé une augmentation marquée de ce rapport trois semaines avant une éruption modérée. Les chercheurs restent prudents : de telles variations ont aussi été observées sans éruption ultérieure, et le rapport ne constitue qu'un indicateur parmi d'autres, aux côtés de la sismicité et de la déformation du sol. Les drones ont en outre leurs limites : les vents violents et les températures élevées au-dessus des cratères réduisent leur autonomie et peuvent les détruire.`,
+opts:[
+`Une hausse du rapport entre dioxyde de carbone et dioxyde de soufre annonce systématiquement une éruption.`,
+`Les drones ont rendu inutile la mesure des gaz par des équipes au sol.`,
+`Sur le volcan d'Amérique centrale, une variation de la composition des gaz a précédé une éruption.`,
+`Les vents violents au-dessus des cratères sont la principale cause de destruction des drones.`],
+c:2,why:[
+`Faux : de telles variations ont été observées « sans éruption ultérieure ».`,
+`Ne peut pas dire : le texte dit que cette tâche était autrefois réalisée à pied, sans affirmer qu'elle n'est plus jamais pratiquée.`,
+`Vrai : une hausse marquée du rapport a été relevée trois semaines avant l'éruption.`,
+`Ne peut pas dire : les vents violents sont cités avec les températures élevées, sans hiérarchie entre les causes.`]},
+
+{passage:`Après avoir presque disparu du continent au milieu du XXe siècle, les trains de nuit connaissent un regain d'intérêt. Une compagnie ferroviaire d'Europe centrale exploite aujourd'hui une vingtaine de lignes de nuit, dont la moitié ont été ouvertes au cours des cinq dernières années. Leur fréquentation a progressé d'environ 40 % depuis 2019, portée par des voyageurs soucieux de l'empreinte carbone de leurs déplacements. L'équation économique reste pourtant délicate. Une voiture-lits transporte beaucoup moins de passagers qu'une voiture de jour, le matériel ne circule qu'une fois par vingt-quatre heures, et les péages ferroviaires varient fortement d'un pays traversé à l'autre. Plusieurs lignes ne survivent que grâce à des subventions publiques, et l'une d'elles a été suspendue l'an dernier faute d'accord sur leur financement entre deux États. La compagnie a commandé de nouvelles rames, plus confortables et dotées de cabines individuelles, mais leurs livraisons ont pris plus de deux ans de retard, ce qui l'oblige à prolonger l'exploitation de voitures anciennes.`,
+opts:[
+`La moitié des lignes de nuit de la compagnie sont subventionnées par des fonds publics.`,
+`La hausse de la fréquentation des trains de nuit s'explique entièrement par des préoccupations environnementales.`,
+`Une ligne de nuit a été interrompue en raison d'un désaccord entre deux États sur son financement.`,
+`Les nouvelles rames commandées par la compagnie ont été livrées dans les délais prévus.`],
+c:2,why:[
+`Ne peut pas dire : « plusieurs lignes » dépendent de subventions, sans proportion précise ; la moitié est la part des lignes récentes.`,
+`Faux : la hausse est « portée par » ces voyageurs, ce qui n'en fait pas l'explication unique.`,
+`Vrai : une ligne a été suspendue « faute d'accord sur leur financement entre deux États ».`,
+`Faux : les livraisons ont pris plus de deux ans de retard.`]},
+
+{passage:`Des archéologues sous-marins ont achevé la fouille d'une épave de navire marchand coulé au large d'une île méditerranéenne vers le Ier siècle avant notre ère. Sa cargaison comprenait plus de 600 amphores, dont les deux tiers environ contenaient du vin et le reste de l'huile ou des sauces de poisson. L'analyse des argiles a permis de rattacher la plupart des amphores à des ateliers situés sur la côte italienne, mais une quarantaine proviennent d'Afrique du Nord, ce qui suggère que le navire a fait escale dans plusieurs ports avant son naufrage. Les chercheurs ont également retrouvé de la vaisselle de bord, des poids de balance et une petite statuette en bronze, sans doute destinée à protéger l'équipage. La coque, exceptionnellement bien conservée sous une couche de sable, mesurait environ 25 mètres. Les causes du naufrage restent inconnues : aucune trace d'incendie n'a été relevée, et l'épave repose sur un fond sableux éloigné de tout récif connu, ce qui rend peu probable l'hypothèse d'un choc contre des rochers.`,
+opts:[
+`Environ 400 amphores de la cargaison contenaient du vin.`,
+`Le navire a coulé à la suite d'une tempête.`,
+`Toutes les amphores ont été fabriquées dans des ateliers italiens.`,
+`La statuette en bronze avait pour fonction de protéger l'équipage.`],
+c:0,why:[
+`Vrai : les deux tiers d'un peu plus de 600 amphores, cela fait environ 400.`,
+`Ne peut pas dire : les causes du naufrage restent inconnues ; seuls l'incendie et le choc sont jugés peu probables.`,
+`Faux : une quarantaine proviennent d'Afrique du Nord.`,
+`Ne peut pas dire : le texte dit qu'elle était « sans doute » destinée à cela, une hypothèse et non un fait.`]},
+
+{passage:`Dans une vallée alpine, le front d'un glacier a reculé de près de 1,2 kilomètre depuis le début des mesures systématiques, il y a 130 ans. La moitié de ce recul s'est produite au cours des trente dernières années. Les glaciologues qui le suivent mesurent aussi l'épaisseur de la glace : elle diminue en moyenne de 1,5 mètre par an depuis le début du siècle, avec des pertes record lors des étés caniculaires. Le retrait du glacier a des conséquences directes pour les habitants. Le torrent qu'il alimente fournit l'essentiel de l'eau d'irrigation des vergers en aval pendant l'été, et une centrale hydroélectrique en dépend. Les modèles prévoient que le débit estival augmentera encore pendant une vingtaine d'années, à mesure que la fonte s'accélère, avant de diminuer fortement lorsque le glacier aura perdu l'essentiel de sa masse. La commune a commencé à étudier la construction d'une retenue d'eau, mais le projet suscite l'opposition d'associations de protection de la nature, qui redoutent l'artificialisation d'un site jusqu'ici préservé.`,
+opts:[
+`Le front du glacier a reculé d'environ 600 mètres au cours des trente dernières années.`,
+`Le débit estival du torrent a déjà commencé à diminuer.`,
+`La construction d'une retenue d'eau a été décidée par la commune.`,
+`L'épaisseur du glacier diminue chaque année d'au moins 1,5 mètre.`],
+c:0,why:[
+`Vrai : la moitié d'un recul d'environ 1,2 kilomètre s'est produite en trente ans, soit environ 600 mètres.`,
+`Faux : les modèles prévoient qu'il augmentera encore pendant une vingtaine d'années.`,
+`Faux : la commune « étudie » le projet, rien n'est décidé.`,
+`Faux : 1,5 mètre est une moyenne, avec des pertes record certaines années ; d'autres années sont donc en dessous.`]},
+
+{passage:`L'usage massif d'antibiotiques dans l'élevage favorise l'apparition de bactéries résistantes, qui peuvent ensuite se transmettre à l'homme par l'alimentation, l'eau ou le contact direct avec les animaux. Un pays d'Europe du Nord a interdit dès les années 1980 l'emploi d'antibiotiques comme facteurs de croissance, une pratique qui consistait à en ajouter à faible dose dans l'alimentation des animaux pour accélérer leur prise de poids. Depuis, ses ventes d'antibiotiques à usage vétérinaire, rapportées à la quantité de viande produite, figurent parmi les plus basses d'Europe. Les éleveurs ont compensé par de meilleures conditions d'hygiène, une densité d'animaux plus faible et une vaccination plus systématique. Les autorités sanitaires reconnaissent que ces mesures ont un coût, que les éleveurs évaluent à quelques centimes par kilo de viande. Elles soulignent toutefois que la résistance aux antibiotiques ne dépend pas seulement de l'élevage : la consommation humaine, notamment les prescriptions inutiles pour des infections virales, y contribue fortement.`,
+opts:[
+`L'interdiction des antibiotiques comme facteurs de croissance a supprimé les bactéries résistantes dans ce pays.`,
+`Les éleveurs de ce pays ont réduit le nombre d'animaux élevés sur une même surface.`,
+`Ce pays est celui qui vend le moins d'antibiotiques vétérinaires en Europe.`,
+`Les prescriptions inutiles chez l'homme contribuent davantage à la résistance que l'élevage.`],
+c:1,why:[
+`Ne peut pas dire : le texte décrit une baisse des ventes, pas la disparition des bactéries résistantes.`,
+`Vrai : ils ont compensé notamment par « une densité d'animaux plus faible ».`,
+`Ne peut pas dire : ses ventes rapportées à la viande produite figurent « parmi les plus basses », ce qui ne dit pas qu'elles sont les plus basses, ni en valeur absolue.`,
+`Ne peut pas dire : la consommation humaine « y contribue fortement », sans comparaison avec l'élevage.`]},
+
+{passage:`Les joueurs d'échecs âgés conservent-ils mieux leurs capacités intellectuelles ? Une équipe de chercheurs a analysé les performances de plusieurs milliers de joueurs de compétition sur quarante ans, à partir des parties enregistrées par les fédérations. Leur niveau progresse jusqu'à la trentaine, se maintient ensuite pendant une quinzaine d'années, puis décline lentement : à 70 ans, un joueur a en moyenne perdu environ un tiers de l'avantage acquis depuis ses débuts. Le déclin est nettement plus lent chez ceux qui continuent de jouer régulièrement en tournoi. Les auteurs mettent en garde contre une interprétation hâtive : ceux qui restent actifs sont peut-être simplement ceux dont les capacités déclinent le moins, et qui ont donc plaisir à continuer. L'étude ne permet pas de trancher entre ces deux explications. Elle montre en revanche que les joueurs âgés compensent en partie la baisse de leur rapidité de calcul par une meilleure évaluation des positions, fruit de leur expérience, ce qui les rend particulièrement performants dans les parties à cadence lente.`,
+opts:[
+`La pratique régulière des échecs ralentit le déclin intellectuel lié à l'âge.`,
+`Le niveau des joueurs d'échecs commence à décliner aux alentours de 45 ans.`,
+`Les joueurs âgés calculent aussi vite que les joueurs plus jeunes.`,
+`À 70 ans, les joueurs ont perdu en moyenne les deux tiers de l'avantage acquis depuis leurs débuts.`],
+c:1,why:[
+`Ne peut pas dire : les auteurs refusent de trancher entre cet effet et un simple effet de sélection.`,
+`Vrai : le niveau progresse jusqu'à la trentaine, se maintient une quinzaine d'années, puis décline, donc vers 45 ans.`,
+`Faux : ils compensent « la baisse de leur rapidité de calcul ».`,
+`Faux : ils en ont perdu environ un tiers.`]},
+
+{passage:`Le cours mondial du café arabica a atteint son plus haut niveau depuis plus de dix ans, après des gelées tardives qui ont touché une partie des plantations du premier pays producteur. Les caféiers endommagés par le gel ne produisent généralement pas de récolte normale avant deux à trois ans, ce qui laisse prévoir une offre réduite au-delà de la saison en cours. À cette perturbation s'ajoutent la hausse du coût des engrais et du transport maritime. Les torréfacteurs, qui achètent souvent leurs grains plusieurs mois à l'avance, n'ont pas encore répercuté l'intégralité de la hausse sur les prix de détail, mais plusieurs grandes marques ont annoncé des augmentations pour le trimestre prochain. Les petits producteurs ne profitent guère de cette flambée : beaucoup avaient vendu leur récolte à prix fixe avant les gelées, et ceux dont les plantations ont été touchées n'ont presque rien à vendre. Le robusta, variété plus résistante cultivée à plus basse altitude, a lui aussi renchéri, mais dans une moindre mesure.`,
+opts:[
+`Les plantations touchées par le gel ne produiront plus de café avant deux à trois ans.`,
+`Le prix du robusta a moins augmenté que celui de l'arabica.`,
+`Les petits producteurs ont été les principaux bénéficiaires de la hausse des cours.`,
+`Les prix du café au détail ont déjà augmenté autant que les cours mondiaux.`],
+c:1,why:[
+`Ne peut pas dire : le texte parle de l'absence de récolte « normale », ce qui ne dit pas si une petite production reste possible.`,
+`Vrai : le robusta a renchéri « dans une moindre mesure ».`,
+`Faux : ils « ne profitent guère » de la flambée.`,
+`Faux : les torréfacteurs n'ont pas encore répercuté l'intégralité de la hausse.`]},
+
+{passage:`Les pales d'éoliennes sont conçues pour durer vingt à vingt-cinq ans, et les premières générations arrivent en fin de vie. Leur recyclage pose un problème technique : faites de fibres de verre ou de carbone noyées dans de la résine, elles se prêtent mal aux procédés classiques. Aujourd'hui, la plupart sont broyées pour servir de matière première dans les cimenteries, où la fibre de verre se substitue en partie au sable et à l'argile. Plusieurs pays ont interdit la mise en décharge des pales, et les fabricants se sont engagés à proposer des pales entièrement recyclables d'ici la fin de la décennie. Un constructeur commercialise déjà un modèle dont la résine peut être dissoute pour séparer les fibres, mais il ne représente encore qu'une faible part de sa production. Les volumes en jeu restent modestes au regard de l'ensemble des déchets industriels, mais ils vont croître rapidement : selon une estimation sectorielle, le nombre de pales à traiter chaque année pourrait être multiplié par quatre d'ici 2030.`,
+opts:[
+`La mise en décharge des pales d'éoliennes est interdite dans la plupart des pays.`,
+`Les pales recyclées en cimenterie remplacent intégralement le sable et l'argile.`,
+`Il existe déjà sur le marché des pales dont les fibres peuvent être séparées de la résine.`,
+`Les pales d'éoliennes constituent l'un des principaux déchets industriels.`],
+c:2,why:[
+`Ne peut pas dire : « plusieurs pays » l'ont interdite, ce qui ne dit rien de la majorité.`,
+`Faux : la fibre de verre s'y substitue « en partie ».`,
+`Vrai : un constructeur commercialise déjà un modèle dont la résine peut être dissoute pour séparer les fibres.`,
+`Faux : les volumes « restent modestes au regard de l'ensemble des déchets industriels ».`]},
+
+{passage:`Une société savante de pédiatrie a publié de nouvelles recommandations sur l'exposition des jeunes enfants aux écrans. Elle déconseille tout écran avant 3 ans, en dehors des appels vidéo avec des proches, et recommande de limiter ensuite le temps d'écran à une heure par jour jusqu'à 6 ans, en privilégiant des contenus éducatifs regardés en présence d'un adulte. Ces recommandations s'appuient sur des études associant une exposition précoce et prolongée à des retards de langage et à des troubles du sommeil. Les auteurs reconnaissent que la plupart de ces études sont observationnelles : elles mettent en évidence des corrélations sans démontrer de lien de cause à effet, les enfants très exposés vivant souvent dans des familles où d'autres facteurs peuvent jouer. Ils estiment néanmoins que le principe de précaution justifie ces limites. La société insiste sur le fait que l'écran du parent compte aussi : un adulte absorbé par son téléphone interagit moins avec l'enfant, et ce sont ces interactions qui apparaissent décisives pour l'acquisition du langage.`,
+opts:[
+`Les écrans provoquent des retards de langage chez les enfants de moins de 3 ans.`,
+`Les appels vidéo avec des proches sont admis avant 3 ans dans les nouvelles recommandations.`,
+`Un enfant de 5 ans ne devrait regarder un écran qu'en présence d'un adulte.`,
+`Les enfants très exposés aux écrans vivent dans des familles moins attentives à leur éducation.`],
+c:1,why:[
+`Faux : les études mettent en évidence des corrélations « sans démontrer de lien de cause à effet ».`,
+`Vrai : ils sont la seule exception à l'absence d'écran avant 3 ans.`,
+`Faux : le texte « privilégie » des contenus regardés avec un adulte, sans en faire une condition.`,
+`Ne peut pas dire : le texte évoque d'autres facteurs possibles, sans dire lesquels.`]},
+
+{passage:`Disparu de nombreuses rivières au XIXe siècle, chassé pour sa fourrure, le castor fait son retour dans plusieurs régions d'Europe, parfois réintroduit volontairement, parfois revenu de lui-même. Ses barrages transforment profondément les cours d'eau : ils ralentissent le courant, créent des zones humides et retiennent l'eau dans le paysage. Une étude menée sur un affluent d'un grand fleuve a montré que les tronçons aménagés par les castors restaient en eau pendant les sécheresses estivales, alors que les tronçons voisins s'asséchaient. La diversité des amphibiens et des libellules y était aussi nettement plus élevée. Ces bienfaits ont une contrepartie : les barrages inondent parfois des champs, des routes ou des chemins, et les castors abattent des arbres fruitiers. Plusieurs régions ont mis en place des systèmes d'indemnisation des agriculteurs et autorisent, dans des cas précis, le déplacement des animaux ou l'abaissement des barrages. Le castor reste une espèce protégée, et sa destruction est interdite sauf dérogation exceptionnelle.`,
+opts:[
+`Toutes les populations de castors présentes aujourd'hui en Europe résultent de réintroductions.`,
+`Sur l'affluent étudié, les tronçons aménagés par les castors ont mieux résisté à la sécheresse.`,
+`Les agriculteurs touchés par les dégâts des castors sont indemnisés dans toutes les régions concernées.`,
+`Il est interdit en toutes circonstances de déplacer un castor.`],
+c:1,why:[
+`Faux : le castor est parfois « revenu de lui-même ».`,
+`Vrai : ces tronçons restaient en eau pendant les sécheresses, contrairement aux tronçons voisins.`,
+`Ne peut pas dire : « plusieurs régions » ont mis en place une indemnisation, pas forcément toutes.`,
+`Faux : le déplacement est autorisé dans des cas précis.`]},
+
+{passage:`De nombreux musées européens réexaminent la provenance d'objets acquis pendant la période coloniale. Dans l'un d'eux, une équipe de quatre chercheurs passe en revue les dossiers d'acquisition de près de 70 000 objets africains et océaniens. Au bout de trois ans, elle a établi l'histoire complète d'environ 3 000 d'entre eux. Pour un peu moins d'un tiers de ces objets, les archives montrent une acquisition lors d'expéditions militaires ou dans des conditions de contrainte manifeste. Le musée a déjà restitué une vingtaine de pièces à deux pays qui en avaient fait la demande. Sa directrice reconnaît que le rythme du travail est lent : à ce train, l'examen de l'ensemble de la collection prendrait plusieurs décennies. Elle souligne aussi que l'absence de documents ne prouve pas qu'un objet a été acquis de façon légitime. Certains pays demandeurs plaident pour des restitutions plus rapides, fondées sur une présomption d'acquisition illégitime pour les objets collectés pendant les guerres coloniales, une approche que la loi nationale ne permet pas encore.`,
+opts:[
+`Environ un tiers des objets de la collection ont été acquis par la contrainte.`,
+`Le musée a restitué une vingtaine d'objets à la suite de demandes de pays d'origine.`,
+`Les objets dont l'acquisition n'est pas documentée ont été acquis de façon légitime.`,
+`La loi nationale permet de restituer les objets collectés pendant les guerres coloniales sans examen individuel.`],
+c:1,why:[
+`Ne peut pas dire : la proportion d'un peu moins d'un tiers ne porte que sur les 3 000 objets étudiés ; on ignore ce qu'il en est du reste de la collection.`,
+`Vrai : il a restitué une vingtaine de pièces à deux pays qui en avaient fait la demande.`,
+`Faux : la directrice souligne que l'absence de documents ne prouve pas la légitimité.`,
+`Faux : cette présomption est une approche « que la loi nationale ne permet pas encore ».`]},
+
+{passage:`Plus de 30 000 débris de plus de dix centimètres sont aujourd'hui suivis en orbite autour de la Terre, selon une agence spatiale, auxquels s'ajoutent des centaines de milliers de fragments plus petits que les radars ne détectent pas. Ces débris, qui circulent à plusieurs kilomètres par seconde, menacent les satellites en service : une collision avec un objet de la taille d'une bille peut suffire à détruire un équipement. Le risque est particulièrement élevé en orbite basse, où se multiplient les constellations de milliers de satellites destinées à fournir un accès à internet. Les opérateurs s'engagent désormais à désorbiter leurs satellites dans les cinq ans suivant la fin de leur mission, contre vingt-cinq ans auparavant, pour qu'ils se désintègrent dans l'atmosphère. Cet engagement ne règle pas le sort des débris existants. Plusieurs entreprises développent des engins capables de capturer un satellite hors d'usage, et une première mission de démonstration est prévue d'ici trois ans, mais son coût rend pour l'instant impossible une application à grande échelle.`,
+opts:[
+`Les radars permettent de suivre tous les débris présents en orbite autour de la Terre.`,
+`Un débris de moins de dix centimètres peut détruire un satellite en service.`,
+`Les nouvelles constellations de satellites sont responsables de la majorité des débris en orbite basse.`,
+`Une mission de capture d'un satellite hors d'usage a déjà été menée avec succès.`],
+c:1,why:[
+`Faux : des centaines de milliers de petits fragments échappent aux radars.`,
+`Vrai : un objet de la taille d'une bille, donc bien plus petit que dix centimètres, peut suffire à détruire un équipement.`,
+`Ne peut pas dire : le texte dit que le risque y est élevé, pas qui produit la majorité des débris.`,
+`Faux : une première mission de démonstration est seulement « prévue d'ici trois ans ».`]},
+
+{passage:`Dans de nombreuses disciplines scientifiques, le délai entre la soumission d'un article et sa publication dans une revue s'est allongé. Une analyse portant sur plus de 3 millions d'articles publiés en vingt ans montre qu'il est passé en moyenne de 140 à 190 jours, avec de fortes disparités : il dépasse désormais un an dans certaines revues de mathématiques et d'économie. Les auteurs de l'analyse attribuent cet allongement à l'explosion du nombre de soumissions, alors que le nombre de chercheurs acceptant d'évaluer bénévolement les travaux de leurs pairs n'a pas suivi. Certains éditeurs ont commencé à rémunérer les évaluateurs ou à leur offrir des réductions sur les frais de publication. Pour contourner ces délais, de plus en plus de chercheurs déposent leurs travaux sur des serveurs de prépublication, accessibles à tous avant toute évaluation. Cette pratique accélère la diffusion des résultats, mais elle expose le public à des travaux non vérifiés, comme l'a montré la reprise médiatique de plusieurs prépublications fragiles pendant la dernière pandémie.`,
+opts:[
+`Le délai moyen de publication a augmenté de plus d'un tiers en vingt ans.`,
+`Dans toutes les revues de mathématiques, le délai de publication dépasse un an.`,
+`La rémunération des évaluateurs a permis de réduire les délais de publication.`,
+`Les prépublications sont évaluées par des pairs avant d'être mises en ligne.`],
+c:0,why:[
+`Vrai : de 140 à 190 jours, la hausse est de 50 jours, soit environ 36 %, plus d'un tiers.`,
+`Faux : le délai dépasse un an dans « certaines » revues seulement.`,
+`Ne peut pas dire : le texte signale l'initiative, sans en mesurer l'effet.`,
+`Faux : elles sont accessibles « avant toute évaluation ».`]},
+
+{passage:`Le développement du télétravail a modifié la géographie du logement dans un pays d'Europe de l'Ouest. Entre 2019 et 2023, les prix de l'immobilier ont progressé de 22 % en moyenne dans les petites villes situées à plus d'une heure de la capitale, contre 9 % dans la capitale elle-même. Les notaires observent une forte proportion d'acheteurs venus des grandes agglomérations, souvent des cadres pouvant travailler à distance plusieurs jours par semaine. Cet afflux a revitalisé certains centres-villes, mais il a aussi rendu l'accès au logement plus difficile pour les habitants locaux, dont les revenus sont en moyenne nettement inférieurs à ceux des nouveaux arrivants. Les élus de plusieurs de ces communes réclament le droit de limiter la transformation de logements en résidences secondaires ou en locations touristiques. Les économistes restent partagés sur la durabilité du phénomène : plusieurs grandes entreprises ont récemment réduit le nombre de jours de télétravail autorisés, ce qui pourrait freiner les départs vers les petites villes.`,
+opts:[
+`Les prix de l'immobilier ont augmenté plus de deux fois plus vite dans les petites villes éloignées que dans la capitale.`,
+`La majorité des acheteurs dans les petites villes viennent des grandes agglomérations.`,
+`Les petites villes ont obtenu le droit de limiter les locations touristiques.`,
+`La réduction du télétravail par certaines entreprises a mis fin aux départs vers les petites villes.`],
+c:0,why:[
+`Vrai : 22 % contre 9 %, c'est plus du double.`,
+`Ne peut pas dire : les notaires parlent d'une « forte proportion », pas d'une majorité.`,
+`Faux : les élus le « réclament », ils ne l'ont pas obtenu.`,
+`Faux : le texte dit que cette réduction « pourrait freiner » les départs, pas qu'elle les a arrêtés.`]},
+
+{passage:`Une agglomération a mis en circulation douze bus à hydrogène il y a trois ans, dans le cadre d'un projet cofinancé par des fonds publics. Ces véhicules ne rejettent que de la vapeur d'eau à l'échappement et offrent une autonomie de 350 kilomètres, supérieure à celle des bus électriques à batterie de la même flotte. L'expérience a pourtant déçu. Le coût d'achat de chaque bus était près de deux fois supérieur à celui d'un bus diesel, l'hydrogène livré par camion coûtait plus cher que prévu, et la station de recharge a connu de nombreuses pannes, immobilisant parfois la moitié des véhicules. Surtout, l'hydrogène utilisé était produit à partir de gaz naturel, ce qui réduisait fortement le bénéfice climatique du projet. L'agglomération a décidé de ne pas renouveler la flotte à hydrogène et de se tourner vers des bus électriques à batterie, dont les performances se sont améliorées. Elle n'exclut pas de revenir à l'hydrogène si une production locale à partir d'électricité renouvelable voit le jour.`,
+opts:[
+`Les bus à hydrogène de l'agglomération n'émettaient aucun gaz à effet de serre sur l'ensemble de leur cycle.`,
+`La station de recharge a immobilisé en permanence la moitié des bus à hydrogène.`,
+`Un bus à hydrogène coûtait à l'achat près du double d'un bus diesel.`,
+`Les bus électriques à batterie de la flotte ont une autonomie supérieure à 350 kilomètres.`],
+c:2,why:[
+`Faux : l'hydrogène était produit à partir de gaz naturel, ce qui réduisait fortement le bénéfice climatique.`,
+`Faux : les pannes immobilisaient « parfois » la moitié des véhicules.`,
+`Vrai : le coût d'achat était « près de deux fois supérieur ».`,
+`Faux : l'autonomie des bus à hydrogène est présentée comme supérieure à celle des bus électriques.`]},
+
+{passage:`Le bruit de la circulation modifie le chant des oiseaux. Des ornithologues ont enregistré des mésanges dans des parcs urbains et dans des forêts proches. En ville, les mâles chantent sur des fréquences plus aiguës, qui se distinguent mieux du grondement grave du trafic. Ils commencent aussi à chanter plus tôt le matin, avant les heures de pointe. Ces adaptations ont toutefois un coût : les chercheurs ont observé que les femelles réagissaient moins vivement aux chants aigus qu'aux chants graves lors d'expériences de diffusion en forêt. Pendant les confinements, lorsque le trafic s'est effondré, une autre équipe a constaté que les oiseaux de plusieurs villes avaient abaissé la fréquence de leur chant en quelques semaines, signe que ces changements relèvent au moins en partie d'une adaptation comportementale rapide plutôt que d'une évolution génétique. Les chercheurs plaident pour la prise en compte du bruit dans l'aménagement des parcs, par exemple en éloignant les zones arborées des grands axes ou en installant des écrans végétalisés.`,
+opts:[
+`Les mésanges urbaines chantent plus fort que les mésanges des forêts.`,
+`Les femelles réagissent davantage aux chants aigus qu'aux chants graves.`,
+`Les modifications du chant des oiseaux en ville sont exclusivement d'origine génétique.`,
+`La baisse du trafic pendant les confinements a été suivie d'un chant plus grave chez certains oiseaux urbains.`],
+c:3,why:[
+`Ne peut pas dire : le texte parle de fréquence et d'horaires, pas de volume.`,
+`Faux : elles réagissaient « moins vivement » aux chants aigus.`,
+`Faux : les observations pendant les confinements montrent une adaptation comportementale, au moins en partie.`,
+`Vrai : les oiseaux de plusieurs villes ont abaissé la fréquence de leur chant en quelques semaines.`]},
+
+{passage:`Creusée dans une montagne d'un archipel arctique, une réserve mondiale de semences conserve aujourd'hui plus d'un million d'échantillons de graines déposés par des banques de gènes du monde entier. Maintenues à -18 °C, la plupart des semences peuvent y rester viables pendant des décennies, voire des siècles pour certaines espèces. La réserve fonctionne comme un coffre-fort : chaque institution déposante reste propriétaire de ses échantillons et seule autorisée à les retirer. Le premier retrait a eu lieu après qu'un centre de recherche agricole a dû quitter une zone de guerre ; ses chercheurs ont pu reconstituer leurs collections à partir des doubles conservés dans l'Arctique, puis en redéposer une partie. Le site a dû faire l'objet de travaux d'étanchéité après une infiltration d'eau dans le tunnel d'accès, survenue lors d'un hiver anormalement doux. Aucune graine n'a été endommagée, mais l'incident a rappelé que même cette installation n'est pas à l'abri des effets du réchauffement.`,
+opts:[
+`Toutes les semences conservées dans la réserve restent viables pendant plusieurs siècles.`,
+`Le gestionnaire de la réserve peut décider de retirer des échantillons pour les confier à d'autres institutions.`,
+`Des semences retirées de la réserve ont permis à un centre de recherche de reconstituer ses collections.`,
+`L'infiltration d'eau dans le tunnel d'accès a endommagé une partie des graines.`],
+c:2,why:[
+`Faux : la plupart restent viables pendant des décennies, et seules certaines espèces pendant des siècles.`,
+`Faux : seule l'institution déposante est autorisée à retirer ses échantillons.`,
+`Vrai : le centre de recherche a reconstitué ses collections à partir des doubles conservés dans la réserve.`,
+`Faux : aucune graine n'a été endommagée.`]},
+
+{passage:`Plusieurs juridictions expérimentent des logiciels de traduction automatique pour faire face au manque d'interprètes, en particulier pour les langues rares. Dans un tribunal pilote, ces outils servent à traduire des pièces écrites, comme des contrats ou des correspondances, afin de permettre aux juges d'en saisir rapidement le contenu. Ils ne sont en revanche pas utilisés pendant les audiences, où la présence d'un interprète assermenté reste obligatoire. Une évaluation interne a relevé que les traductions étaient jugées satisfaisantes dans la grande majorité des cas pour les langues les plus courantes, mais nettement moins fiables pour les langues peu représentées dans les données d'entraînement des logiciels. Des erreurs portant sur des négations ou sur des termes juridiques ont été relevées, dont certaines auraient pu modifier le sens d'une pièce. Les avocats demandent que toute pièce traduite automatiquement et produite à l'appui d'une décision fasse l'objet d'une vérification humaine. Le ministère de la Justice a indiqué qu'il publierait des lignes directrices avant d'étendre l'expérimentation.`,
+opts:[
+`Les logiciels de traduction automatique remplacent les interprètes pendant les audiences du tribunal pilote.`,
+`Les traductions automatiques sont moins fiables pour les langues rares, qui sont celles qui manquent le plus d'interprètes.`,
+`Certaines erreurs relevées dans les traductions automatiques auraient pu changer le sens d'un document.`,
+`Le ministère de la Justice a décidé d'étendre l'expérimentation à l'ensemble des tribunaux.`],
+c:2,why:[
+`Faux : la présence d'un interprète assermenté reste obligatoire en audience.`,
+`Ne peut pas dire : le texte dit que les langues rares manquent d'interprètes et que les traductions sont moins fiables pour les langues peu représentées dans les données ; il ne dit pas que ce sont les mêmes langues.`,
+`Vrai : certaines erreurs « auraient pu modifier le sens d'une pièce ».`,
+`Ne peut pas dire : il publiera des lignes directrices « avant d'étendre » l'expérimentation, sans préciser à quels tribunaux.`]},
+
+{passage:`Une ville moyenne a remplacé en deux ans les 45 000 compteurs d'eau de ses abonnés par des compteurs communicants, qui transmettent la consommation toutes les heures. Le principal bénéfice attendu concernait les fuites. Dans les logements, une consommation continue pendant la nuit signale généralement une fuite ; les abonnés concernés sont désormais avertis par message. Au cours de la première année, environ 3 800 alertes ont été envoyées, et la consommation des foyers alertés a baissé en moyenne de 12 % dans les mois suivants. Sur le réseau public, l'analyse des données a permis de localiser plus vite des canalisations défectueuses. La ville estime que le rendement de son réseau, c'est-à-dire la part de l'eau produite qui parvient effectivement aux abonnés, est passé de 78 % à 83 %. Des associations de consommateurs se sont toutefois inquiétées de la précision des informations collectées, qui permettent de déduire les heures de présence des occupants. La ville assure que les données sont anonymisées au-delà de trois mois.`,
+opts:[
+`Environ 3 800 fuites ont été détectées dans les logements au cours de la première année.`,
+`La consommation de l'ensemble des abonnés a baissé de 12 % grâce aux compteurs communicants.`,
+`Avant l'installation des compteurs, plus d'un cinquième de l'eau produite n'atteignait pas les abonnés.`,
+`Les données collectées par les compteurs ne permettent pas de connaître les habitudes des occupants.`],
+c:2,why:[
+`Ne peut pas dire : 3 800 alertes ont été envoyées, mais une consommation nocturne ne signale « généralement » qu'une fuite ; le nombre de fuites réelles n'est pas donné.`,
+`Faux : la baisse de 12 % concerne les seuls foyers alertés.`,
+`Vrai : avec un rendement de 78 %, 22 % de l'eau produite n'atteignait pas les abonnés, soit plus d'un cinquième.`,
+`Faux : les associations soulignent qu'elles permettent de déduire les heures de présence.`]},
+
+{passage:`L'organisation d'un grand marathon urbain a décidé d'avancer d'une heure le départ de sa course, programmée chaque année au printemps, après une édition marquée par une chaleur inhabituelle. Ce jour-là, la température avait dépassé 26 °C à la mi-journée, et les services de secours avaient pris en charge près de 600 coureurs, contre 150 en moyenne lors des éditions précédentes. Une trentaine avaient été hospitalisés, la plupart pour des coups de chaleur. Les médecins du sport rappellent que la performance des coureurs se dégrade sensiblement au-delà de 15 °C et que le risque médical augmente fortement au-delà de 25 °C, surtout chez les coureurs peu entraînés, qui restent plus longtemps exposés. L'organisation a aussi doublé le nombre de points d'eau et installé des brumisateurs sur le parcours. Elle n'exclut pas d'annuler une édition future si les prévisions annoncent des températures extrêmes, une décision que certains participants, venus parfois de loin, jugent difficile à accepter.`,
+opts:[
+`Le nombre de coureurs pris en charge par les secours a quadruplé par rapport à la moyenne des éditions précédentes.`,
+`Tous les coureurs hospitalisés souffraient d'un coup de chaleur.`,
+`L'organisation a décidé d'annuler la prochaine édition du marathon.`,
+`Les coureurs les mieux entraînés ne courent aucun risque au-delà de 25 °C.`],
+c:0,why:[
+`Vrai : près de 600 contre 150 en moyenne, c'est quatre fois plus.`,
+`Faux : « la plupart » des hospitalisations étaient dues à un coup de chaleur, pas toutes.`,
+`Faux : elle « n'exclut pas » d'annuler une édition future, sans l'avoir décidé.`,
+`Faux : le risque augmente fortement au-delà de 25 °C, « surtout » chez les moins entraînés, ce qui n'exclut pas les autres.`]},
+
+{passage:`Une région a mesuré pendant un mois les déchets alimentaires de 120 cantines scolaires. En moyenne, 110 grammes de nourriture par élève et par repas finissaient à la poubelle, soit un tiers des quantités servies. Le gaspillage était plus élevé dans les écoles primaires que dans les collèges, et il concernait surtout les légumes et le pain. Les cantines qui laissaient les élèves choisir la taille de leur portion gaspillaient en moyenne 40 % de moins que les autres. La région a lancé un programme d'accompagnement fondé sur ces constats : pesée des restes devant les élèves, ajustement des grammages, achat de pain en plus petites quantités et allongement de la pause déjeuner, que de nombreux élèves jugeaient trop courte pour finir leur assiette. Les économies réalisées sur les achats doivent permettre d'augmenter la part des produits issus de l'agriculture biologique sans hausse du prix des repas. Un nouveau relevé est prévu dans deux ans pour mesurer l'effet du programme.`,
+opts:[
+`Les élèves de collège gaspillent davantage que ceux des écoles primaires.`,
+`Laisser les élèves choisir la taille de leur portion réduit le gaspillage de 40 %.`,
+`Les quantités servies par élève et par repas étaient en moyenne d'environ 330 grammes.`,
+`Le programme a permis d'augmenter la part des produits biologiques dans les cantines.`],
+c:2,why:[
+`Faux : le gaspillage était plus élevé dans les écoles primaires.`,
+`Ne peut pas dire : les cantines concernées gaspillaient 40 % de moins, mais le texte n'établit pas que ce choix en est la cause.`,
+`Vrai : si 110 grammes représentent un tiers des quantités servies, celles-ci s'élèvent à environ 330 grammes.`,
+`Ne peut pas dire : c'est un objectif, dont l'effet sera mesuré dans deux ans.`]},
+
+{passage:`Le microcrédit, qui consiste à prêter de petites sommes à des personnes exclues du système bancaire, a longtemps été présenté comme un outil majeur de lutte contre la pauvreté. Une série d'évaluations rigoureuses menées dans six pays a nuancé ce constat. Comparant des quartiers où une institution de microfinance s'était installée à des quartiers similaires qui n'en disposaient pas, les chercheurs ont observé que l'accès au crédit permettait à certains ménages de créer ou d'agrandir une petite activité, mais sans effet significatif sur le revenu moyen ni sur la scolarisation des enfants après dix-huit mois. Les gains se concentraient sur une minorité d'entrepreneurs déjà actifs avant l'arrivée du crédit. Les auteurs ne concluent pas pour autant à l'inutilité du microcrédit : il aide les ménages à faire face aux imprévus, comme une maladie ou une mauvaise récolte, sans recourir à des prêteurs informels pratiquant des taux exorbitants. Ils estiment simplement que ses promesses initiales étaient exagérées.`,
+opts:[
+`Le microcrédit n'a aucune utilité pour les ménages pauvres.`,
+`Dans les quartiers étudiés, l'accès au microcrédit n'a pas sensiblement augmenté le revenu moyen des ménages après dix-huit mois.`,
+`Le microcrédit a amélioré la scolarisation des enfants dans la plupart des pays étudiés.`,
+`Les prêteurs informels ont disparu des quartiers où le microcrédit s'est installé.`],
+c:1,why:[
+`Faux : les auteurs ne concluent pas à son inutilité et soulignent son rôle face aux imprévus.`,
+`Vrai : les évaluations ne montrent pas d'effet significatif sur le revenu moyen après dix-huit mois.`,
+`Faux : aucun effet significatif n'a été observé sur la scolarisation.`,
+`Ne peut pas dire : le microcrédit évite de recourir à eux, mais le texte ne dit pas qu'ils ont disparu.`]},
+
+{passage:`Les avis de consommateurs publiés sur les sites de vente en ligne influencent fortement les achats, et ils sont devenus la cible de fraudes organisées. Une autorité de protection des consommateurs a contrôlé plus de 200 sites : dans près de la moitié des cas, elle a relevé des pratiques douteuses, comme la publication d'avis rédigés par des employés, la suppression des avis négatifs ou l'absence d'information sur la vérification des avis. Certaines entreprises achètent des lots d'avis positifs à des intermédiaires qui rémunèrent des particuliers pour les rédiger. La législation interdit désormais de présenter des avis comme provenant de consommateurs réels sans avoir pris de mesures raisonnables pour le vérifier, et impose d'indiquer comment ils sont contrôlés. Les plateformes affirment supprimer chaque année des millions de faux avis grâce à des outils de détection automatique. Les spécialistes rappellent cependant que les avis les plus difficiles à repérer sont ceux qui sont modérément positifs et rédigés dans un style naturel, bien plus crédibles qu'une série d'éloges dithyrambiques.`,
+opts:[
+`Près de la moitié des avis publiés sur les sites contrôlés sont faux.`,
+`La législation interdit de supprimer les avis négatifs.`,
+`Un site doit désormais indiquer de quelle manière il contrôle les avis qu'il publie.`,
+`Les outils de détection automatique repèrent l'ensemble des faux avis.`],
+c:2,why:[
+`Faux : près de la moitié des sites présentaient des pratiques douteuses ; le texte ne donne pas la part de faux avis.`,
+`Ne peut pas dire : la suppression des avis négatifs est citée comme pratique douteuse, mais le texte ne précise pas qu'une loi l'interdit.`,
+`Vrai : la législation « impose d'indiquer comment ils sont contrôlés ».`,
+`Faux : les avis modérément positifs et naturels restent les plus difficiles à repérer.`]},
+
+{passage:`Une étude portant sur plus de 300 hôpitaux a mis en évidence un lien entre le nombre de patients par infirmier et la mortalité des patients opérés. Chaque patient supplémentaire confié à un infirmier était associé à une hausse d'environ 7 % du risque de décès dans les trente jours suivant l'opération. Les hôpitaux où les infirmiers étaient plus nombreux à détenir un diplôme universitaire affichaient également de meilleurs résultats. Les auteurs ont pris en compte l'âge des patients, la gravité de leur état et la taille des établissements, mais reconnaissent que d'autres différences entre hôpitaux peuvent jouer. Sur la base de travaux de ce type, plusieurs pays et régions ont fixé un ratio maximal de patients par infirmier dans les services de soins aigus. Les directions hospitalières objectent que ces ratios sont coûteux et difficiles à respecter dans un contexte de pénurie de personnel, et qu'ils risquent de conduire à fermer des lits plutôt qu'à recruter. Les syndicats répondent que de meilleures conditions de travail réduiraient les départs et faciliteraient le recrutement.`,
+opts:[
+`Confier un patient supplémentaire à chaque infirmier fait augmenter de 7 % le nombre total de décès à l'hôpital.`,
+`Les auteurs ont tenu compte de la gravité de l'état des patients dans leur analyse.`,
+`Tous les pays ont fixé un ratio maximal de patients par infirmier.`,
+`Les ratios imposés ont conduit plusieurs hôpitaux à fermer des lits.`],
+c:1,why:[
+`Faux : la hausse d'environ 7 % porte sur le risque de décès des patients opérés dans les trente jours, pas sur l'ensemble des décès de l'hôpital.`,
+`Vrai : ils ont pris en compte l'âge, la gravité de l'état des patients et la taille des établissements.`,
+`Faux : « plusieurs pays et régions » l'ont fait.`,
+`Ne peut pas dire : c'est un risque avancé par les directions, pas un fait constaté.`]},
+
+{passage:`Lorsque la municipalité d'une grande ville a annoncé la transformation d'une rue commerçante en axe réservé aux piétons et aux vélos, une partie des commerçants a protesté, craignant de perdre la clientèle venue en voiture. Deux ans après les travaux, une étude commandée par la chambre de commerce dresse un bilan contrasté. Le nombre de passants a augmenté de 25 % et le chiffre d'affaires des cafés et restaurants de la rue a progressé plus vite que la moyenne de la ville. Les commerces de biens encombrants, comme l'électroménager ou l'ameublement, ont en revanche vu leurs ventes stagner, et deux d'entre eux ont déménagé vers la périphérie. L'étude souligne que les commerçants avaient largement surestimé la part de leurs clients venant en voiture : ils l'estimaient à plus de la moitié, alors que les comptages réalisés avant les travaux la situaient autour de 20 %. Les auteurs rappellent toutefois que la rue a bénéficié dans le même temps de l'ouverture d'une nouvelle station de métro, dont l'effet est difficile à isoler.`,
+opts:[
+`La piétonnisation de la rue est la cause de la hausse du chiffre d'affaires des cafés et restaurants.`,
+`Avant les travaux, la majorité des clients de la rue venaient en voiture.`,
+`Tous les commerces de biens encombrants de la rue ont déménagé vers la périphérie.`,
+`Les commerçants avaient surestimé de plus du double la part de leurs clients venant en voiture.`],
+c:3,why:[
+`Ne peut pas dire : l'ouverture d'une station de métro au même moment rend l'effet difficile à isoler.`,
+`Faux : les comptages situaient cette part autour de 20 %.`,
+`Faux : deux d'entre eux ont déménagé, pas tous.`,
+`Vrai : ils l'estimaient à plus de la moitié, contre environ 20 % mesurés, soit plus du double.`]},
+
+{passage:`Chaque hiver, des milliers de bénévoles participent au comptage des oiseaux des jardins organisé par une association naturaliste. Pendant une heure, ils notent le nombre maximal d'individus de chaque espèce observés simultanément, puis transmettent leurs résultats en ligne. L'édition de cette année a réuni environ 18 000 participants, soit un tiers de plus que l'an dernier. Le moineau domestique reste l'espèce la plus fréquemment observée, mais ses effectifs moyens par jardin ont reculé de 15 % en dix ans. À l'inverse, le pigeon ramier et la tourterelle turque progressent. L'association reconnaît les limites de la méthode : les participants ne sont pas répartis uniformément sur le territoire, les débutants confondent parfois des espèces proches, et une météo défavorable le jour du comptage peut réduire le nombre d'oiseaux visibles. C'est pourquoi les résultats sont analysés sur plusieurs années, et comparés aux suivis scientifiques menés selon des protocoles plus stricts, avec lesquels ils concordent dans l'ensemble pour les espèces les plus communes.`,
+opts:[
+`Environ 13 500 personnes avaient participé au comptage de l'an dernier.`,
+`Le nombre total de moineaux domestiques dans le pays a baissé de 15 % en dix ans.`,
+`Les résultats du comptage contredisent ceux des suivis scientifiques pour les espèces communes.`,
+`Le moineau domestique est l'espèce la plus nombreuse dans les jardins.`],
+c:0,why:[
+`Vrai : 18 000 représente un tiers de plus que l'an dernier, soit environ 13 500 participants l'an dernier.`,
+`Faux : la baisse de 15 % porte sur les effectifs moyens par jardin, pas sur la population nationale totale.`,
+`Faux : ils concordent dans l'ensemble pour les espèces les plus communes.`,
+`Ne peut pas dire : il est l'espèce la plus « fréquemment observée », ce qui ne dit pas qu'elle est la plus nombreuse.`]},
+
+{passage:`Les téléphones portables contiennent de petites quantités de métaux rares, comme le néodyme utilisé dans les aimants des haut-parleurs et des vibreurs. Leur recyclage permettrait de réduire la dépendance de l'industrie à l'égard de quelques pays producteurs. Pourtant, selon une estimation, moins de 20 % des téléphones usagés sont collectés en vue d'un recyclage ; la plupart dorment dans des tiroirs. Même lorsqu'ils sont collectés, l'extraction des métaux rares reste marginale : les procédés actuels récupèrent surtout l'or, l'argent et le cuivre, plus faciles à séparer et plus rentables. Une entreprise a mis au point un robot capable de démonter un téléphone en quelques secondes pour isoler les aimants, mais la diversité des modèles limite son efficacité. Des chercheurs plaident pour une conception des appareils qui faciliterait leur démontage, et rappellent que prolonger la durée d'utilisation d'un téléphone réduit davantage les besoins en matières premières que tout procédé de recyclage.`,
+opts:[
+`Plus de 80 % des téléphones usagés ne sont pas collectés en vue d'un recyclage, selon une estimation.`,
+`Les procédés de recyclage actuels permettent de récupérer l'essentiel des métaux rares des téléphones collectés.`,
+`Le robot de démontage fonctionne avec la même efficacité quel que soit le modèle de téléphone.`,
+`Le néodyme est le métal le plus présent dans les téléphones portables.`],
+c:0,why:[
+`Vrai : si moins de 20 % sont collectés, plus de 80 % ne le sont pas.`,
+`Faux : l'extraction des métaux rares « reste marginale ».`,
+`Faux : la diversité des modèles limite son efficacité.`,
+`Ne peut pas dire : le texte ne compare pas les quantités des différents métaux.`]},
+
+{passage:`Le changement d'heure deux fois par an fait l'objet d'un débat récurrent. Instauré dans de nombreux pays européens dans les années 1970 pour économiser l'énergie après le choc pétrolier, il est aujourd'hui critiqué pour ses effets sur la santé et pour la faiblesse des économies qu'il permet encore. Plusieurs études associent les jours qui suivent le passage à l'heure d'été à une légère hausse des accidents de la route et des infarctus, sans que la causalité soit fermement établie. Les économies d'éclairage, réelles à l'origine, sont désormais faibles, l'éclairage ne représentant qu'une petite part de la consommation électrique. Une consultation publique en ligne a recueilli une très large majorité de réponses favorables à la suppression du changement d'heure, mais les répondants venaient en grande partie d'un seul pays. Le choix de l'heure à conserver divise : l'heure d'été permanente offrirait des soirées plus lumineuses, mais retarderait le lever du soleil en hiver, au-delà de 9 heures dans certaines régions.`,
+opts:[
+`Le changement d'heure provoque une hausse des infarctus dans les jours qui suivent le passage à l'heure d'été.`,
+`Les résultats de la consultation en ligne reflètent fidèlement l'opinion de l'ensemble des pays concernés.`,
+`Le changement d'heure a été instauré à l'origine pour des raisons d'économie d'énergie.`,
+`L'heure d'été permanente retarderait le lever du soleil en hiver au-delà de 9 heures dans toutes les régions.`],
+c:2,why:[
+`Faux : les études montrent une association « sans que la causalité soit fermement établie ».`,
+`Faux : les répondants venaient en grande partie d'un seul pays.`,
+`Vrai : il a été instauré pour économiser l'énergie après le choc pétrolier.`,
+`Faux : dans « certaines régions » seulement.`]},
+
+{passage:`L'analyse de l'ADN extrait d'ossements de chiens anciens, dont certains ont plus de 10 000 ans, éclaire l'histoire de la domestication. Une équipe internationale a séquencé le génome de plusieurs dizaines de chiens préhistoriques retrouvés en Europe, au Proche-Orient et en Sibérie. Les résultats indiquent qu'il existait déjà, il y a 11 000 ans, au moins cinq lignées de chiens génétiquement distinctes, ce qui suppose une domestication antérieure. Les chercheurs ont aussi constaté que l'histoire des chiens suit souvent celle des populations humaines, sans s'y superposer complètement : lorsque des agriculteurs venus du Proche-Orient se sont installés en Europe, leurs chiens se sont mêlés aux chiens locaux, mais dans d'autres régions, les migrations humaines ne se sont pas accompagnées d'un remplacement des chiens. La question du lieu de la domestication reste ouverte : les données ne permettent pas de dire si elle a eu lieu une seule fois ou dans plusieurs régions, ni à partir de quelle population de loups.`,
+opts:[
+`Le chien a été domestiqué il y a exactement 11 000 ans.`,
+`L'étude établit que la domestication du chien a eu lieu en Sibérie.`,
+`Les migrations humaines se sont toujours accompagnées d'un remplacement des chiens locaux.`,
+`La domestication du chien a commencé avant l'apparition de cinq lignées distinctes.`],
+c:3,why:[
+`Faux : l'existence de cinq lignées il y a 11 000 ans suppose une domestication antérieure.`,
+`Faux : le lieu de la domestication reste une question ouverte.`,
+`Faux : dans d'autres régions, les migrations ne se sont pas accompagnées d'un remplacement.`,
+`Vrai : la diversité des lignées il y a 11 000 ans suppose une domestication antérieure à leur différenciation.`]},
+
+{passage:`Une ville touristique a doublé sa taxe de séjour l'an dernier, la portant à 4 euros par nuit et par personne dans les hôtels de catégorie supérieure, et à 2 euros dans les autres hébergements. Les recettes ont atteint 38 millions d'euros, contre 21 millions l'année précédente, alors que le nombre de nuitées est resté quasiment stable. La municipalité affecte ces recettes à l'entretien de l'espace public, au nettoyage des quartiers les plus fréquentés et à des aides au logement destinées aux habitants, dont beaucoup ont quitté le centre historique sous l'effet de la hausse des loyers. Les professionnels de l'hôtellerie redoutaient une chute de la fréquentation ; ils reconnaissent qu'elle ne s'est pas produite, mais affirment que la taxe pèse sur leurs marges, car ils ont dû renoncer à augmenter leurs propres tarifs. La ville envisage désormais un droit d'entrée pour les visiteurs à la journée, qui ne paient pas de taxe de séjour et représentent, selon elle, la majorité des personnes présentes dans le centre les jours d'affluence.`,
+opts:[
+`Les recettes de la taxe de séjour ont presque doublé alors que la fréquentation a fortement baissé.`,
+`Les hôteliers ont augmenté leurs tarifs pour compenser la hausse de la taxe de séjour.`,
+`Les visiteurs à la journée ne sont pas soumis à la taxe de séjour.`,
+`Avant la réforme, la taxe de séjour s'élevait à 1,50 euro dans les hébergements autres que les hôtels de catégorie supérieure.`],
+c:2,why:[
+`Faux : le nombre de nuitées est resté quasiment stable.`,
+`Faux : ils disent avoir dû renoncer à augmenter leurs tarifs.`,
+`Vrai : le texte précise qu'ils « ne paient pas de taxe de séjour ».`,
+`Faux : la taxe a été doublée et portée à 2 euros dans ces hébergements ; elle y était donc de 1 euro.`]},
+
+{passage:`Le droit de pétition permet à tout citoyen de saisir une assemblée parlementaire d'une question qui le concerne. Dans un parlement national, une réforme a abaissé à 100 000 le nombre de signatures en ligne nécessaires pour qu'une pétition soit examinée en séance publique. Depuis, une quinzaine de pétitions ont franchi ce seuil, sur des sujets aussi variés que le bien-être animal, la fiscalité des carburants ou l'accès aux soins dans les zones rurales. L'examen en séance ne garantit pas l'adoption d'une loi : les parlementaires débattent, puis peuvent décider de déposer une proposition de loi, d'interroger le gouvernement ou de classer la pétition. Selon un rapport de la commission chargée des pétitions, trois d'entre elles ont débouché sur une modification de la législation. Les auteurs du rapport notent que les pétitions les plus signées ne sont pas forcément les plus suivies d'effets, et que leur influence dépend souvent de l'existence préalable d'un débat parlementaire sur le sujet.`,
+opts:[
+`Une pétition qui recueille 100 000 signatures est automatiquement transformée en proposition de loi.`,
+`Au moins une des pétitions examinées en séance a été classée.`,
+`Une partie des pétitions examinées en séance a conduit à modifier la législation.`,
+`Les pétitions les plus signées sont celles qui ont le plus souvent débouché sur une loi.`],
+c:2,why:[
+`Faux : elle est examinée en séance, ce qui ne garantit pas une proposition de loi.`,
+`Ne peut pas dire : le classement est une issue possible, mais le texte ne dit pas qu'il a été utilisé.`,
+`Vrai : trois d'entre elles ont débouché sur une modification de la législation.`,
+`Faux : les pétitions les plus signées « ne sont pas forcément les plus suivies d'effets ».`]}
+];
+
 const NUMERIC_BANK = [
 {q:`Un pays a exporté pour 240 millions d'euros de marchandises en 2023. Ses exportations ont augmenté de 20 % par rapport à 2022. Quel était le montant des exportations en 2022 ?`,
 opts:[`192 M€`,`200 M€`,`210 M€`,`220 M€`],c:1,ex:`240 ÷ 1,20 = 200. On divise par (1 + le taux). Erreur classique : retirer 20 % de 240 donne 192, ce qui est faux.`},
@@ -1616,6 +2106,10 @@ const NUMERIC_TEMPLATES = [
    ignorer une colonne fait partie de l'exercice. */
 const PAYS = ['Belgique','Danemark','Espagne','Finlande','France','Grèce','Irlande','Italie','Pays-Bas','Pologne','Portugal','Suède','Tchéquie','Autriche','Allemagne','Hongrie'];
 function pickN(arr,n){ return shuffle(arr).slice(0,n); }
+/* Article défini devant un nom de pays : « la Grèce », « le Danemark », « les Pays-Bas ». */
+const ART_PAYS = {'Belgique':'la','Danemark':'le','Espagne':"l'",'Finlande':'la','France':'la','Grèce':'la','Irlande':"l'",'Italie':"l'",'Pays-Bas':'les','Pologne':'la','Portugal':'le','Suède':'la','Tchéquie':'la','Autriche':"l'",'Allemagne':"l'",'Hongrie':'la'};
+function lePays(n){ const a=ART_PAYS[n]||''; return a.endsWith("'") ? a+n : (a ? a+' '+n : n); }
+function duPays(n){ const a=ART_PAYS[n]; return a==='le' ? 'du '+n : a==='les' ? 'des '+n : 'de '+lePays(n); }
 
 const NUMERIC_TABLE_TEMPLATES = [
   /* Déduire une grandeur absolue à partir d'un pourcentage et d'une valeur absolue,
@@ -1924,6 +2418,95 @@ const NUMERIC_TABLE_TEMPLATES = [
       val, [parts[k], Math.round(total/5), val*2],
       fmtN(parts[k])+` % de `+fmtN(total)+` M€ = `+fmtN(val)+` M€. Le tableau donne des parts, pas des montants : la question suppose de revenir au total indiqué en titre.`,
       ' M€', table);
+  },
+
+  /* ---- Niveau examen : quatre opérations ou plus, données à reconstituer. ---- */
+
+  /* Cellule manquante : le total se déduit de la part d'une ligne inconnue. */
+  ()=>{
+    const sect = ['Agriculture et alimentation','Énergie et extraction','Construction et logement','Textile et habillement','Transport et voyages','Numérique et services financiers','Santé et éducation'];
+    const vals = sect.map(()=>ri(20,180)*100);
+    const k = 5, p = [40,42,45,48,50][ri(0,4)];
+    const connus = vals.reduce((a,v,i)=>i===k?a:a+v,0);
+    const total = Math.round(connus/(1-p/100));
+    const vals2 = vals.map(v=>Math.round(v*(ri(95,130)/100)));
+    const rows = sect.map((n,i)=>[n, i===k?'?':fmtN(vals[i]), fmtN(vals2[i])]);
+    rows.push(['Total','?', fmtN(vals2.reduce((a,v)=>a+v,0))]);
+    const table = dataTable('Importations de services par secteur (M€)', ['Secteur','Année N','Année N+2'], rows);
+    return mkNum(`Si le secteur « Numérique et services financiers » représentait `+p+` % du total des importations de services l'année N, quel était ce total (en M€) ?`,
+      total, [Math.round(connus*(1+p/100)), connus, Math.round(connus/(p/100))],
+      `Les six secteurs connus totalisent `+fmtN(connus)+` M€ et représentent donc `+(100-p)+` % du total. Total = `+fmtN(connus)+` ÷ `+fmtN((100-p)/100,2)+` ≈ `+fmtN(total)+` M€. Majorer la somme connue de `+p+` % est le piège : la part s'applique au total, pas à la somme des autres lignes.`,
+      '', table);
+  },
+  /* Part constante d'une ligne repère : reconstituer un total puis une autre ligne. */
+  ()=>{
+    const c0 = ri(150,400)*100, g0 = ri(10,40)*100, t0 = ri(30,60)*10000;
+    const c1 = Math.round(c0*(ri(108,140)/100));
+    const res = Math.round(g0*c1/c0);
+    const table = dataTable('Dépenses par poste (k€)', ['Poste','2020','2024'],
+      [['Infrastructures', fmtN(c0), fmtN(c1)], ['Personnel', fmtN(ri(100,300)*100), fmtN(ri(100,300)*100)],
+       ['Sécurité et défense', fmtN(g0), '?'], ['Communication', fmtN(ri(20,80)*100), fmtN(ri(20,80)*100)], ['Total', fmtN(t0), '?']]);
+    return mkNum(`Si les postes « Infrastructures » et « Sécurité et défense » ont conservé en 2024 la même part du total qu'en 2020, quel était le montant du poste « Sécurité et défense » en 2024 (en k€) ?`,
+      res, [g0, g0+(c1-c0), Math.round(g0*1.1)],
+      `Le total 2024 est inconnu, mais la part constante du poste repère suffit : si les deux postes gardent leur part, leur rapport reste le même. Sécurité 2024 = `+fmtN(g0)+` × `+fmtN(c1)+` ÷ `+fmtN(c0)+` ≈ `+fmtN(res)+` k€. Le total 2020 est une donnée inutile pour ce calcul.`,
+      '', table);
+  },
+  /* Population reconstituée puis interpolée linéairement à une date intermédiaire. */
+  ()=>{
+    const p = pickN(PAYS,4);
+    const rows = p.map(n=>{ const pop0=ri(30,180)/10, g=(ri(0,1)?1:-1)*ri(40,140)/1000, pop1=+(pop0*(1+g)).toFixed(2);
+      const pc0=ri(3500,6500)/10, pc1=+(pc0*(1+ri(-30,30)/1000)).toFixed(1);
+      return {n, a0:Math.round(pop0*pc0), a1:Math.round(pop1*pc1), pc0, pc1}; });
+    const x = rows[ri(0,3)];
+    const P0 = x.a0/x.pc0, P1 = x.a1/x.pc1;
+    const res = +(P0 + (P1-P0)*4/6).toFixed(2);
+    const table = dataTable('Surfaces urbanisées', ['Pays','Surface urbanisée 2016 (km²)','Surface urbanisée 2022 (km²)','Surface par habitant 2016 (m²)','Surface par habitant 2022 (m²)'],
+      rows.map(r=>[r.n, fmtN(r.a0), fmtN(r.a1), fmtN(r.pc0,1), fmtN(r.pc1,1)]));
+    return mkNum(`En supposant une évolution linéaire, quelle était la population `+duPays(x.n)+` en 2020 (en millions d'habitants) ?`,
+      res, [+P0.toFixed(2), +P1.toFixed(2), +((P0+P1)/2).toFixed(2)],
+      `Population = surface urbanisée ÷ surface par habitant ; les km² et les m² se compensent pour donner des millions d'habitants. 2016 : `+fmtN(x.a0)+` ÷ `+fmtN(x.pc0,1)+` ≈ `+fmtN(+P0.toFixed(2),2)+` ; 2022 : `+fmtN(x.a1)+` ÷ `+fmtN(x.pc1,1)+` ≈ `+fmtN(+P1.toFixed(2),2)+`. 2020 est à 4 années sur 6 de l'intervalle : `+fmtN(+P0.toFixed(2),2)+` + (`+fmtN(+P1.toFixed(2),2)+` − `+fmtN(+P0.toFixed(2),2)+`) × 4 ÷ 6 ≈ `+fmtN(res,2)+`. La moyenne des deux années correspondrait à 2019.`,
+      ' millions', table);
+  },
+  /* PIB reconstitué depuis le PIB par habitant, puis dette en milliards. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>({n, pib:ri(180,520)*100, pop:+(ri(20,840)/10).toFixed(1), dette:ri(40,150), ch:+(ri(30,120)/10).toFixed(1)}));
+    const x = rows[ri(0,4)];
+    const pib = x.pib*x.pop/1000;            // milliards d'euros
+    const res = Math.round(pib*x.dette/100);
+    const table = dataTable('Indicateurs économiques, 2024', ['Pays','PIB par habitant (€)','Population (millions)','Dette publique (% du PIB)','Chômage (%)'],
+      rows.map(r=>[r.n, fmtN(r.pib), fmtN(r.pop,1), fmtN(r.dette), fmtN(r.ch,1)]));
+    return mkNum(`Quel était approximativement le montant de la dette publique `+duPays(x.n)+` en 2024 (en milliards d'euros) ?`,
+      res, [Math.round(pib), Math.round(res*1000), Math.round(x.pib*x.dette/100)],
+      `Le PIB se reconstitue : `+fmtN(x.pib)+` € × `+fmtN(x.pop,1)+` millions = `+fmtN(Math.round(pib))+` milliards d'euros. La dette en représente `+x.dette+` %, soit environ `+fmtN(res)+` milliards. Les erreurs d'unité (millions contre milliards) sont la cause d'échec la plus fréquente sur ce type de question.`,
+      ' Md€', table);
+  },
+  /* Rapport entre deux sous-populations, à partir d'un écart relatif entre deux pays. */
+  ()=>{
+    const [A,B] = pickN(PAYS,2);
+    const oA=ri(14,24), oB=ri(14,24), uA=ri(15,25), uB=ri(15,25), q=ri(20,90);
+    const PAB = (1+q/100)*(100-oB)/(100-oA);
+    const res = +(uA*PAB/uB).toFixed(2);
+    const table = dataTable('Structure par âge de la population, 2024', ['Pays','Moins de 18 ans (%)','18-64 ans (%)','65 ans et plus (%)'],
+      [[A, fmtN(uA), fmtN(100-uA-oA), fmtN(oA)], [B, fmtN(uB), fmtN(100-uB-oB), fmtN(oB)]]);
+    const Ac = lePays(A); 
+    return mkNum(Ac.charAt(0).toUpperCase()+Ac.slice(1)+(A==='Pays-Bas'?` comptent `:` compte `)+q+` % d'habitants de moins de 65 ans de plus que `+lePays(B)+`. Quel est le rapport entre le nombre de moins de 18 ans `+duPays(A)+` et celui `+duPays(B)+` ?`,
+      res, [+(1/res).toFixed(2), +(uA/uB).toFixed(2), +((1+q/100)*uA/uB).toFixed(2)],
+      `Moins de 65 ans = population × (100 − part des 65 ans et plus). D'où population de `+A+` ÷ population de `+B+` = `+fmtN(1+q/100,2)+` × `+(100-oB)+` ÷ `+(100-oA)+` ≈ `+fmtN(+PAB.toFixed(3),3)+`. Le rapport cherché vaut `+uA+` % × `+fmtN(+PAB.toFixed(3),3)+` ÷ `+uB+` % ≈ `+fmtN(res,2)+`. Le rapport inverse est le piège le plus fréquent.`,
+      '', table);
+  },
+  /* Projection d'une tendance linéaire, comparée à la valeur réellement observée. */
+  ()=>{
+    const v = [ri(300,600)]; for(let i=1;i<8;i++) v.push(Math.round(v[i-1]*(1+ri(-20,90)/1000)));
+    const pente = (v[3]-v[0])/3;
+    const proj = v[3] + pente*4;
+    const res = Math.round(proj - v[7]);
+    const table = dataTable('Utilisateurs actifs d\'un service en ligne (millions, au 1er janvier)', ['Année'].concat([2016,2017,2018,2019,2020,2021,2022,2023].map(String)),
+      [['Utilisateurs'].concat(v.map(x=>fmtN(x)))]);
+    return mkNum(`En prolongeant la tendance moyenne annuelle observée entre 2016 et 2019, quel aurait été l'écart (en millions) entre la valeur projetée pour 2023 et la valeur réellement observée ?`,
+      res, [Math.round(v[3]+pente*7-v[7]), -res, Math.round(v[3]-v[7])],
+      `Tendance 2016-2019 : (`+fmtN(v[3])+` − `+fmtN(v[0])+`) ÷ 3 ≈ `+fmtN(+pente.toFixed(1),1)+` millions par an. Projection 2023 : `+fmtN(v[3])+` + 4 × `+fmtN(+pente.toFixed(1),1)+` ≈ `+fmtN(Math.round(proj))+`. Écart avec la valeur observée (`+fmtN(v[7])+`) : `+fmtN(res)+` millions. Compter sept années au lieu de quatre à partir de 2019 est l'erreur la plus fréquente.`,
+      '', table);
   },
 ];
 
@@ -5855,14 +6438,19 @@ function renderVerbal(){
       </ul>
       <p class="lede" style="font-size:15px;">Méthode adaptée de A. Baneth, <i>The Ultimate EU Test Book, Administrators</i>, chapitre 2.</p>
     </details>
-    <button class="btn wide" id="startVerbal">Démarrer une session (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes · ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)} au total)</button>
+    <div class="info-box"><b>Deux banques.</b> Le <b>niveau examen</b> réunit ${VERBAL_EXAM.length} textes plus longs et plus
+    denses, avec des chiffres à recouper et une correction affirmation par affirmation : c'est le niveau
+    à viser. La banque <b>standard</b> (${VERBAL_BANK.length} textes plus courts) sert à l'échauffement et à la méthode.</div>
+    <button class="btn wide" id="startVerbalExam">Session niveau examen (${VERB_COUNT} textes · ${fmtTime(VERB_COUNT*VERB_SEC)})</button>
+    <button class="btn ghost wide" id="startVerbal" style="margin-top:8px;">Session standard (${Math.min(VERB_COUNT, VERBAL_BANK.length)} textes · ${fmtTime(Math.min(VERB_COUNT, VERBAL_BANK.length)*VERB_SEC)})</button>
   </div>`;
-  document.getElementById('startVerbal').addEventListener('click', runVerbalSession);
+  document.getElementById('startVerbalExam').addEventListener('click', ()=>runVerbalSession(VERBAL_EXAM));
+  document.getElementById('startVerbal').addEventListener('click', ()=>runVerbalSession(VERBAL_BANK));
 }
-function runVerbalSession(){
+function runVerbalSession(BANK){
   const app = document.getElementById('app');
-  const count = Math.min(VERB_COUNT, VERBAL_BANK.length);
-  let order = shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0, count);
+  const count = Math.min(VERB_COUNT, BANK.length);
+  let order = shuffle(BANK.map((_,i)=>i)).slice(0, count);
   let idx=0, score=0, timeLeft=count*VERB_SEC, timer=null, answered=false, ended=false, view=null;
   function startClock(){
     clearInterval(timer);
@@ -5874,7 +6462,7 @@ function runVerbalSession(){
   }
   function renderP(){
     answered=false;
-    const item = VERBAL_BANK[order[idx]];
+    const item = BANK[order[idx]];
     view = shuffleOpts(item);
     app.innerHTML = '<div class="card">'
       +'<div class="section-title"><span class="eyebrow">Verbal · Texte '+(idx+1)+' / '+order.length+'</span>'
@@ -5897,7 +6485,7 @@ function runVerbalSession(){
   }
   function submit(choice){
     if(answered) return; answered=true; clearInterval(timer);
-    const item = VERBAL_BANK[order[idx]];
+    const item = BANK[order[idx]];
     const ok = choice===view.c;
     if(ok) score++;
     PROGRESS.verbal.att++; if(ok) PROGRESS.verbal.cor++;
@@ -5909,7 +6497,12 @@ function runVerbalSession(){
       if(i===view.c) b.classList.add('correct');
       else if(i===choice) b.classList.add('incorrect');
     });
-    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+view.c)+'. '+item.ex+'</div>';
+    /* Verdict par affirmation, dans l'ordre affiché : les options ayant été
+       permutées, on retrouve chacune dans l'ordre d'origine par son texte. */
+    const detail = item.why
+      ? '<ul class="why-list">'+view.opts.map((o,i)=>'<li><b>'+String.fromCharCode(65+i)+'.</b> '+item.why[item.opts.indexOf(o)]+'</li>').join('')+'</ul>'
+      : item.ex;
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. ')+'La bonne réponse est '+String.fromCharCode(65+view.c)+'. '+detail+'</div>';
     document.getElementById('nextBtn').classList.remove('hidden');
   }
   function endSession(timedOut){
@@ -5921,7 +6514,7 @@ function runVerbalSession(){
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
     document.getElementById('againBtn').addEventListener('click',()=>{
-      order=shuffle(VERBAL_BANK.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=count*VERB_SEC; ended=false;
+      order=shuffle(BANK.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=count*VERB_SEC; ended=false;
       renderP(); startClock();
     });
     document.getElementById('backBtn').addEventListener('click',()=>goTo('verbal'));

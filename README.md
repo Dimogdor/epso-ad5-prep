@@ -5,8 +5,8 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 
 ## Modules
 
-- **Verbal** · 141 textes au format réel : un passage, quatre affirmations A/B/C/D, une seule pleinement démontrée par le texte. Chronomètre global de session. La moitié des textes sont hors sujet européen, comme au concours.
-- **Numérique + abstrait** · format vérifié sur l'épreuve blanche officielle : cinq options par question. 16 questions écrites, 20 générateurs sur énoncé, 20 générateurs sur tableau de données ; séries abstraites produites par neuf familles de règles paramétrées sur un rendu SVG procédural. Les deux types d'items du concours sont couverts, la suite à compléter et l'ensemble régi par une règle liant deux attributs. Les deux tests sont chronométrés séparément.
+- **Verbal** · 181 textes au format réel : un passage, quatre affirmations A/B/C/D, une seule pleinement démontrée par le texte. Une banque « niveau examen » de 40 textes originaux plus longs et plus denses (150 à 175 mots, chiffres à recouper) est corrigée affirmation par affirmation ; les 141 textes standard servent à l'échauffement. Chronomètre global de session. La moitié des textes sont hors sujet européen, comme au concours.
+- **Numérique + abstrait** · format vérifié sur l'épreuve blanche officielle : cinq options par question. 16 questions écrites, 20 générateurs sur énoncé, 26 générateurs sur tableau, dont six de niveau examen (cellule manquante, part constante, interpolation, unités, rapport entre deux pays, projection de tendance) de données ; séries abstraites produites par neuf familles de règles paramétrées sur un rendu SVG procédural. Les deux types d'items du concours sont couverts, la suite à compléter et l'ensemble régi par une règle liant deux attributs. Les deux tests sont chronométrés séparément.
 - **Connaissances UE** · cours en 9 sections et 354 questions.
 - **Compétences numériques** · cadre DigComp et 193 questions.
 - **EUFTE** · six consignes au format réel, chacune avec une correction visant le haut de la grille et une explication critère par critère sur les cinq « anchors » publiés par EPSO.
