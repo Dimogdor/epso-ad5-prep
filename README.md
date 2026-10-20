@@ -5,7 +5,7 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 
 ## Modules
 
-- **Verbal** · 181 textes au format réel : un passage, quatre affirmations A/B/C/D, une seule pleinement démontrée par le texte. Une banque « niveau examen » de 40 textes originaux plus longs et plus denses (150 à 175 mots, chiffres à recouper) est corrigée affirmation par affirmation ; les 141 textes standard servent à l'échauffement. Chronomètre global de session. La moitié des textes sont hors sujet européen, comme au concours.
+- **Verbal** · 181 textes au format réel, tous au niveau de l'examen : un passage de 150 à 185 mots, quatre affirmations A/B/C/D, une seule pleinement démontrée par le texte. La correction donne le verdict de chaque affirmation (vrai, faux, ne peut pas dire) et sa raison. Les sessions tirent en priorité des textes pas encore vus. Chronomètre global de session. La moitié des textes sont hors sujet européen, comme au concours.
 - **Numérique + abstrait** · format vérifié sur l'épreuve blanche officielle : cinq options par question. 16 questions écrites, 20 générateurs sur énoncé, 26 générateurs sur tableau, dont six de niveau examen (cellule manquante, part constante, interpolation, unités, rapport entre deux pays, projection de tendance) de données ; séries abstraites produites par neuf familles de règles paramétrées sur un rendu SVG procédural. Les deux types d'items du concours sont couverts, la suite à compléter et l'ensemble régi par une règle liant deux attributs. Les deux tests sont chronométrés séparément.
 - **Connaissances UE** · cours en 9 sections et 354 questions.
 - **Compétences numériques** · cadre DigComp et 193 questions.
