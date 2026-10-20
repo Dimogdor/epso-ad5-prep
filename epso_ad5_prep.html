@@ -24,6 +24,7 @@
   --r:12px; --r-sm:8px;
   --shadow:0 1px 1px rgba(20,22,26,.03);
   --tile:#FFFFFF; --tile-line:#DBD8D2;
+  --c1:#1F3A5F; --c2:#7A97C2; --c3:#B7832A; --c4:#3E7D5A;
 }
 :root[data-theme="dark"]{
   --bg:#121317; --surface:#1B1D22; --subtle:#23262C; --sunken:#17191D;
@@ -34,6 +35,7 @@
   --warn:#DCA94F; --warn-soft:#2B2312;
   --shadow:0 1px 1px rgba(0,0,0,.25);
   --tile:#EEEDEA; --tile-line:#C9C6C0;
+  --c1:#9DBDF0; --c2:#4E6E9E; --c3:#E2B45E; --c4:#6CC08E;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121317; --surface:#1B1D22; --subtle:#23262C; --sunken:#17191D;
@@ -44,6 +46,7 @@
   --warn:#DCA94F; --warn-soft:#2B2312;
   --shadow:0 1px 1px rgba(0,0,0,.25);
   --tile:#EEEDEA; --tile-line:#C9C6C0;
+  --c1:#9DBDF0; --c2:#4E6E9E; --c3:#E2B45E; --c4:#6CC08E;
 }}
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -189,6 +192,15 @@ main{padding-top:28px;}
   background-repeat:no-repeat;background-size:40px 100%,40px 100%,15px 100%,15px 100%;
   background-attachment:local,local,scroll,scroll;}
 .data-table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums;}
+/* Graphiques des séries numériques : couleurs de série définies par thème. */
+.chart-wrap{padding:8px 6px 2px;border-bottom:1px solid var(--line-2);}
+.chart{width:100%;min-width:540px;height:auto;display:block;font-family:inherit;}
+.chart .ch-t{font-size:14px;font-weight:650;fill:var(--ink-2);}
+.chart .ch-a{font-size:11px;fill:var(--muted);}
+.chart .ch-l{font-size:12.5px;fill:var(--ink-2);}
+.chart .ch-v{font-size:10.5px;fill:var(--ink);font-variant-numeric:tabular-nums;}
+.chart .ch-g{stroke:var(--line-2);stroke-width:1;}
+.set-tag{display:block;font-size:12.5px;font-weight:650;color:var(--accent);letter-spacing:.02em;margin-bottom:6px;}
 .data-table caption{caption-side:top;text-align:left;padding:13px 15px 10px;font-size:14.5px;color:var(--muted);}
 .data-table th,.data-table td{border-top:1px solid var(--line-2);padding:10px 15px;text-align:right;white-space:nowrap;}
 .data-table th{background:var(--subtle);font-weight:650;font-size:14px;color:var(--ink-2);}
@@ -2862,6 +2874,7 @@ function pickN(arr,n){ return shuffle(arr).slice(0,n); }
 const ART_PAYS = {'Belgique':'la','Danemark':'le','Espagne':"l'",'Finlande':'la','France':'la','Grèce':'la','Irlande':"l'",'Italie':"l'",'Pays-Bas':'les','Pologne':'la','Portugal':'le','Suède':'la','Tchéquie':'la','Autriche':"l'",'Allemagne':"l'",'Hongrie':'la'};
 function lePays(n){ const a=ART_PAYS[n]||''; return a.endsWith("'") ? a+n : (a ? a+' '+n : n); }
 function duPays(n){ const a=ART_PAYS[n]; return a==='le' ? 'du '+n : a==='les' ? 'des '+n : 'de '+lePays(n); }
+function enPays(n){ const a=ART_PAYS[n]; return a==='le' ? 'au '+n : a==='les' ? 'aux '+n : 'en '+n; }
 
 const NUMERIC_TABLE_TEMPLATES = [
   /* Déduire une grandeur absolue à partir d'un pourcentage et d'une valeur absolue,
@@ -2923,7 +2936,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Dépenses publiques de recherche',
       ['Pays','Budget recherche (M€)','Population (millions)','Taux de chômage (%)','Part du privé (%)'],
       rows.map(r=>[r.n, fmtN(r.budget), fmtN(r.pop), fmtN(r.taux,1), fmtN(r.part)]));
-    return mkNum(`Quel est le budget de recherche par habitant en `+x.n+` ?`,
+    return mkNum(`Quel est le budget de recherche par habitant `+enPays(x.n)+` ?`,
       x.budget/x.pop, [Math.round(x.budget/x.pop/10), Math.round(x.budget/x.pop*10), x.budget-x.pop],
       `Budget par habitant = `+fmtN(x.budget)+` millions d'euros ÷ `+fmtN(x.pop)+` millions d'habitants = `+fmtN(x.budget/x.pop)+` €. Les deux grandeurs étant en millions, elles se simplifient : le résultat est en euros par habitant.`,
       ' €', table);
@@ -2937,7 +2950,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Candidats à un concours par pays',
       ['Pays','Candidats inscrits','Part de femmes (%)','Taux d\'admission des femmes (%)','Note moyenne (/20)'],
       rows.map(r=>[r.n, fmtN(r.tot), fmtN(r.femmes), fmtN(r.admis), fmtN(r.moy,1)]));
-    return mkNum(`Combien de femmes ont été admises en `+x.n+` ?`,
+    return mkNum(`Combien de femmes ont été admises `+enPays(x.n)+` ?`,
       res, [x.tot*x.admis/100, x.tot*x.femmes/100, res*2],
       `Deux pourcentages s'appliquent l'un après l'autre : `+fmtN(x.femmes)+` % de `+fmtN(x.tot)+` = `+fmtN(x.tot*x.femmes/100)+` femmes, dont `+fmtN(x.admis)+` % admises, soit `+fmtN(res)+`. Appliquer le taux d'admission au total des candidats est l'erreur classique.`,
       '', table);
@@ -2985,7 +2998,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Taux de chômage, 2019 et 2024',
       ['Pays','Taux 2019 (%)','Taux 2024 (%)','Population active (millions)'],
       rows.map(r=>[r.n, fmtN(r.a,1), fmtN(r.b,1), fmtN(ri(15,300)/10,1)]));
-    return mkNum(`De combien de points de pourcentage le taux de chômage a-t-il varié en `+x.n+` entre 2019 et 2024 ?`,
+    return mkNum(`De combien de points de pourcentage le taux de chômage a-t-il varié `+enPays(x.n)+` entre 2019 et 2024 ?`,
       pts, [rel, +(x.a+x.b).toFixed(1), +(-pts).toFixed(1)],
       `Une variation en points de pourcentage est une simple soustraction : `+fmtN(x.b,1)+` moins `+fmtN(x.a,1)+` = `+String(pts).replace('.',',')+` point(s). La variation relative, elle, vaut `+String(rel).replace('.',',')+` % : les deux réponses sont proposées, il faut lire la question.`,
       ' points', table);
@@ -3261,6 +3274,390 @@ const NUMERIC_TABLE_TEMPLATES = [
       '', table);
   },
 ];
+
+/* ================= NUMÉRIQUE · SÉRIES NIVEAU EXAMEN =================
+   Format calibré sur un recueil d'entraînement récent : un jeu de données
+   (un ou plusieurs tableaux, un graphique en barres ou en courbes) commun à
+   trois questions de quatre à six opérations, cinq options proches. Tous les
+   calculs partent des valeurs AFFICHÉES, arrondies comme à l'écran, pour que la
+   réponse attendue soit exactement celle qu'obtient le candidat. Données
+   générées : aucun chiffre n'est repris d'une source réelle. */
+const nr = (v,d) => +(+v).toFixed(d);
+/* Comme fmtN, mais en gardant les zéros de fin : « 14,0 » et non « 14 »,
+   pour que toutes les valeurs d'une colonne aient le même nombre de décimales. */
+function fmtF(v,d){ if(d===undefined) return fmtN(v); const t=(+v).toFixed(d).split('.'); t[0]=t[0].replace(/\B(?=(\d{3})+(?!\d))/g,' '); return t.join(','); }
+const nPct = v => nr(v,1);
+
+/* Graphique en barres groupées, valeurs inscrites au-dessus des barres. */
+function svgBars(titre, groupes, series, dec){
+  const W=600, H=300, g0=48, b0=250, haut=200;
+  const max = Math.max(...series.flatMap(s=>s.values))*1.12;
+  const gw = (W-g0-10)/groupes.length, bw = Math.min(26,(gw-18)/series.length);
+  let o = '<svg viewBox="0 0 '+W+' '+(H+34)+'" class="chart" role="img" aria-label="'+titre+'">';
+  o += '<text x="'+W/2+'" y="16" text-anchor="middle" class="ch-t">'+titre+'</text>';
+  for(let k=0;k<=4;k++){ const y=b0-haut*k/4; o+='<line x1="'+g0+'" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" class="ch-g"/><text x="'+(g0-6)+'" y="'+(y+4)+'" text-anchor="end" class="ch-a">'+fmtF(nr(max*k/4,0))+'</text>'; }
+  groupes.forEach((gname,gi)=>{
+    const x0 = g0+gi*gw+(gw-bw*series.length)/2;
+    series.forEach((s,si)=>{ const v=s.values[gi], h=haut*v/max, x=x0+si*bw, y=b0-h;
+      o+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw-3)+'" height="'+h.toFixed(1)+'" fill="var(--c'+(si+1)+')"/>';
+      o+='<text x="'+(x+(bw-3)/2).toFixed(1)+'" y="'+(y-4).toFixed(1)+'" text-anchor="middle" class="ch-v">'+fmtF(v,dec)+'</text>'; });
+    o+='<text x="'+(g0+gi*gw+gw/2).toFixed(1)+'" y="'+(b0+18)+'" text-anchor="middle" class="ch-l">'+gname+'</text>';
+  });
+  let lx = g0;
+  series.forEach((s,si)=>{ o+='<rect x="'+lx+'" y="'+(H+12)+'" width="12" height="12" fill="var(--c'+(si+1)+')"/><text x="'+(lx+17)+'" y="'+(H+22)+'" class="ch-l">'+s.name+'</text>'; lx += 30+s.name.length*7.5; });
+  return '<div class="chart-wrap">'+o+'</svg></div>';
+}
+/* Courbes avec points étiquetés. */
+function svgLines(titre, xs, series, dec){
+  const W=600, H=280, g0=52, b0=240, haut=200;
+  const all = series.flatMap(s=>s.values), max = Math.max(...all)*1.1, min = 0;
+  const dx = (W-g0-24)/(xs.length-1);
+  const Y = v => b0-haut*(v-min)/(max-min);
+  let o = '<svg viewBox="0 0 '+W+' '+(H+30)+'" class="chart" role="img" aria-label="'+titre+'">';
+  o += '<text x="'+W/2+'" y="16" text-anchor="middle" class="ch-t">'+titre+'</text>';
+  for(let k=0;k<=4;k++){ const v=min+(max-min)*k/4, y=Y(v); o+='<line x1="'+g0+'" x2="'+(W-10)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" class="ch-g"/><text x="'+(g0-6)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" class="ch-a">'+fmtF(nr(v,0))+'</text>'; }
+  xs.forEach((x,i)=>{ o+='<text x="'+(g0+i*dx).toFixed(1)+'" y="'+(b0+18)+'" text-anchor="middle" class="ch-l">'+x+'</text>'; });
+  series.forEach((s,si)=>{
+    o+='<polyline fill="none" stroke="var(--c'+(si+1)+')" stroke-width="2.5" points="'+s.values.map((v,i)=>(g0+i*dx).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+'"/>';
+    s.values.forEach((v,i)=>{ const x=g0+i*dx, y=Y(v);
+      o+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="var(--c'+(si+1)+')"/>';
+      o+='<text x="'+x.toFixed(1)+'" y="'+(si===0? y+15 : y-8).toFixed(1)+'" text-anchor="middle" class="ch-v">'+fmtF(v,dec)+'</text>'; });
+  });
+  let lx = g0;
+  series.forEach((s,si)=>{ o+='<rect x="'+lx+'" y="'+(H+8)+'" width="12" height="12" fill="var(--c'+(si+1)+')"/><text x="'+(lx+17)+'" y="'+(H+18)+'" class="ch-l">'+s.name+'</text>'; lx += 30+s.name.length*7.5; });
+  return '<div class="chart-wrap">'+o+'</svg></div>';
+}
+/* Barres horizontales de parts, en pourcentage. */
+function svgHBars(titre, labels, values){
+  const W=600, rh=30, H=40+labels.length*rh, g0=190, max=Math.max(...values)*1.15;
+  let o = '<svg viewBox="0 0 '+W+' '+H+'" class="chart" role="img" aria-label="'+titre+'">';
+  o += '<text x="'+W/2+'" y="16" text-anchor="middle" class="ch-t">'+titre+'</text>';
+  labels.forEach((l,i)=>{ const y=30+i*rh, w=(W-g0-60)*values[i]/max;
+    o+='<text x="'+(g0-8)+'" y="'+(y+15)+'" text-anchor="end" class="ch-l">'+l+'</text>';
+    o+='<rect x="'+g0+'" y="'+y+'" width="'+w.toFixed(1)+'" height="20" fill="var(--c'+(1+i%4)+')"/>';
+    o+='<text x="'+(g0+w+6).toFixed(1)+'" y="'+(y+15)+'" class="ch-v">'+fmtF(values[i],1)+' %</text>'; });
+  return '<div class="chart-wrap">'+o+'</svg></div>';
+}
+const nTab = (cap, h, rows) => dataTable(cap, h, rows);
+
+const NUM_SETS = [
+
+  /* 1. Électricité renouvelable : part, projection linéaire, variation cumulée. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const a=ri(150,900)/10; const b=nr(a*(1+ri(8,35)/100),1); const c=nr(b*(1+ri(6,30)/100),1);
+      return {n, a, b, c, cons:Math.round(c*(ri(180,420)/100))}; });
+    const [X,Y,Z] = rows;
+    const tab = nTab('Production d\'électricité renouvelable (TWh) et consommation d\'électricité (TWh)',
+      ['Pays','Prod. 2019','Prod. 2021','Prod. 2023','Consommation 2023'],
+      rows.map(r=>[r.n, fmtF(r.a,1), fmtF(r.b,1), fmtF(r.c,1), fmtF(r.cons)]));
+    const q1 = nPct(100*X.c/X.cons);
+    const q2 = nr(Y.c + (Y.c-Y.b)*3/2,1);
+    const q3 = nPct(100*((X.c+Z.c)/(X.a+Z.a)-1));
+    const moy = nPct(50*((X.c/X.a-1)+(Z.c/Z.a-1)));
+    return {html:tab, qs:[
+      {q:`Quelle part de la consommation d'électricité ${duPays(X.n)} la production renouvelable couvrait-elle en 2023 ?`,
+       c:q1, d:[nPct(100*X.b/X.cons), nPct(100*(X.c-X.b)/X.cons), nPct(100*X.cons/X.c/10)], u:' %',
+       ex:`${fmtF(X.c,1)} ÷ ${fmtF(X.cons)} = ${fmtF(q1,1)} %. Les colonnes 2019 et 2021 ne servent à rien ici.`},
+      {q:`Si la production renouvelable ${duPays(Y.n)} avait continué d'augmenter au même rythme annuel moyen qu'entre 2021 et 2023, quelle aurait-elle été en 2026 (TWh) ?`,
+       c:q2, d:[nr(Y.c+(Y.c-Y.b)*3,1), nr(Y.c+(Y.c-Y.b),1), nr(Y.c*Math.pow(Y.c/Y.b,1.5),1)], u:' TWh',
+       ex:`Hausse annuelle moyenne 2021-2023 : (${fmtF(Y.c,1)} − ${fmtF(Y.b,1)}) ÷ 2 = ${fmtF(nr((Y.c-Y.b)/2,2),2)} TWh. Trois années plus tard : ${fmtF(Y.c,1)} + 3 × ${fmtF(nr((Y.c-Y.b)/2,2),2)} ≈ ${fmtF(q2,1)} TWh. Piège : appliquer trois fois la hausse sur deux ans.`},
+      {q:`De combien la production renouvelable cumulée ${duPays(X.n)} et ${duPays(Z.n)} a-t-elle augmenté entre 2019 et 2023 (%) ?`,
+       c:q3, d:[moy, nPct(100*((X.c-X.a)+(Z.c-Z.a))/(X.c+Z.c)), nPct(100*((X.b+Z.b)/(X.a+Z.a)-1))], u:' %',
+       ex:`Production cumulée : ${fmtF(nr(X.a+Z.a,1),1)} TWh en 2019, ${fmtF(nr(X.c+Z.c,1),1)} TWh en 2023, soit +${fmtF(q3,1)} %. La moyenne des deux taux (${fmtF(moy,1)} %) est fausse dès que les volumes diffèrent.`}]};
+  },
+
+  /* 2. Émissions par habitant (graphique) et population (tableau). */
+  ()=>{
+    const p = pickN(PAYS,4), ans = [2017,2018,2020,2021];
+    const pc = p.map(()=>{ let v=ri(55,160)/10; return ans.map(()=>{ v=nr(v*(1+ri(-8,4)/100),1); return v; }); });
+    const pop = p.map(()=>{ let v=ri(40,820)/10; return [0,1,2,3,4].map(()=>{ v=nr(v*(1+ri(-6,8)/1000),2); return v; }); }); // 2017..2021
+    const iy = {2017:0,2018:1,2019:2,2020:3,2021:4};
+    const chart = svgBars('Émissions de gaz à effet de serre par habitant (tonnes)', p, ans.map((a,ai)=>({name:String(a), values:pc.map(r=>r[ai])})), 1);
+    const tab = nTab('Population (millions)', ['Pays','2017','2018','2019','2020','2021'], p.map((n,i)=>[n].concat(pop[i].map(v=>fmtF(v,2)))));
+    const tot = (i,y) => pc[i][ans.indexOf(y)]*pop[i][iy[y]];
+    const q1 = nr(Math.abs(tot(0,2017)-tot(1,2017)),1);
+    const q2 = nr((tot(2,2018)+tot(2,2020))/2,1);
+    const delta = nr(tot(3,2018)*ri(2,7)/100,1);
+    const q3 = nr((tot(3,2018)-delta)/pop[3][2],2);
+    return {html:chart+tab, qs:[
+      {q:`Quelle était la différence entre les émissions totales ${duPays(p[0])} et celles ${duPays(p[1])} en 2017 (millions de tonnes) ?`,
+       c:q1, d:[nr(Math.abs(pc[0][0]-pc[1][0])*(pop[0][0]+pop[1][0])/2,1), nr(Math.abs(pc[0][0]-pc[1][0]),1), nr(Math.abs(tot(0,2018)-tot(1,2018)),1)], u:' Mt',
+       ex:`Total = émissions par habitant × population. ${p[0]} : ${fmtF(pc[0][0],1)} × ${fmtF(pop[0][0],2)} ≈ ${fmtF(nr(tot(0,2017),1),1)} Mt ; ${p[1]} : ${fmtF(pc[1][0],1)} × ${fmtF(pop[1][0],2)} ≈ ${fmtF(nr(tot(1,2017),1),1)} Mt. Écart ≈ ${fmtF(q1,1)} Mt.`},
+      {q:`En supposant que les émissions totales ${duPays(p[2])} ont évolué de façon linéaire entre 2018 et 2020, quelles étaient-elles en 2019 (millions de tonnes) ?`,
+       c:q2, d:[nr(tot(2,2018),1), nr(tot(2,2020),1), nr((pc[2][1]+pc[2][2])/2*pop[2][0],1)], u:' Mt',
+       ex:`2018 : ${fmtF(pc[2][1],1)} × ${fmtF(pop[2][1],2)} ≈ ${fmtF(nr(tot(2,2018),1),1)} Mt ; 2020 : ${fmtF(pc[2][2],1)} × ${fmtF(pop[2][3],2)} ≈ ${fmtF(nr(tot(2,2020),1),1)} Mt. 2019 est au milieu : ${fmtF(q2,1)} Mt. L'année 2019 ne figure pas sur le graphique : c'est voulu.`},
+      {q:`Les émissions totales ${duPays(p[3])} en 2019 étaient inférieures de ${fmtF(delta,1)} millions de tonnes à celles de 2018. Quelles étaient ses émissions par habitant en 2019 (tonnes) ?`,
+       c:q3, d:[nr((tot(3,2018)-delta)/pop[3][1],2), nr(pc[3][1]-delta/pop[3][2],2)===q3?nr(q3+0.21,2):nr(pc[3][1]-delta/pop[3][2],2), nr(pc[3][1]-delta,2)], u:' t',
+       ex:`Total 2018 : ${fmtF(pc[3][1],1)} × ${fmtF(pop[3][1],2)} ≈ ${fmtF(nr(tot(3,2018),2),2)} Mt. Total 2019 : ${fmtF(nr(tot(3,2018)-delta,2),2)} Mt. Divisé par la population 2019 (${fmtF(pop[3][2],2)} M) : ${fmtF(q3,2)} t. Diviser par la population 2018 est le piège.`}]};
+  },
+
+  /* 3. Vol entre deux fuseaux horaires : vitesse, temps gagné, détour. */
+  ()=>{
+    const villes = [['Lisbonne',0,'Varsovie',1],['Dublin',0,'Athènes',2],['Madrid',1,'Helsinki',2],['Porto',0,'Bucarest',2],['Paris',1,'Riga',2]];
+    const [vd,zd,va,za] = absPick(villes);
+    const dir = ri(18,30)*100, reel = dir + ri(4,12)*10;
+    const durMin = ri(15,26)*10 + 5;        // 155 à 265 min
+    const dep = ri(6,11)*60 + absPick([0,10,20,25,35,40,50]);
+    const arr = dep + durMin + (za-zd)*60;
+    const hm = m => String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+    const tab = nTab('Vol direct', ['Élément','Valeur'], [
+      ['Départ', vd+', '+hm(dep)+' heure locale (UTC'+(zd?'+'+zd:'')+')'], ['Arrivée', va+', '+hm(arr)+' heure locale (UTC+'+za+')'],
+      ['Distance réellement parcourue', fmtF(reel)+' km'], ['Distance à vol d\'oiseau', fmtF(dir)+' km']]);
+    const v = reel/(durMin/60);
+    const q1 = nr(v,1);
+    const p = absPick([4,5,8,10]);
+    const gain = nr(durMin - dir/(q1*(1+p/100))*60,1);
+    const t2 = durMin + ri(3,8)*5;
+    const q3 = nPct(100*(q1*t2/60 - reel)/reel);
+    return {html:tab, qs:[
+      {q:`Quelle a été la vitesse moyenne de l'avion sur l'ensemble du vol (km/h) ?`,
+       c:q1, d:[nr(reel/((durMin+(za-zd)*60)/60),1), nr(dir/(durMin/60),1), nr(reel/((durMin-(za-zd)*60)/60),1)], u:' km/h',
+       ex:`Durée réelle : ${hm(arr)} − ${hm(dep)} − ${za-zd} h de décalage horaire = ${Math.floor(durMin/60)} h ${durMin%60} min. Vitesse = ${fmtF(reel)} ÷ ${fmtF(nr(durMin/60,4),4)} ≈ ${fmtF(q1,1)} km/h. Oublier le décalage horaire est le piège principal.`},
+      {q:`Si l'avion avait suivi la route à vol d'oiseau à une vitesse moyenne supérieure de ${p} %, combien de minutes aurait-on gagnées ?`,
+       c:gain, d:[nr(durMin - dir/q1*60,1), nr(durMin*p/100,1), nr(durMin - reel/(q1*(1+p/100))*60,1)], u:' min',
+       ex:`Nouvelle vitesse : ${fmtF(q1,1)} × ${fmtF(1+p/100,2)} ≈ ${fmtF(nr(q1*(1+p/100),1),1)} km/h. Durée : ${fmtF(dir)} ÷ cette vitesse ≈ ${fmtF(nr(dir/(q1*(1+p/100))*60,1),1)} min, soit ${fmtF(gain,1)} min de moins que les ${durMin} min du vol.`},
+      {q:`Un second avion relie les mêmes villes à la même vitesse moyenne, mais contourne un orage et vole ${Math.floor(t2/60)} h ${t2%60} min. Quelle distance supplémentaire a-t-il parcourue, en pourcentage de la distance réellement parcourue par le premier ?`,
+       c:q3, d:[nPct(100*(t2-durMin)/t2), nPct(100*q1*t2/60/reel), nPct(100*(q1*t2/60 - dir)/dir)], u:' %',
+       ex:`À ${fmtF(q1,1)} km/h pendant ${fmtF(nr(t2/60,4),4)} h, il parcourt ${fmtF(nr(q1*t2/60,0))} km, soit ${fmtF(nr(q1*t2/60-reel,0))} km de plus que les ${fmtF(reel)} km du premier : +${fmtF(q3,1)} %.`}]};
+  },
+
+  /* 4. Deux services en ligne (courbes) : rapport, projection, plus grand écart. */
+  ()=>{
+    const xs = [2016,2017,2018,2019,2020,2021,2022,2023,2024];
+    let a=ri(120,260), b=ri(600,1100);
+    const A=[], B=[];
+    xs.forEach(()=>{ A.push(a); B.push(b); a=Math.round(a*(1+ri(4,22)/100)); b=Math.round(b*(1+ri(2,12)/100)); });
+    const chart = svgLines('Utilisateurs actifs au 1er janvier (millions)', xs.map(String), [{name:'Service A',values:A},{name:'Service B',values:B}], 0);
+    const yr = ri(1,3);
+    const q1 = nPct(100*A[yr]/B[yr]);
+    const pente = (B[3]-B[0])/3, proj = B[3]+pente*4;
+    const q2 = Math.round(proj - B[7]);
+    const ecarts = xs.map((_,i)=>B[i]-A[i]); const imax = ecarts.indexOf(Math.max(...ecarts));
+    const autres = shuffle(xs.filter((_,i)=>i!==imax)).slice(0,3).map(String);
+    return {html:chart, qs:[
+      {q:`En ${xs[yr]}, le nombre d'utilisateurs du service A représentait quel pourcentage de celui du service B ?`,
+       c:q1, d:[nPct(100*B[yr]/A[yr]), nPct(100*(B[yr]-A[yr])/B[yr]), nPct(100*A[yr+1]/B[yr+1])], u:' %',
+       ex:`${fmtF(A[yr])} ÷ ${fmtF(B[yr])} = ${fmtF(q1,1)} %. Le rapport inverse est le distracteur le plus fréquent.`},
+      {q:`En prolongeant la hausse annuelle moyenne du service B observée entre 2016 et 2019, quel aurait été l'écart (en millions) entre la valeur projetée pour 2023 et la valeur réelle ?`,
+       c:q2, d:[Math.round(B[3]+pente*7-B[7]), -q2, Math.round(B[3]-B[7])], u:'',
+       ex:`Hausse moyenne 2016-2019 : (${fmtF(B[3])} − ${fmtF(B[0])}) ÷ 3 ≈ ${fmtF(nr(pente,1),1)} millions par an. Projection 2023 : ${fmtF(B[3])} + 4 × ${fmtF(nr(pente,1),1)} ≈ ${fmtF(Math.round(proj))}. Écart avec la valeur réelle (${fmtF(B[7])}) : ${fmtF(q2)} millions. Un écart négatif signifie que la réalité a dépassé la tendance.`},
+      {q:`Quelle année l'écart entre le nombre d'utilisateurs du service B et celui du service A a-t-il été le plus grand ?`,
+       c:String(xs[imax]), d:autres, u:'',
+       ex:`Écarts : ${xs.map((x,i)=>x+' : '+fmtF(ecarts[i])).join(' ; ')}. Le plus grand est atteint en ${xs[imax]}.`}]};
+  },
+
+  /* 5. Importations par secteur avec cellules manquantes. */
+  ()=>{
+    const sect = ['Agriculture et alimentation','Énergie','Construction','Textile','Transport et voyages','Numérique et finance','Santé et éducation','Autres'];
+    const N = sect.map(()=>ri(20,180)*100), N2 = N.map(v=>Math.round(v*(1+ri(-5,25)/100))), N4 = N2.map(v=>Math.round(v*(1+ri(0,25)/100)));
+    const kNum=5, kCons=2, kAut=7, kSan=6, p=absPick([38,40,42,45]);
+    const connus = N.reduce((a,v,i)=>i===kNum?a:a+v,0), totN = Math.round(connus/(1-p/100));
+    N[kNum] = totN - connus;
+    const tot2 = N2.reduce((a,v)=>a+v,0);
+    const rows = sect.map((n,i)=>[n, i===kNum?'?':fmtF(N[i]), fmtF(N2[i]), i===kAut?'?':fmtF(N4[i])]);
+    rows.push(['Total','?',fmtF(tot2),'?']);
+    const tab = nTab('Importations de services de l\'Union par secteur (M€)', ['Secteur','Année N','N + 2','N + 4'], rows);
+    const q2 = Math.round(N[kAut]*N4[kCons]/N[kCons]);
+    const qq = absPick([10,12,15]), x = Math.round((qq/100*tot2 - N2[kSan])/(1-qq/100));
+    return {html:tab, qs:[
+      {q:`Si le secteur « Numérique et finance » représentait ${p} % du total l'année N, quel était ce total (M€) ?`,
+       c:totN, d:[Math.round(connus*(1+p/100)), connus, Math.round(connus/(p/100))], u:' M€',
+       ex:`Les sept autres secteurs totalisent ${fmtF(connus)} M€, soit ${100-p} % du total. Total = ${fmtF(connus)} ÷ ${fmtF((100-p)/100,2)} ≈ ${fmtF(totN)} M€.`},
+      {q:`Si « Construction » et « Autres » ont représenté en N + 4 la même part du total qu'en N, quelle était la valeur de « Autres » en N + 4 (M€) ?`,
+       c:q2, d:[N[kAut], Math.round(N[kAut]*N2[kCons]/N[kCons]), N[kAut]+(N4[kCons]-N[kCons])], u:' M€',
+       ex:`Deux postes qui gardent leur part du total gardent aussi leur rapport : Autres N+4 = ${fmtF(N[kAut])} × ${fmtF(N4[kCons])} ÷ ${fmtF(N[kCons])} ≈ ${fmtF(q2)} M€. Le total N+4 n'est pas nécessaire.`},
+      {q:`De combien les importations « Santé et éducation » auraient-elles dû être plus élevées en N + 2 pour représenter ${qq} % du total de cette année-là (M€) ?`,
+       c:x, d:[Math.round(qq/100*tot2 - N2[kSan]), Math.round(qq/100*tot2), Math.round(x*1.15)], u:' M€',
+       ex:`Si le secteur augmente de x, le total augmente aussi de x : (${fmtF(N2[kSan])} + x) ÷ (${fmtF(tot2)} + x) = ${qq} %, d'où x = (${fmtF(qq/100,2)} × ${fmtF(tot2)} − ${fmtF(N2[kSan])}) ÷ ${fmtF(1-qq/100,2)} ≈ ${fmtF(x)} M€. Oublier que le total bouge donne ${fmtF(Math.round(qq/100*tot2 - N2[kSan]))}.`}]};
+  },
+
+  /* 6. Lait : production, taux de matière grasse et de protéines. */
+  ()=>{
+    const p = pickN(PAYS,4), ys=[2018,2020,2022];
+    const prod = p.map(()=>{ const b=ri(60,3800); return ys.map(()=>Math.round(b*(1+ri(-10,10)/100))); });
+    const fat = p.map(()=>{ const b=ri(360,440)/100; return ys.map(()=>nr(b+ri(-8,10)/100,2)); });
+    const pro = p.map(()=>{ const b=ri(320,360)/100; return ys.map(()=>nr(b+ri(-5,8)/100,2)); });
+    const t = (cap,arr,d)=>nTab(cap,['Pays'].concat(ys.map(String)), p.map((n,i)=>[n].concat(arr[i].map(v=>fmtF(v,d)))));
+    const html = t('Production de lait de consommation (milliers de tonnes)',prod,0) + t('Matière grasse (% du poids)',fat,2) + t('Protéines (% du poids)',pro,2);
+    const [A,B,C,D] = [0,1,2,3];
+    const g = (i,y)=>prod[i][y]*fat[i][y]*10;          // tonnes
+    const q1 = Math.round(Math.abs(g(A,0)-g(B,0)));
+    const q2 = Math.round(prod[C][2]*(fat[C][2]-fat[C][0])*10);
+    const q3 = nPct(100*(prod[D][2]*(fat[D][2]+pro[D][2]))/(prod[D][1]*(fat[D][1]+pro[D][1]))-100);
+    return {html, qs:[
+      {q:`Quelle était, en 2018, la différence de quantité de matière grasse contenue dans le lait produit par ${lePays(p[A])} et par ${lePays(p[B])} (tonnes) ?`,
+       c:q1, d:[Math.round(q1/1000), Math.round(Math.abs(prod[A][0]-prod[B][0])*fat[A][0]*10), Math.round(Math.abs(prod[A][0]*pro[A][0]-prod[B][0]*pro[B][0])*10)], u:' t',
+       ex:`Matière grasse = production × taux. ${p[A]} : ${fmtF(prod[A][0])} kt × ${fmtF(fat[A][0],2)} % ≈ ${fmtF(Math.round(g(A,0)))} t ; ${p[B]} : ${fmtF(prod[B][0])} kt × ${fmtF(fat[B][0],2)} % ≈ ${fmtF(Math.round(g(B,0)))} t. Attention aux milliers de tonnes : 1 kt = 1 000 t.`},
+      {q:`Quelle quantité de matière grasse supplémentaire le lait ${duPays(p[C])} a-t-il contenue en 2022 du fait d'un taux différent de celui de 2018 (tonnes, valeur négative en cas de baisse) ?`,
+       c:q2, d:[Math.round(prod[C][0]*(fat[C][2]-fat[C][0])*10), Math.round((fat[C][2]-fat[C][0])*1000), Math.round(g(C,2)-g(C,0))], u:' t',
+       ex:`Seul l'écart de taux compte, appliqué à la production 2022 : ${fmtF(prod[C][2])} kt × (${fmtF(fat[C][2],2)} − ${fmtF(fat[C][0],2)}) % ≈ ${fmtF(q2)} t. Comparer les tonnages totaux mélangerait l'effet du taux et celui du volume.`},
+      {q:`Quelle a été la variation de la quantité totale de matière grasse et de protéines contenue dans le lait ${duPays(p[D])} entre 2020 et 2022 (%) ?`,
+       c:q3, d:[nPct(100*(prod[D][2]/prod[D][1]-1)), nPct(100*((fat[D][2]+pro[D][2])/(fat[D][1]+pro[D][1])-1)), nPct(-q3)], u:' %',
+       ex:`2020 : ${fmtF(prod[D][1])} × (${fmtF(fat[D][1],2)} + ${fmtF(pro[D][1],2)}) % ; 2022 : ${fmtF(prod[D][2])} × (${fmtF(fat[D][2],2)} + ${fmtF(pro[D][2],2)}) %. Rapport − 1 = ${fmtF(q3,1)} %. Le volume et les taux varient ensemble : il faut multiplier avant de comparer.`}]};
+  },
+
+  /* 7. Débarquements de la pêche : prix au kilo, variation, effet prix. */
+  ()=>{
+    const p = pickN(PAYS,4), ys=[2017,2019,2021];
+    const t = p.map(()=>{ const b=ri(250,1600)*1000; return ys.map(()=>Math.round(b*(1+ri(-12,12)/100)/10)*10); });
+    const v = p.map((_,i)=>{ const prix=ri(110,320)/100; return ys.map((y,k)=>nr(t[i][k]*prix*(1+ri(-10,15)/100)/1e6*1000,1)); }); // M€ ; prix €/kg ~ 1,1-3,2
+    const html = nTab('Débarquements de produits de la pêche', ['Pays'].concat(ys.flatMap(y=>[y+' (M€)',y+' (t)'])),
+      p.map((n,i)=>[n].concat(ys.flatMap((y,k)=>[fmtF(v[i][k],1), fmtF(t[i][k])]))));
+    const prixKg = (i,k)=> v[i][k]*1e6/(t[i][k]*1000);
+    const q1 = nr(prixKg(0,0),2);
+    const q2 = nPct(100*(prixKg(1,2)/prixKg(1,0)-1));
+    const q3 = nr(t[2][2]*v[2][0]/t[2][0],1);
+    return {html, qs:[
+      {q:`Quel était le prix moyen au kilogramme des débarquements ${duPays(p[0])} en 2017 (€/kg) ?`,
+       c:q1, d:[nr(q1*1000,2), nr(t[0][0]/(v[0][0]*1e6)*1000,2), nr(prixKg(0,2),2)], u:' €/kg',
+       ex:`${fmtF(v[0][0],1)} M€ ÷ ${fmtF(t[0][0])} t = ${fmtF(nr(v[0][0]*1e6/t[0][0],0))} € la tonne, soit ${fmtF(q1,2)} € le kilogramme.`},
+      {q:`De combien le prix moyen par tonne des débarquements ${duPays(p[1])} a-t-il varié entre 2017 et 2021 (%) ?`,
+       c:q2, d:[nPct(100*(v[1][2]/v[1][0]-1)), nPct(100*(t[1][2]/t[1][0]-1)), nPct(-q2)], u:' %',
+       ex:`Prix par tonne : ${fmtF(nr(prixKg(1,0)*1000,0))} € en 2017 et ${fmtF(nr(prixKg(1,2)*1000,0))} € en 2021, soit ${fmtF(q2,1)} %. La variation de la seule valeur ignore celle des volumes.`},
+      {q:`Quelle aurait été la valeur des débarquements ${duPays(p[2])} en 2021 si le prix moyen par tonne était resté à son niveau de 2017 (M€) ?`,
+       c:q3, d:[v[2][0], nr(v[2][2]*t[2][0]/t[2][2],1), nr(t[2][0]*v[2][2]/t[2][2],1)===q3?nr(q3*1.08,1):nr(t[2][0]*v[2][2]/t[2][2],1)], u:' M€',
+       ex:`Prix 2017 : ${fmtF(v[2][0],1)} M€ ÷ ${fmtF(t[2][0])} t. Appliqué aux ${fmtF(t[2][2])} t de 2021 : ${fmtF(q3,1)} M€.`}]};
+  },
+
+  /* 8. PIB, population et dette. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>({n, pib:ri(180,520)*100, pop:nr(ri(30,600)/10,1), dette:ri(40,150), ch:nr(ri(30,120)/10,1)}));
+    const [A,B] = rows;
+    let C = rows.slice(2).find(r=>r.dette>65); if(!C){ rows[2].dette = ri(80,140); C = rows[2]; }
+    const html = nTab('Indicateurs économiques, 2024', ['Pays','PIB par habitant (€)','Population (millions)','Dette publique (% du PIB)','Chômage (%)'],
+      rows.map(r=>[r.n, fmtF(r.pib), fmtF(r.pop,1), fmtF(r.dette), fmtF(r.ch,1)]));
+    const pib = r => r.pib*r.pop/1000;   // Md€
+    const q1 = Math.round(pib(A));
+    const q2 = Math.round(pib(B)*B.dette/100);
+    const q3 = Math.round(pib(C)*(C.dette-60)/100);
+    return {html, qs:[
+      {q:`Quel était le produit intérieur brut ${duPays(A.n)} en 2024 (milliards d'euros) ?`,
+       c:q1, d:[Math.round(q1*1000), Math.round(A.pib/A.pop), Math.round(pib(A)*A.dette/100)], u:' Md€',
+       ex:`${fmtF(A.pib)} € × ${fmtF(A.pop,1)} millions d'habitants = ${fmtF(q1)} milliards d'euros.`},
+      {q:`Quel était le montant de la dette publique ${duPays(B.n)} en 2024 (milliards d'euros) ?`,
+       c:q2, d:[Math.round(pib(B)), Math.round(B.pib*B.dette/100), Math.round(q2*1000)], u:' Md€',
+       ex:`PIB : ${fmtF(B.pib)} € × ${fmtF(B.pop,1)} M ≈ ${fmtF(Math.round(pib(B)))} Md€. Dette : ${B.dette} % de ce montant ≈ ${fmtF(q2)} Md€.`},
+      {q:`De combien la dette publique ${duPays(C.n)} aurait-elle dû être plus faible en 2024 pour ne pas dépasser 60 % du PIB (milliards d'euros) ?`,
+       c:q3, d:[Math.round(pib(C)*C.dette/100), Math.round(pib(C)*0.6), Math.round(q3*C.dette/60)], u:' Md€',
+       ex:`PIB ≈ ${fmtF(Math.round(pib(C)))} Md€. Excédent par rapport à 60 % : (${C.dette} − 60) % du PIB ≈ ${fmtF(q3)} Md€.`}]};
+  },
+
+  /* 9. Structure par âge, avec une population à reconstituer. */
+  ()=>{
+    const [A,B,C] = pickN(PAYS,3);
+    const sh = ()=>{ const u=ri(15,24), o=ri(14,25); return {u, m:100-u-o, o}; };
+    const sA=sh(), sC=sh(); let sB=sh(); while(Math.abs(sB.o-sA.o)<3 || sB.u===sA.u) sB=sh();
+    const popA = nr(ri(40,700)/10,1), popC = nr(ri(40,700)/10,1), q = ri(15,90);
+    const html = nTab('Structure par âge et population, 2024', ['Pays','Moins de 18 ans (%)','18-64 ans (%)','65 ans et plus (%)','Population (millions)'],
+      [[A,sA.u,sA.m,sA.o,fmtF(popA,1)],[B,sB.u,sB.m,sB.o,'?'],[C,sC.u,sC.m,sC.o,fmtF(popC,1)]].map(r=>[r[0],fmtF(r[1]),fmtF(r[2]),fmtF(r[3]),r[4]]));
+    const q1 = nr(popC*sC.o/100,2);
+    const popB = popA*(100-sA.o)/100*(1+q/100)/((100-sB.o)/100);
+    const q2 = nr(popB,1);
+    const q3 = nr((sB.u*popB)/(sA.u*popA),2);
+    return {html, qs:[
+      {q:`Quel était le nombre d'habitants de 65 ans et plus ${duPays(C)} en 2024 (millions) ?`,
+       c:q1, d:[nr(popC*(sC.u+sC.m)/100,2), nr(popC*sC.u/100,2), nr(popC*sC.o/10,2)], u:' M',
+       ex:`${fmtF(popC,1)} M × ${sC.o} % = ${fmtF(q1,2)} millions.`},
+      {q:`${lePays(B).charAt(0).toUpperCase()+lePays(B).slice(1)} ${B==='Pays-Bas'?'comptent':'compte'} ${q} % d'habitants de moins de 65 ans de plus que ${lePays(A)}. Quelle est la population ${duPays(B)} (millions) ?`,
+       c:q2, d:[nr(popA*(1+q/100),1), nr(popA*(100-sA.o)/100*(1+q/100),1), nr(popA*(100-sB.o)/100*(1+q/100)/((100-sA.o)/100),1)], u:' M',
+       ex:`Moins de 65 ans ${duPays(A)} : ${fmtF(popA,1)} × ${100-sA.o} % ≈ ${fmtF(nr(popA*(100-sA.o)/100,2),2)} M. ${B} en compte ${q} % de plus, soit ≈ ${fmtF(nr(popA*(100-sA.o)/100*(1+q/100),2),2)} M, qui représentent ${100-sB.o} % de sa population : ${fmtF(q2,1)} M.`},
+      {q:`Quel est le rapport entre le nombre de moins de 18 ans ${duPays(B)} et celui ${duPays(A)} ?`,
+       c:q3, d:[nr(1/q3,2), nr(sB.u/sA.u,2), nr((1+q/100)*sB.u/sA.u,2)], u:'',
+       ex:`${fmtF(sB.u)} % × ${fmtF(nr(popB,2),2)} M ÷ (${fmtF(sA.u)} % × ${fmtF(popA,1)} M) ≈ ${fmtF(q3,2)}. Comparer les seuls pourcentages ignore la différence de taille des deux pays.`}]};
+  },
+
+  /* 10. Répartition d'un budget (barres horizontales). */
+  ()=>{
+    const noms = pickN(['Cohésion','Agriculture','Recherche','Voisinage','Administration','Migration','Défense','Numérique'],6);
+    let parts = noms.map(()=>ri(40,250)); const s = parts.reduce((a,b)=>a+b,0); parts = parts.map(x=>nr(100*x/s,1));
+    parts[5] = nr(100 - parts.slice(0,5).reduce((a,b)=>a+b,0),1);
+    const total = ri(120,240)*1000;   // M€
+    const chart = svgHBars('Répartition d\'une enveloppe de '+fmtF(total)+' M€', noms, parts);
+    const [i,j] = [0,1], g=absPick([3,4,5,6]), k=absPick([1,1.5,2]);
+    const q1 = Math.round(total*parts[i]/100);
+    const q2 = Math.round(total*(1+g/100)*(parts[j]-k)/100 - total*parts[j]/100);
+    const q3 = nr(parts[2]/parts[3],2);
+    return {html:chart, qs:[
+      {q:`Quel montant revient à la rubrique « ${noms[i]} » (M€) ?`,
+       c:q1, d:[Math.round(total/100*parts[i]*10), Math.round(total/6), Math.round(total*parts[i+1]/100)], u:' M€',
+       ex:`${fmtF(parts[i],1)} % de ${fmtF(total)} M€ = ${fmtF(q1)} M€.`},
+      {q:`L'enveloppe totale augmente de ${g} % l'année suivante, tandis que la part de « ${noms[j]} » recule de ${fmtF(k,1)} point${k>1?'s':''}. De combien le montant de cette rubrique varie-t-il (M€) ?`,
+       c:q2, d:[Math.round(-total*k/100), Math.round(total*parts[j]/100*(g/100)), Math.round(total*(1+g/100)*parts[j]/100*(1-k/100) - total*parts[j]/100)], u:' M€',
+       ex:`Avant : ${fmtF(parts[j],1)} % × ${fmtF(total)} ≈ ${fmtF(Math.round(total*parts[j]/100))} M€. Après : ${fmtF(nr(parts[j]-k,1),1)} % × ${fmtF(Math.round(total*(1+g/100)))} ≈ ${fmtF(Math.round(total*(1+g/100)*(parts[j]-k)/100))} M€. Variation : ${fmtF(q2)} M€. Un recul en points se retranche de la part, il ne se multiplie pas.`},
+      {q:`Combien de fois la rubrique « ${noms[2]} » est-elle plus importante que la rubrique « ${noms[3]} » ?`,
+       c:q3, d:[nr(1/q3,2), nr(parts[2]-parts[3],2), nr(q3+0.12,2)], u:'',
+       ex:`${fmtF(parts[2],1)} ÷ ${fmtF(parts[3],1)} ≈ ${fmtF(q3,2)}. Le montant total n'est pas nécessaire : le rapport des parts suffit.`}]};
+  },
+
+  /* 11. Prix d'un panier et taux de change. */
+  ()=>{
+    const pays = pickN([['Pologne','zlotys',4.3],['Tchéquie','couronnes',25.1],['Hongrie','forints',395],['Suède','couronnes',11.4],['Danemark','couronnes',7.46],['Roumanie','lei',4.97]],4);
+    const base = ri(55,95);
+    const rows = pays.map(([n,dev,tx])=>{ const t=nr(tx*(1+ri(-3,3)/100), tx>100?0:2); const eur=base*(1+ri(-30,30)/100); return {n,dev,t,loc:Math.round(eur*t)}; });
+    const html = nTab('Prix d\'un même panier de produits et taux de change', ['Pays','Prix du panier (monnaie locale)','Monnaie','Unités pour 1 €'],
+      rows.map(r=>[r.n, fmtF(r.loc), r.dev, fmtF(r.t, r.t>100?0:2)]));
+    const e = r => r.loc/r.t;
+    const [X,Y] = rows;
+    const q1 = nr(e(X),2);
+    const es = rows.map(e), q2 = nr(Math.max(...es)-Math.min(...es),2);
+    const q3 = nPct(100*(e(X)/e(Y)-1));
+    return {html, qs:[
+      {q:`Quel est le prix du panier ${enPays(X.n)} exprimé en euros ?`,
+       c:q1, d:[nr(X.loc*X.t,2), nr(X.loc/rows[1].t,2), nr(X.t/X.loc*1000,2)], u:' €',
+       ex:`${fmtF(X.loc)} ${X.dev} ÷ ${fmtF(X.t, X.t>100?0:2)} = ${fmtF(q1,2)} €. Multiplier par le taux au lieu de diviser est l'erreur classique.`},
+      {q:`Quel est l'écart, en euros, entre le panier le plus cher et le moins cher des quatre pays ?`,
+       c:q2, d:[nr(Math.max(...rows.map(r=>r.loc))-Math.min(...rows.map(r=>r.loc)),2), nr(q2*1.1,2), nr(es.sort((a,b)=>b-a)[0]-es[1],2)], u:' €',
+       ex:`Prix en euros : ${rows.map(r=>r.n+' '+fmtF(nr(e(r),2),2)+' €').join(', ')}. Écart entre le plus cher et le moins cher : ${fmtF(q2,2)} €. Les prix en monnaie locale ne sont pas comparables entre eux.`},
+      {q:`De combien de pour cent le panier est-il plus cher (ou moins cher) ${enPays(X.n)} qu'${enPays(Y.n)}, une fois converti en euros ?`,
+       c:q3, d:[nPct(100*(e(Y)/e(X)-1)), nPct(100*(X.loc/Y.loc-1)), nPct(100*(1-e(Y)/e(X)))], u:' %',
+       ex:`${fmtF(nr(e(X),2),2)} € contre ${fmtF(nr(e(Y),2),2)} € : ${fmtF(nr(e(X),2),2)} ÷ ${fmtF(nr(e(Y),2),2)} − 1 = ${fmtF(q3,1)} %. La base de comparaison est le second pays.`}]};
+  },
+
+  /* 12. Réseau de fret ferroviaire : capacité totale, rattrapage, part. */
+  ()=>{
+    const p = pickN(PAYS,4);
+    const rows = p.map(n=>({n, km:nr(ri(120,980)/100,2), cap:nr(ri(3000,30000)/100,2)}));  // centaines de km ; milliers de t/jour par km
+    const html = nTab('Réseau ferroviaire de fret, 2024', ['Pays','Longueur des lignes (centaines de km)','Capacité par km (t par jour)'],
+      rows.map(r=>[r.n, fmtF(r.km,2), fmtF(r.cap,2)]));
+    const tot = r => r.km*100*r.cap;   // t/jour
+    const tri = rows.slice().sort((a,b)=>tot(b)-tot(a));
+    const [X,Y] = [rows[0], rows.slice(1).find(r=>r.cap>rows[0].cap) || rows[1]];
+    const q2 = Math.round((Y.cap - X.cap)*X.km*100/1000);   // milliers de t/jour
+    const q3 = nPct(100*tot(rows[2])/rows.reduce((a,r)=>a+tot(r),0));
+    return {html, qs:[
+      {q:`Quel pays dispose de la deuxième plus grande capacité totale de transport de fret par jour ?`,
+       c:tri[1].n, d:[tri[0].n, tri[2].n, tri[3].n], u:'',
+       ex:`Capacité totale = longueur × capacité par km : ${rows.map(r=>r.n+' ≈ '+fmtF(Math.round(tot(r)/1000))+' milliers de t').join(', ')}. Deuxième : ${tri[1].n}. Classer d'après une seule colonne mène à l'erreur.`},
+      {q:`De combien la capacité totale ${duPays(X.n)} devrait-elle varier pour atteindre la capacité par km ${duPays(Y.n)} (milliers de tonnes par jour, valeur négative en cas de baisse) ?`,
+       c:q2, d:[Math.round((Y.cap-X.cap)*Y.km*100/1000), nr(Y.cap-X.cap,0), Math.round((tot(Y)-tot(X))/1000)], u:'',
+       ex:`Il faut appliquer l'écart de capacité par km (${fmtF(nr(Y.cap-X.cap,2),2)} t) à la longueur ${duPays(X.n)} : ${fmtF(X.km,2)} × 100 km × ${fmtF(nr(Y.cap-X.cap,2),2)} ≈ ${fmtF(q2)} milliers de tonnes par jour.`},
+      {q:`Quelle part de la capacité totale des quatre pays représente celle ${duPays(rows[2].n)} (%) ?`,
+       c:q3, d:[nPct(100*rows[2].km/rows.reduce((a,r)=>a+r.km,0)), nPct(100*rows[2].cap/rows.reduce((a,r)=>a+r.cap,0)), nPct(25)], u:' %',
+       ex:`${fmtF(Math.round(tot(rows[2])/1000))} ÷ ${fmtF(Math.round(rows.reduce((a,r)=>a+tot(r),0)/1000))} milliers de t ≈ ${fmtF(q3,1)} %. Ni la longueur seule ni la capacité par km seule ne suffisent.`}]};
+  },
+];
+
+/* Une session d'examen : dix questions tirées de séries de trois, posées dans
+   l'ordre, chaque série partageant son jeu de données. */
+function mkNumericExam(n){
+  const out = [];
+  let fam = [];
+  let s = 0;
+  while(out.length < n){
+    if(!fam.length) fam = shuffle(NUM_SETS.map((_,i)=>i));
+    const set = NUM_SETS[fam.pop()]();
+    s++;
+    set.qs.forEach((q,k)=>{
+      if(out.length >= n) return;
+      const it = mkNum(q.q, q.c, q.d, q.ex, q.u, set.html);
+      it.q = '<span class="set-tag">Série '+s+' · question '+(k+1)+' sur '+set.qs.length+'</span>'+it.q;
+      out.push(it);
+    });
+  }
+  return out;
+}
 
 /* Le vivier d'une session : les questions écrites, les générateurs sur énoncé et
    les générateurs sur tableau. Les items écrits n'ont que quatre options : on leur
@@ -7331,10 +7728,14 @@ const EU_COUNT=30,   EU_SEC=80;     // 30 questions / 40 min, seuil 15/30
 const DIG_COUNT=40,  DIG_SEC=45;    // 40 questions / 30 min, seuil 20/40
 
 /* ================= MOTEUR QCM ================= */
-function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
+/* `extra.ordered` garde l'ordre de la banque (séries de questions liées) ;
+   `extra.regen` fournit une nouvelle banque pour « Refaire une session ». */
+function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ, extra){
   const app = document.getElementById('app');
+  const ordered = !!(extra && extra.ordered);
   const count = Math.min(maxQ || bank.length, bank.length);
-  let order = shuffle(bank.map((_,i)=>i)).slice(0, count);
+  const tirer = () => ordered ? bank.map((_,i)=>i).slice(0, count) : shuffle(bank.map((_,i)=>i)).slice(0, count);
+  let order = tirer();
   let idx=0, score=0, answered=false, timer=null, timeLeft=order.length*secPerQ, ended=false, view=null;
 
   // ponytail: one countdown for the whole session, like the real exam. Paused while the
@@ -7396,7 +7797,8 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ){
       +'<button class="btn" id="againBtn">Refaire une session</button>'
       +'<button class="btn ghost" id="backBtn" style="margin-top:8px;">Retour</button></div>';
     document.getElementById('againBtn').addEventListener('click',()=>{
-      order=shuffle(bank.map((_,i)=>i)).slice(0,count); idx=0; score=0; timeLeft=order.length*secPerQ; ended=false;
+      if(extra && extra.regen) bank = extra.regen();
+      order=tirer(); idx=0; score=0; timeLeft=order.length*secPerQ; ended=false;
       renderQ(); startClock();
     });
     document.getElementById('backBtn').addEventListener('click',()=>goTo(backTo));
@@ -7637,11 +8039,16 @@ function renderNumAbs(){
         <li>Piège fréquent des options : une réponse correcte sur l'attribut le plus visible mais fausse sur un attribut secondaire. Vérifie chaque attribut avant de valider.</li>
       </ul>
     </details>
-    <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique (${NUM_COUNT} questions · 20 min au total · chiffres renouvelés)</button>
+    <div class="info-box"><b>Niveau examen.</b> Comme dans les recueils d'entraînement récents, chaque jeu de données
+    (tableaux, graphique en barres ou en courbes) sert à trois questions de quatre à six opérations : unités à convertir,
+    cellules manquantes à reconstituer, tendances à prolonger, décalage horaire. Les chiffres sont renouvelés à chaque session.</div>
+    <button class="btn wide" id="startNum" style="margin-bottom:8px;">Session numérique niveau examen (${NUM_COUNT} questions · 20 min au total)</button>
+    <button class="btn ghost wide" id="startNumWarm" style="margin-bottom:8px;">Session numérique d'échauffement (questions courtes)</button>
     <button class="btn wide" id="startAbsExam">Session abstraite niveau examen (${ABS_COUNT} séries · 10 min au total)</button>
     <button class="btn ghost wide" id="startAbs" style="margin-top:8px;">Session abstraite d'échauffement (règles simples)</button>
   </div>`;
-  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
+  document.getElementById('startNum').addEventListener('click',()=>runQCMSession(mkNumericExam(NUM_COUNT),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT,{ordered:true, regen:()=>mkNumericExam(NUM_COUNT)}));
+  document.getElementById('startNumWarm').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
   document.getElementById('startAbsExam').addEventListener('click', ()=>runAbstractSession(mkAbsExam));
   document.getElementById('startAbs').addEventListener('click', ()=>runAbstractSession(mkAbsSeries));
 }
