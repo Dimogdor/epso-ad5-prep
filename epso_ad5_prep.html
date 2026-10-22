@@ -428,6 +428,96 @@ body.has-player{padding-bottom:150px;}
   .plan-week .pw{width:auto;}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important;}}
+/* ---- Mode examen (simulation TAO) ---- */
+/* Plein écran comme sur TAO : ni onglets ni lecteur audio pendant l'épreuve. */
+body.tao-on header.top, body.tao-on .player{display:none !important;}
+.tao{max-width:980px;margin:0 auto;}
+.tao-top{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:10px;box-shadow:var(--shadow);}
+.tao-id{display:flex;flex-direction:column;min-width:0;flex:1 1 200px;}
+.tao-id b{font-size:15px;}
+.tao-id span{font-size:13px;color:var(--muted);}
+.tao-tmr{font-family:var(--mono);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;padding:4px 10px;border-radius:8px;background:var(--subtle);}
+.tao-tmr.low{color:var(--bad);background:var(--bad-soft);}
+.tao-tools{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%;}
+.tao-tools button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 11px;min-height:40px;font-size:14px;font-weight:600;}
+.tao-tools button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);}
+.tao-tools.inline{margin:0 0 12px;}
+.tao-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;align-items:center;}
+.tao-n{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:var(--sunken);color:var(--muted);
+  font-weight:700;font-size:14px;position:relative;padding:0;}
+.tao-n.vu{background:var(--surface);border-color:var(--ink);color:var(--ink);}
+.tao-n.rep{background:var(--ink);border-color:var(--ink);color:var(--surface);}
+.tao-n.cur{outline:3px solid var(--accent);outline-offset:2px;}
+.tao-n.flag::after{content:"";position:absolute;top:-5px;right:-4px;width:10px;height:13px;background:var(--warn);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%);}
+.tao-ov{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;min-height:40px;font-weight:600;color:var(--ink);margin-left:auto;}
+.tao-q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px;box-shadow:var(--shadow);}
+.tao-consigne{font-weight:600;margin:4px 0 10px;}
+.tao-opt.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent);}
+.tao-radio{display:inline-block;width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);margin-right:8px;vertical-align:-3px;}
+.tao-opt.sel .tao-radio{border-color:var(--accent);background:radial-gradient(var(--accent) 42%, transparent 48%);}
+.qcm-opt.tao-opt.elim{opacity:.5;text-decoration:line-through;}
+.abs-opt.tao-opt.elim{position:relative;opacity:.55;}
+.abs-opt.tao-opt.elim::after{content:"";position:absolute;inset:10px;pointer-events:none;
+  background:linear-gradient(to top right,transparent calc(50% - 1.5px),var(--bad) calc(50% - 1.5px),var(--bad) calc(50% + 1.5px),transparent calc(50% + 1.5px));}
+.tao-elim-note{font-size:13.5px;color:var(--warn);margin:-4px 0 8px;}
+.tao-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;}
+.tao-foot .btn{padding:11px 16px;}
+.tao-foot .btn:disabled{opacity:.45;cursor:default;}
+.tao-sp{flex:1;}
+.tao-flag{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 12px;min-height:44px;font-weight:600;}
+.tao-flag.on{border-color:var(--warn);background:var(--warn-soft);color:var(--warn);}
+mark.tao-hl{background:#FFE58A;color:#1B2438;padding:0 1px;border-radius:2px;}
+.tao-win{position:fixed;z-index:70;width:290px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.22);resize:both;overflow:auto;min-width:240px;min-height:160px;}
+#taoNotes{width:min(560px,92vw);}
+.tao-win.hidden{display:none;}
+.tao-win-h{display:flex;justify-content:space-between;align-items:center;padding:6px 6px 6px 12px;cursor:move;background:var(--subtle);
+  border-bottom:1px solid var(--line);font-weight:700;font-size:14px;touch-action:none;user-select:none;}
+.tao-x{border:none;background:transparent;font-size:24px;line-height:1;color:var(--ink);width:40px;height:40px;}
+.tao-win-b{padding:10px;}
+.calc-hist{max-height:92px;overflow:auto;font-family:var(--mono);font-size:12.5px;display:flex;flex-direction:column;gap:2px;margin-bottom:6px;}
+.calc-h{border:none;background:transparent;text-align:right;color:var(--muted);font-family:inherit;font-size:inherit;padding:2px 4px;}
+.calc-in{width:100%;font-family:var(--mono);font-size:20px;text-align:right;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--sunken);color:var(--ink);}
+.calc-msg{min-height:18px;font-size:12.5px;color:var(--bad);margin:4px 0;}
+.calc-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.calc-keys button{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:8px;font-size:17px;font-weight:600;color:var(--ink);}
+.calc-keys button.eq{background:var(--accent);color:#fff;border-color:var(--accent);}
+:root[data-theme="dark"] .calc-keys button.eq{color:#10221D;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .calc-keys button.eq{color:#10221D;}}
+.notes-tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.notes-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:40px;font-size:13.5px;color:var(--ink);}
+.notes-tabs button.on{border-color:var(--accent);background:var(--accent-soft);}
+#notesTxt{width:100%;min-height:220px;font-family:var(--mono);font-size:14px;border:1px solid var(--line);border-radius:8px;padding:8px;
+  background:var(--sunken);color:var(--ink);resize:vertical;}
+#notesCv{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:var(--sunken);color:var(--ink);touch-action:none;}
+.tao-dlg-fond{position:fixed;inset:0;z-index:80;background:rgba(10,12,16,.45);display:flex;align-items:center;justify-content:center;padding:16px;}
+.tao-dlg{background:var(--surface);color:var(--ink);border-radius:14px;max-width:520px;width:100%;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:90vh;overflow:auto;}
+.tao-dlg h3{margin:0 0 10px;font-size:18px;}
+.tao-dlg-b{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px;}
+.tao-ov-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.tao-leg{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.tao-leg .tao-n{width:24px;height:24px;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.tao-lnk{border:none;background:none;color:var(--accent);font-weight:700;text-decoration:underline;padding:6px 4px;}
+.tao-rules{font-size:14.5px;line-height:1.6;}
+.tao-count{margin:12px 0;font-size:14.5px;}
+.tao-bilan{list-style:none;padding:0;font-size:16px;line-height:1.8;}
+.tao-bilan b{font-size:18px;}
+.tao-rev{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px;}
+.tao-rev summary{cursor:pointer;font-weight:600;min-height:28px;}
+.tao-rev summary span{display:inline-block;min-width:38px;}
+.tao-rev.ok summary{color:var(--good);}
+.tao-rev.ko summary{color:var(--bad);}
+.tao-rev.vide summary{color:var(--muted);}
+.tao-rev[open] summary{margin-bottom:10px;}
+.exam-hist{font-size:13.5px;color:var(--muted);margin-top:10px;}
+@media(max-width:640px){
+  .tao-tmr{font-size:19px;}
+  .tao-n{width:34px;height:34px;font-size:13px;}
+  .tao-q{padding:16px 12px;}
+  .tao-win{width:min(290px,94vw);}
+}
 </style>
 </head>
 <body>
@@ -2724,8 +2814,8 @@ function mkNum(q,correct,distractors,ex,unit,table){
   /* La sentinelle n'était jamais la bonne réponse sur les questions à réponse
      textuelle ; l'y afficher systématiquement entraînait le réflexe même que sa
      présence aléatoire est censée casser. */
-  const useNone = ri(0,1)===1;
-  const nVals = useNone ? 4 : 5;
+  let useNone = ri(0,1)===1;
+  let nVals = useNone ? 4 : 5;
   const vals=[correct];
   distractors.forEach(x=>{ const v=round(x); if(vals.indexOf(v)===-1) vals.push(v); });
   // Filet de securite quand le generateur fournit trop peu de distracteurs distincts.
@@ -2736,10 +2826,14 @@ function mkNum(q,correct,distractors,ex,unit,table){
     const v = round(correct*(1 + (pad%2?1:-1)*0.06*Math.ceil(pad/2)));
     if(isFinite(v) && vals.indexOf(v)===-1) vals.push(v);
   }
-  for(let k=1; vals.length<nVals && k<=500; k++){
-    const cands = num ? [round(correct+k*step), round(correct-k*step)] : [correct+' ('+k+')'];
-    cands.forEach(v=>{ if(vals.length<nVals && vals.indexOf(v)===-1) vals.push(v); });
+  for(let k=1; num && vals.length<nVals && k<=500; k++){
+    [round(correct+k*step), round(correct-k*step)].forEach(v=>{ if(vals.length<nVals && vals.indexOf(v)===-1) vals.push(v); });
   }
+  /* Une réponse textuelle (un pays, une année) ne se complète pas : fabriquer
+     « Hongrie (1) » à côté de « Hongrie » affichait deux fois la même réponse,
+     dont une seule comptait juste. Faute de cinq valeurs distinctes, la
+     cinquième place revient à « Aucune de ces réponses ». */
+  if(!num && !useNone && vals.length<5){ useNone = true; nVals = 4; }
   let picked = vals.slice(0,nVals);
   // La sentinelle n'est la bonne reponse que lorsqu'elle est presente : on retire
   // alors la valeur exacte des propositions chiffrees.
@@ -2876,6 +2970,15 @@ function lePays(n){ const a=ART_PAYS[n]||''; return a.endsWith("'") ? a+n : (a ?
 function duPays(n){ const a=ART_PAYS[n]; return a==='le' ? 'du '+n : a==='les' ? 'des '+n : 'de '+lePays(n); }
 function enPays(n){ const a=ART_PAYS[n]; return a==='le' ? 'au '+n : a==='les' ? 'aux '+n : 'en '+n; }
 
+/* Quatre rapports voisins, simplifiés et distincts de la bonne réponse. */
+function ratiosVoisins(a, b){
+  const pgcd = (x,y)=> y ? pgcd(y, x%y) : x;
+  const simp = (x,y)=>{ const g=pgcd(x,y); return (x/g)+':'+(y/g); };
+  const bon = simp(a,b), out = [];
+  [[b,a],[a+1,b],[a,b+1],[a+1,b+1],[2*a,b],[a,2*b],[1,1],[3,1],[1,3],[4,3],[3,4]].forEach(([x,y])=>{
+    const r = simp(x,y); if(r!==bon && out.indexOf(r)<0) out.push(r); });
+  return out.slice(0,4);
+}
 const NUMERIC_TABLE_TEMPLATES = [
   /* Déduire une grandeur absolue à partir d'un pourcentage et d'une valeur absolue,
      puis comparer deux pays. C'est le mécanisme exact de l'échantillon officiel. */
@@ -2893,7 +2996,7 @@ const NUMERIC_TABLE_TEMPLATES = [
       ['Pays','Dép. R&D (% du PIB)','Dép. R&D (M€)','PIB par habitant (€)','Brevets par million d\'hab.'],
       rows.map(x=>[x.n, fmtN(x.pct,2), fmtN(x.dep), fmtN(x.hab), fmtN(x.brev,1)]));
     return mkNum(`Quel est approximativement le rapport entre le PIB de `+a.n+` et celui de `+b.n+` ?`,
-      r[0]+':'+r[1], [r[1]+':'+r[0], (r[0]+1)+':'+r[1], r[0]+':'+(r[1]+1)],
+      r[0]+':'+r[1], ratiosVoisins(r[0], r[1]),
       `Le PIB ne figure pas dans le tableau : il se déduit de la dépense de R&D et de sa part dans le PIB. `+a.n+` : `+fmtN(a.dep)+` ÷ `+fmtN(a.pct,2)+` % = `+fmtN(Math.round(pibA))+` M€. `+b.n+` : `+fmtN(b.dep)+` ÷ `+fmtN(b.pct,2)+` % = `+fmtN(Math.round(pibB))+` M€. Rapport ≈ `+String(exact).replace('.',',')+`, soit `+r[0]+':'+r[1]+`. La colonne PIB par habitant est un distracteur : sans la population, elle ne sert à rien.`,
       '', table);
   },
@@ -2924,7 +3027,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Démographie mondiale par continent',
       ['Continent','Superficie (km²)','Population (millions)','Population urbaine (%)','Nombre de pays'], rows);
     return mkNum(`Quelle est la superficie cumulée de ces deux ensembles : `+sel[i1][0]+` et `+sel[i2][0]+` ?`,
-      fmtN(somme), [fmtN(somme+60000), fmtN(somme-60000), fmtN(sel[i1][1]*2)],
+      somme, [somme+60000, somme-60000, sel[i1][1]*2, sel[i2][1]*2],
       `Addition directe des deux superficies : `+fmtN(sel[i1][1])+` + `+fmtN(sel[i2][1])+` = `+fmtN(somme)+` km². Les options voisines ne diffèrent que de quelques dizaines de milliers : il faut lire les chiffres jusqu'au bout.`,
       ' km²', table);
   },
@@ -2966,7 +3069,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Exportations de biens, 2019 et 2024',
       ['Pays','Exportations 2019 (M€)','Exportations 2024 (M€)','Part dans le PIB (%)'],
       rows.map(r=>[r.n, fmtN(r.v0), fmtN(r.v1), fmtN(ri(150,450)/10,1)]));
-    const opts = rows.filter(r=>r!==best).slice(0,3).map(r=>r.n);
+    const opts = rows.filter(r=>r!==best).map(r=>r.n);
     return mkNum(`Quel pays a connu la plus forte progression de ses exportations en pourcentage entre 2019 et 2024 ?`,
       best.n, opts,
       `La progression se mesure en relatif, pas en valeur absolue : `+best.n+` passe de `+fmtN(best.v0)+` à `+fmtN(best.v1)+` M€, soit `+fmtN(best.pct)+` %, la plus forte hausse du tableau. Le pays dont l'augmentation en euros est la plus grande n'est pas forcément celui qui progresse le plus vite.`,
@@ -3060,7 +3163,7 @@ const NUMERIC_TABLE_TEMPLATES = [
     const table = dataTable('Dépenses culturelles',
       ['Pays','Dépense totale (M€)','Population (millions)','Part du budget national (%)'],
       rows.map(z=>[z.x, fmtN(z.tot), fmtN(z.pop), fmtN(ri(5,45)/10,1)]));
-    const distr = rows.filter(z=>z!==best).slice(0,3).map(z=>z.x);
+    const distr = rows.filter(z=>z!==best).map(z=>z.x);
     return mkNum(`Quel pays dépense le plus par habitant ?`,
       best.x, distr,
       `Il faut diviser chaque dépense totale par la population : `+best.x+` atteint `+fmtN(best.par)+` € par habitant, le plus haut du tableau. `+(gros!==best? gros.x+` a la dépense totale la plus élevée, mais rapportée à sa population elle ne l'est plus : c'est exactement le piège.` : `La dépense totale la plus élevée est ici aussi la plus élevée par habitant, ce qui n'est pas la règle générale.`),
@@ -3364,7 +3467,16 @@ const NUM_SETS = [
        ex:`Hausse annuelle moyenne 2021-2023 : (${fmtF(Y.c,1)} − ${fmtF(Y.b,1)}) ÷ 2 = ${fmtF(nr((Y.c-Y.b)/2,2),2)} TWh. Trois années plus tard : ${fmtF(Y.c,1)} + 3 × ${fmtF(nr((Y.c-Y.b)/2,2),2)} ≈ ${fmtF(q2,1)} TWh. Piège : appliquer trois fois la hausse sur deux ans.`},
       {q:`De combien la production renouvelable cumulée ${duPays(X.n)} et ${duPays(Z.n)} a-t-elle augmenté entre 2019 et 2023 (%) ?`,
        c:q3, d:[moy, nPct(100*((X.c-X.a)+(Z.c-Z.a))/(X.c+Z.c)), nPct(100*((X.b+Z.b)/(X.a+Z.a)-1))], u:' %',
-       ex:`Production cumulée : ${fmtF(nr(X.a+Z.a,1),1)} TWh en 2019, ${fmtF(nr(X.c+Z.c,1),1)} TWh en 2023, soit +${fmtF(q3,1)} %. La moyenne des deux taux (${fmtF(moy,1)} %) est fausse dès que les volumes diffèrent.`}]};
+       ex:`Production cumulée : ${fmtF(nr(X.a+Z.a,1),1)} TWh en 2019, ${fmtF(nr(X.c+Z.c,1),1)} TWh en 2023, soit +${fmtF(q3,1)} %. La moyenne des deux taux (${fmtF(moy,1)} %) est fausse dès que les volumes diffèrent.`},
+      (()=>{ const g = rows.map(r=>r.c/r.a), m = Math.max(...g); if(g.filter(x=>Math.abs(x-m)<1e-9).length>1) return null; const best = rows[g.indexOf(m)];
+        return {q:`Quel pays a enregistré la plus forte hausse de sa production renouvelable, en pourcentage, entre 2019 et 2023 ?`,
+         c:best.n, d:rows.filter(r=>r!==best).map(r=>r.n), u:'',
+         ex:`Hausse = production 2023 ÷ production 2019 − 1 : ${rows.map(r=>r.n+' '+fmtF(nPct(100*(r.c/r.a-1)),1)+' %').join(', ')}. La plus forte hausse en TWh n'est pas forcément la plus forte en pourcentage.`}; })(),
+      (()=>{ const T = Math.ceil(q1/10)*10+10, c = nr(T/100*X.cons - X.c,1);
+        return {q:`Combien de TWh supplémentaires aurait-il fallu produire ${enPays(X.n)} en 2023 pour que la production renouvelable couvre ${T} % de la consommation ?`,
+         c, d:[nr(T/100*X.cons,1), nr((T-q1)/100*X.c,1), nr(T/100*X.cons - X.b,1)], u:' TWh',
+         ex:`${T} % de ${fmtF(X.cons)} TWh = ${fmtF(nr(T/100*X.cons,1),1)} TWh. Production 2023 : ${fmtF(X.c,1)} TWh. Il manque ${fmtF(c,1)} TWh.`}; })(),
+    ]};
   },
 
   /* 2. Émissions par habitant (graphique) et population (tableau). */
@@ -3389,7 +3501,16 @@ const NUM_SETS = [
        ex:`2018 : ${fmtF(pc[2][1],1)} × ${fmtF(pop[2][1],2)} ≈ ${fmtF(nr(tot(2,2018),1),1)} Mt ; 2020 : ${fmtF(pc[2][2],1)} × ${fmtF(pop[2][3],2)} ≈ ${fmtF(nr(tot(2,2020),1),1)} Mt. 2019 est au milieu : ${fmtF(q2,1)} Mt. L'année 2019 ne figure pas sur le graphique : c'est voulu.`},
       {q:`Les émissions totales ${duPays(p[3])} en 2019 étaient inférieures de ${fmtF(delta,1)} millions de tonnes à celles de 2018. Quelles étaient ses émissions par habitant en 2019 (tonnes) ?`,
        c:q3, d:[nr((tot(3,2018)-delta)/pop[3][1],2), nr(pc[3][1]-delta/pop[3][2],2)===q3?nr(q3+0.21,2):nr(pc[3][1]-delta/pop[3][2],2), nr(pc[3][1]-delta,2)], u:' t',
-       ex:`Total 2018 : ${fmtF(pc[3][1],1)} × ${fmtF(pop[3][1],2)} ≈ ${fmtF(nr(tot(3,2018),2),2)} Mt. Total 2019 : ${fmtF(nr(tot(3,2018)-delta,2),2)} Mt. Divisé par la population 2019 (${fmtF(pop[3][2],2)} M) : ${fmtF(q3,2)} t. Diviser par la population 2018 est le piège.`}]};
+       ex:`Total 2018 : ${fmtF(pc[3][1],1)} × ${fmtF(pop[3][1],2)} ≈ ${fmtF(nr(tot(3,2018),2),2)} Mt. Total 2019 : ${fmtF(nr(tot(3,2018)-delta,2),2)} Mt. Divisé par la population 2019 (${fmtF(pop[3][2],2)} M) : ${fmtF(q3,2)} t. Diviser par la population 2018 est le piège.`},
+      (()=>{ const t = p.map((_,i)=>tot(i,2021)), m = Math.max(...t); const i = t.indexOf(m);
+        return {q:`Quel pays avait les émissions totales les plus élevées en 2021 ?`,
+         c:p[i], d:p.filter((_,k)=>k!==i), u:'',
+         ex:`Émissions totales 2021 = émissions par habitant × population : ${p.map((n,k)=>n+' ≈ '+fmtF(nr(t[k],1),1)+' Mt').join(', ')}. Le pays aux émissions par habitant les plus fortes n'est pas forcément celui qui émet le plus.`}; })(),
+      (()=>{ const c = nPct(100*(tot(1,2021)/tot(1,2017)-1));
+        return {q:`De combien de pour cent les émissions totales ${duPays(p[1])} ont-elles varié entre 2017 et 2021 ?`,
+         c, d:[nPct(100*(pc[1][3]/pc[1][0]-1)), nPct(100*(pop[1][4]/pop[1][0]-1)), nr(-c,1)], u:' %',
+         ex:`2017 : ${fmtF(pc[1][0],1)} × ${fmtF(pop[1][0],2)} ≈ ${fmtF(nr(tot(1,2017),2),2)} Mt ; 2021 : ${fmtF(pc[1][3],1)} × ${fmtF(pop[1][4],2)} ≈ ${fmtF(nr(tot(1,2021),2),2)} Mt. Variation : ${fmtF(c,1)} %. La seule variation par habitant ignore celle de la population.`}; })(),
+    ]};
   },
 
   /* 3. Vol entre deux fuseaux horaires : vitesse, temps gagné, détour. */
@@ -3419,7 +3540,18 @@ const NUM_SETS = [
        ex:`Nouvelle vitesse : ${fmtF(q1,1)} × ${fmtF(1+p/100,2)} ≈ ${fmtF(nr(q1*(1+p/100),1),1)} km/h. Durée : ${fmtF(dir)} ÷ cette vitesse ≈ ${fmtF(nr(dir/(q1*(1+p/100))*60,1),1)} min, soit ${fmtF(gain,1)} min de moins que les ${durMin} min du vol.`},
       {q:`Un second avion relie les mêmes villes à la même vitesse moyenne, mais contourne un orage et vole ${Math.floor(t2/60)} h ${t2%60} min. Quelle distance supplémentaire a-t-il parcourue, en pourcentage de la distance réellement parcourue par le premier ?`,
        c:q3, d:[nPct(100*(t2-durMin)/t2), nPct(100*q1*t2/60/reel), nPct(100*(q1*t2/60 - dir)/dir)], u:' %',
-       ex:`À ${fmtF(q1,1)} km/h pendant ${fmtF(nr(t2/60,4),4)} h, il parcourt ${fmtF(nr(q1*t2/60,0))} km, soit ${fmtF(nr(q1*t2/60-reel,0))} km de plus que les ${fmtF(reel)} km du premier : +${fmtF(q3,1)} %.`}]};
+       ex:`À ${fmtF(q1,1)} km/h pendant ${fmtF(nr(t2/60,4),4)} h, il parcourt ${fmtF(nr(q1*t2/60,0))} km, soit ${fmtF(nr(q1*t2/60-reel,0))} km de plus que les ${fmtF(reel)} km du premier : +${fmtF(q3,1)} %.`},
+      (()=>{ const ret = durMin + ri(2,5)*5, depR = ri(13,18)*60 + absPick([0,15,30,45]);
+        const ok = depR + ret - (za-zd)*60;
+        const c = hm(ok);
+        return {q:`Le vol retour quitte ${va} à ${hm(depR)} heure locale et dure ${Math.floor(ret/60)} h ${ret%60} min. À quelle heure locale atterrit-il à ${vd} ?`,
+         c, d:[hm(depR + ret + (za-zd)*60), hm(depR + ret), hm(depR + durMin - (za-zd)*60), hm(ok + 30)], u:'',
+         ex:`${hm(depR)} + ${Math.floor(ret/60)} h ${ret%60} min = ${hm(depR+ret)} à l'heure de ${va}. ${vd} a ${za-zd} h de retard sur ${va} : on retranche ce décalage, soit ${c}.`}; })(),
+      (()=>{ const c = nPct(100*(reel-dir)/dir);
+        return {q:`De combien de pour cent la distance réellement parcourue dépasse-t-elle la distance à vol d'oiseau ?`,
+         c, d:[nPct(100*(reel-dir)/reel), nPct(100*reel/dir), nPct((reel-dir)/10)], u:' %',
+         ex:`(${fmtF(reel)} − ${fmtF(dir)}) ÷ ${fmtF(dir)} = ${fmtF(c,1)} %. La base est la distance à vol d'oiseau, celle à laquelle on compare.`}; })(),
+    ]};
   },
 
   /* 4. Deux services en ligne (courbes) : rapport, projection, plus grand écart. */
@@ -3428,23 +3560,36 @@ const NUM_SETS = [
     let a=ri(120,260), b=ri(600,1100);
     const A=[], B=[];
     xs.forEach(()=>{ A.push(a); B.push(b); a=Math.round(a*(1+ri(4,22)/100)); b=Math.round(b*(1+ri(2,12)/100)); });
-    const chart = svgLines('Utilisateurs actifs au 1er janvier (millions)', xs.map(String), [{name:'Service A',values:A},{name:'Service B',values:B}], 0);
+    const T = absPick([
+      {titre:'Utilisateurs actifs au 1er janvier (millions)', a:'Service A', b:'Service B', nom:"d'utilisateurs", nomPl:"d'utilisateurs", deA:'du service A', deB:'du service B', aA:'au service A', u:'millions'},
+      {titre:'Passagers annuels (millions)', a:'Aéroport Nord', b:'Aéroport Sud', nom:'de passagers', nomPl:'de passagers', deA:"de l'aéroport Nord", deB:"de l'aéroport Sud", aA:"à l'aéroport Nord", u:'millions'},
+      {titre:'Abonnés à deux réseaux de transport (milliers)', a:'Réseau A', b:'Réseau B', nom:"d'abonnés", nomPl:"d'abonnés", deA:'du réseau A', deB:'du réseau B', aA:'au réseau A', u:'milliers'}]);
+    const chart = svgLines(T.titre, xs.map(String), [{name:T.a,values:A},{name:T.b,values:B}], 0);
     const yr = ri(1,3);
     const q1 = nPct(100*A[yr]/B[yr]);
     const pente = (B[3]-B[0])/3, proj = B[3]+pente*4;
     const q2 = Math.round(proj - B[7]);
     const ecarts = xs.map((_,i)=>B[i]-A[i]); const imax = ecarts.indexOf(Math.max(...ecarts));
-    const autres = shuffle(xs.filter((_,i)=>i!==imax)).slice(0,3).map(String);
+    const autres = shuffle(xs.filter((_,i)=>i!==imax)).slice(0,4).map(String);
     return {html:chart, qs:[
-      {q:`En ${xs[yr]}, le nombre d'utilisateurs du service A représentait quel pourcentage de celui du service B ?`,
+      {q:`En ${xs[yr]}, le nombre ${T.nom} ${T.deA} représentait quel pourcentage de celui ${T.deB} ?`,
        c:q1, d:[nPct(100*B[yr]/A[yr]), nPct(100*(B[yr]-A[yr])/B[yr]), nPct(100*A[yr+1]/B[yr+1])], u:' %',
        ex:`${fmtF(A[yr])} ÷ ${fmtF(B[yr])} = ${fmtF(q1,1)} %. Le rapport inverse est le distracteur le plus fréquent.`},
-      {q:`En prolongeant la hausse annuelle moyenne du service B observée entre 2016 et 2019, quel aurait été l'écart (en millions) entre la valeur projetée pour 2023 et la valeur réelle ?`,
+      {q:`En prolongeant la hausse annuelle moyenne ${T.deB} observée entre 2016 et 2019, quel aurait été l'écart (en ${T.u}) entre la valeur projetée pour 2023 et la valeur réelle ?`,
        c:q2, d:[Math.round(B[3]+pente*7-B[7]), -q2, Math.round(B[3]-B[7])], u:'',
-       ex:`Hausse moyenne 2016-2019 : (${fmtF(B[3])} − ${fmtF(B[0])}) ÷ 3 ≈ ${fmtF(nr(pente,1),1)} millions par an. Projection 2023 : ${fmtF(B[3])} + 4 × ${fmtF(nr(pente,1),1)} ≈ ${fmtF(Math.round(proj))}. Écart avec la valeur réelle (${fmtF(B[7])}) : ${fmtF(q2)} millions. Un écart négatif signifie que la réalité a dépassé la tendance.`},
-      {q:`Quelle année l'écart entre le nombre d'utilisateurs du service B et celui du service A a-t-il été le plus grand ?`,
+       ex:`Hausse moyenne 2016-2019 : (${fmtF(B[3])} − ${fmtF(B[0])}) ÷ 3 ≈ ${fmtF(nr(pente,1),1)} ${T.u} par an. Projection 2023 : ${fmtF(B[3])} + 4 × ${fmtF(nr(pente,1),1)} ≈ ${fmtF(Math.round(proj))}. Écart avec la valeur réelle (${fmtF(B[7])}) : ${fmtF(q2)} ${T.u}. Un écart négatif signifie que la réalité a dépassé la tendance.`},
+      {q:`Quelle année l'écart entre le nombre ${T.nom} ${T.deB} et celui ${T.deA} a-t-il été le plus grand ?`,
        c:String(xs[imax]), d:autres, u:'',
-       ex:`Écarts : ${xs.map((x,i)=>x+' : '+fmtF(ecarts[i])).join(' ; ')}. Le plus grand est atteint en ${xs[imax]}.`}]};
+       ex:`Écarts : ${xs.map((x,i)=>x+' : '+fmtF(ecarts[i])).join(' ; ')}. Le plus grand est atteint en ${xs[imax]}.`},
+      (()=>{ const c = nPct(100*(A[8]/A[0]-1));
+        return {q:`De combien de pour cent le nombre ${T.nom} ${T.deA} a-t-il augmenté entre 2016 et 2024 ?`,
+         c, d:[nPct(100*(A[8]-A[0])/A[8]), nPct(100*(B[8]/B[0]-1)), nPct(100*(A[8]/A[0]-1)/8)], u:' %',
+         ex:`${fmtF(A[8])} ÷ ${fmtF(A[0])} − 1 = ${fmtF(c,1)} %. Diviser par huit donnerait une moyenne annuelle simple, qui n'est pas la question.`}; })(),
+      (()=>{ const f = [0.5,0.6,0.75,0.9].find(x=>x*B[8]>A[8]+5); if(!f) return null; const c = Math.round(f*B[8]-A[8]);
+        return {q:`En 2024, combien ${T.nomPl} supplémentaires (en ${T.u}) aurait-il fallu ${T.aA} pour atteindre ${fmtF(100*f)} % du nombre ${T.nom} ${T.deB} ?`,
+         c, d:[Math.round(f*B[8]), Math.round(B[8]-A[8]), Math.round(f*(B[8]-A[8]))], u:'',
+         ex:`${fmtF(100*f)} % de ${fmtF(B[8])} = ${fmtF(nr(f*B[8],1),1)}. Il en manquait ${fmtF(c)} par rapport aux ${fmtF(A[8])} observés.`}; })(),
+    ]};
   },
 
   /* 5. Importations par secteur avec cellules manquantes. */
@@ -3469,7 +3614,16 @@ const NUM_SETS = [
        ex:`Deux postes qui gardent leur part du total gardent aussi leur rapport : Autres N+4 = ${fmtF(N[kAut])} × ${fmtF(N4[kCons])} ÷ ${fmtF(N[kCons])} ≈ ${fmtF(q2)} M€. Le total N+4 n'est pas nécessaire.`},
       {q:`De combien les importations « Santé et éducation » auraient-elles dû être plus élevées en N + 2 pour représenter ${qq} % du total de cette année-là (M€) ?`,
        c:x, d:[Math.round(qq/100*tot2 - N2[kSan]), Math.round(qq/100*tot2), Math.round(x*1.15)], u:' M€',
-       ex:`Si le secteur augmente de x, le total augmente aussi de x : (${fmtF(N2[kSan])} + x) ÷ (${fmtF(tot2)} + x) = ${qq} %, d'où x = (${fmtF(qq/100,2)} × ${fmtF(tot2)} − ${fmtF(N2[kSan])}) ÷ ${fmtF(1-qq/100,2)} ≈ ${fmtF(x)} M€. Oublier que le total bouge donne ${fmtF(Math.round(qq/100*tot2 - N2[kSan]))}.`}]};
+       ex:`Si le secteur augmente de x, le total augmente aussi de x : (${fmtF(N2[kSan])} + x) ÷ (${fmtF(tot2)} + x) = ${qq} %, d'où x = (${fmtF(qq/100,2)} × ${fmtF(tot2)} − ${fmtF(N2[kSan])}) ÷ ${fmtF(1-qq/100,2)} ≈ ${fmtF(x)} M€. Oublier que le total bouge donne ${fmtF(Math.round(qq/100*tot2 - N2[kSan]))}.`},
+      (()=>{ const c = nPct(100*(tot2/totN-1));
+        return {q:`Sachant que « Numérique et finance » représentait ${p} % du total l'année N, de combien de pour cent le total a-t-il augmenté entre N et N + 2 ?`,
+         c, d:[nPct(100*(tot2/connus-1)), nPct(100*(N2[kNum]/N[kNum]-1)), nPct(100*(tot2-totN)/tot2)], u:' %',
+         ex:`Total N = ${fmtF(connus)} ÷ ${fmtF((100-p)/100,2)} ≈ ${fmtF(totN)} M€ ; total N + 2 = ${fmtF(tot2)} M€ ; hausse ≈ ${fmtF(c,1)} %.`}; })(),
+      (()=>{ const c = nPct(100*N2[1]/tot2);
+        return {q:`Quelle part du total des importations le secteur « Énergie » représentait-il en N + 2 (%) ?`,
+         c, d:[nPct(100*N[1]/totN), nPct(100*N4[1]/tot2), nPct(100*N2[1]/(tot2-N2[1]))], u:' %',
+         ex:`${fmtF(N2[1])} ÷ ${fmtF(tot2)} = ${fmtF(c,1)} %. Le total N + 2 est le seul total connu : c'est la bonne base.`}; })(),
+    ]};
   },
 
   /* 6. Lait : production, taux de matière grasse et de protéines. */
@@ -3494,7 +3648,16 @@ const NUM_SETS = [
        ex:`Seul l'écart de taux compte, appliqué à la production 2022 : ${fmtF(prod[C][2])} kt × (${fmtF(fat[C][2],2)} − ${fmtF(fat[C][0],2)}) % ≈ ${fmtF(q2)} t. Comparer les tonnages totaux mélangerait l'effet du taux et celui du volume.`},
       {q:`Quelle a été la variation de la quantité totale de matière grasse et de protéines contenue dans le lait ${duPays(p[D])} entre 2020 et 2022 (%) ?`,
        c:q3, d:[nPct(100*(prod[D][2]/prod[D][1]-1)), nPct(100*((fat[D][2]+pro[D][2])/(fat[D][1]+pro[D][1])-1)), nPct(-q3)], u:' %',
-       ex:`2020 : ${fmtF(prod[D][1])} × (${fmtF(fat[D][1],2)} + ${fmtF(pro[D][1],2)}) % ; 2022 : ${fmtF(prod[D][2])} × (${fmtF(fat[D][2],2)} + ${fmtF(pro[D][2],2)}) %. Rapport − 1 = ${fmtF(q3,1)} %. Le volume et les taux varient ensemble : il faut multiplier avant de comparer.`}]};
+       ex:`2020 : ${fmtF(prod[D][1])} × (${fmtF(fat[D][1],2)} + ${fmtF(pro[D][1],2)}) % ; 2022 : ${fmtF(prod[D][2])} × (${fmtF(fat[D][2],2)} + ${fmtF(pro[D][2],2)}) %. Rapport − 1 = ${fmtF(q3,1)} %. Le volume et les taux varient ensemble : il faut multiplier avant de comparer.`},
+      (()=>{ const t = p.map((_,i)=>prod[i][1]*pro[i][1]), m = Math.max(...t), i = t.indexOf(m);
+        return {q:`Quel pays a produit la plus grande quantité de protéines laitières en 2020 ?`,
+         c:p[i], d:p.filter((_,k)=>k!==i), u:'',
+         ex:`Protéines = production × taux : ${p.map((n,k)=>n+' ≈ '+fmtF(Math.round(t[k]*10))+' t').join(', ')}. Le taux le plus élevé ne suffit pas, il faut le volume.`}; })(),
+      (()=>{ const sp = prod.reduce((a,r)=>a+r[2],0), c = nr(prod.reduce((a,r,i)=>a+r[2]*fat[i][2],0)/sp,2);
+        return {q:`Quelle était la teneur moyenne en matière grasse du lait des quatre pays réunis en 2022 (%, moyenne pondérée par la production) ?`,
+         c, d:[nr(fat.reduce((a,r)=>a+r[2],0)/4,2), nr(prod.reduce((a,r,i)=>a+r[0]*fat[i][0],0)/prod.reduce((a,r)=>a+r[0],0),2), nr(c+0.06,2)], u:' %',
+         ex:`Somme des productions × taux ÷ production totale (${fmtF(sp)} kt) = ${fmtF(c,2)} %. La moyenne simple des quatre taux ignore la taille des pays.`}; })(),
+    ]};
   },
 
   /* 7. Débarquements de la pêche : prix au kilo, variation, effet prix. */
@@ -3517,7 +3680,16 @@ const NUM_SETS = [
        ex:`Prix par tonne : ${fmtF(nr(prixKg(1,0)*1000,0))} € en 2017 et ${fmtF(nr(prixKg(1,2)*1000,0))} € en 2021, soit ${fmtF(q2,1)} %. La variation de la seule valeur ignore celle des volumes.`},
       {q:`Quelle aurait été la valeur des débarquements ${duPays(p[2])} en 2021 si le prix moyen par tonne était resté à son niveau de 2017 (M€) ?`,
        c:q3, d:[v[2][0], nr(v[2][2]*t[2][0]/t[2][2],1), nr(t[2][0]*v[2][2]/t[2][2],1)===q3?nr(q3*1.08,1):nr(t[2][0]*v[2][2]/t[2][2],1)], u:' M€',
-       ex:`Prix 2017 : ${fmtF(v[2][0],1)} M€ ÷ ${fmtF(t[2][0])} t. Appliqué aux ${fmtF(t[2][2])} t de 2021 : ${fmtF(q3,1)} M€.`}]};
+       ex:`Prix 2017 : ${fmtF(v[2][0],1)} M€ ÷ ${fmtF(t[2][0])} t. Appliqué aux ${fmtF(t[2][2])} t de 2021 : ${fmtF(q3,1)} M€.`},
+      (()=>{ const t1 = p.map((_,i)=>prixKg(i,1)), m = Math.max(...t1), i = t1.indexOf(m);
+        return {q:`Quel pays avait le prix moyen au kilogramme le plus élevé en 2019 ?`,
+         c:p[i], d:p.filter((_,k)=>k!==i), u:'',
+         ex:`Prix = valeur ÷ volume : ${p.map((n,k)=>n+' '+fmtF(nr(t1[k],2),2)+' €/kg').join(', ')}. La plus forte valeur totale n'est pas le prix le plus élevé.`}; })(),
+      (()=>{ const c = nPct(100*(t[3][2]/t[3][0]-1));
+        return {q:`De combien de pour cent le volume des débarquements ${duPays(p[3])} a-t-il varié entre 2017 et 2021 ?`,
+         c, d:[nPct(100*(v[3][2]/v[3][0]-1)), nPct(100*(t[3][2]-t[3][0])/t[3][2]), nr(-c,1)], u:' %',
+         ex:`${fmtF(t[3][2])} ÷ ${fmtF(t[3][0])} − 1 = ${fmtF(c,1)} %. La question porte sur les tonnes, pas sur les euros.`}; })(),
+    ]};
   },
 
   /* 8. PIB, population et dette. */
@@ -3541,7 +3713,16 @@ const NUM_SETS = [
        ex:`PIB : ${fmtF(B.pib)} € × ${fmtF(B.pop,1)} M ≈ ${fmtF(Math.round(pib(B)))} Md€. Dette : ${B.dette} % de ce montant ≈ ${fmtF(q2)} Md€.`},
       {q:`De combien la dette publique ${duPays(C.n)} aurait-elle dû être plus faible en 2024 pour ne pas dépasser 60 % du PIB (milliards d'euros) ?`,
        c:q3, d:[Math.round(pib(C)*C.dette/100), Math.round(pib(C)*0.6), Math.round(q3*C.dette/60)], u:' Md€',
-       ex:`PIB ≈ ${fmtF(Math.round(pib(C)))} Md€. Excédent par rapport à 60 % : (${C.dette} − 60) % du PIB ≈ ${fmtF(q3)} Md€.`}]};
+       ex:`PIB ≈ ${fmtF(Math.round(pib(C)))} Md€. Excédent par rapport à 60 % : (${C.dette} − 60) % du PIB ≈ ${fmtF(q3)} Md€.`},
+      (()=>{ const t = rows.map(pib), m = Math.max(...t), i = t.indexOf(m);
+        return {q:`Quel pays a le produit intérieur brut total le plus élevé ?`,
+         c:rows[i].n, d:rows.filter((_,k)=>k!==i).map(r=>r.n), u:'',
+         ex:`PIB = PIB par habitant × population : ${rows.map(r=>r.n+' ≈ '+fmtF(Math.round(pib(r)))+' Md€').join(', ')}.`}; })(),
+      (()=>{ const c = Math.round(A.pib*A.dette/100);
+        return {q:`Quelle est la dette publique par habitant ${duPays(A.n)} (€) ?`,
+         c, d:[Math.round(A.pib*A.dette/100/A.pop), Math.round(pib(A)*A.dette/100), Math.round(A.pib/A.dette*100)], u:' €',
+         ex:`La dette est un pourcentage du PIB, donc aussi du PIB par habitant : ${A.dette} % de ${fmtF(A.pib)} € = ${fmtF(c)} €. La population est inutile ici.`}; })(),
+    ]};
   },
 
   /* 9. Structure par âge, avec une population à reconstituer. */
@@ -3565,7 +3746,16 @@ const NUM_SETS = [
        ex:`Moins de 65 ans ${duPays(A)} : ${fmtF(popA,1)} × ${100-sA.o} % ≈ ${fmtF(nr(popA*(100-sA.o)/100,2),2)} M. ${B} en compte ${q} % de plus, soit ≈ ${fmtF(nr(popA*(100-sA.o)/100*(1+q/100),2),2)} M, qui représentent ${100-sB.o} % de sa population : ${fmtF(q2,1)} M.`},
       {q:`Quel est le rapport entre le nombre de moins de 18 ans ${duPays(B)} et celui ${duPays(A)} ?`,
        c:q3, d:[nr(1/q3,2), nr(sB.u/sA.u,2), nr((1+q/100)*sB.u/sA.u,2)], u:'',
-       ex:`${fmtF(sB.u)} % × ${fmtF(nr(popB,2),2)} M ÷ (${fmtF(sA.u)} % × ${fmtF(popA,1)} M) ≈ ${fmtF(q3,2)}. Comparer les seuls pourcentages ignore la différence de taille des deux pays.`}]};
+       ex:`${fmtF(sB.u)} % × ${fmtF(nr(popB,2),2)} M ÷ (${fmtF(sA.u)} % × ${fmtF(popA,1)} M) ≈ ${fmtF(q3,2)}. Comparer les seuls pourcentages ignore la différence de taille des deux pays.`},
+      (()=>{ const c = nr(popA*sA.m/100,2);
+        return {q:`Combien d'habitants de 18 à 64 ans compte ${lePays(A)} (millions) ?`,
+         c, d:[nr(popA*(sA.m+sA.u)/100,2), nr(popA*sA.u/100,2), nr(popA*sA.m/1000,2)], u:' M',
+         ex:`${fmtF(popA,1)} M × ${sA.m} % = ${fmtF(c,2)} millions.`}; })(),
+      (()=>{ const c = nr(100*sC.o/sC.m,1);
+        return {q:`Combien de personnes de 65 ans et plus ${C==='Pays-Bas'?'les Pays-Bas comptent-ils':'compte '+lePays(C)} pour 100 personnes de 18 à 64 ans ?`,
+         c, d:[nr(100*(sC.o+sC.u)/sC.m,1), nr(sC.o,1), nr(100*sC.o/(100-sC.o),1)], u:'',
+         ex:`${sC.o} ÷ ${sC.m} × 100 = ${fmtF(c,1)}. La population totale n'est pas nécessaire : un rapport de parts suffit.`}; })(),
+    ]};
   },
 
   /* 10. Répartition d'un budget (barres horizontales). */
@@ -3588,7 +3778,16 @@ const NUM_SETS = [
        ex:`Avant : ${fmtF(parts[j],1)} % × ${fmtF(total)} ≈ ${fmtF(Math.round(total*parts[j]/100))} M€. Après : ${fmtF(nr(parts[j]-k,1),1)} % × ${fmtF(Math.round(total*(1+g/100)))} ≈ ${fmtF(Math.round(total*(1+g/100)*(parts[j]-k)/100))} M€. Variation : ${fmtF(q2)} M€. Un recul en points se retranche de la part, il ne se multiplie pas.`},
       {q:`Combien de fois la rubrique « ${noms[2]} » est-elle plus importante que la rubrique « ${noms[3]} » ?`,
        c:q3, d:[nr(1/q3,2), nr(parts[2]-parts[3],2), nr(q3+0.12,2)], u:'',
-       ex:`${fmtF(parts[2],1)} ÷ ${fmtF(parts[3],1)} ≈ ${fmtF(q3,2)}. Le montant total n'est pas nécessaire : le rapport des parts suffit.`}]};
+       ex:`${fmtF(parts[2],1)} ÷ ${fmtF(parts[3],1)} ≈ ${fmtF(q3,2)}. Le montant total n'est pas nécessaire : le rapport des parts suffit.`},
+      (()=>{ const tri = parts.slice().sort((a,b)=>a-b), c = nr(tri[0]+tri[1]+tri[2],1);
+        return {q:`Quelle part de l'enveloppe représentent ensemble les trois plus petites rubriques (%) ?`,
+         c, d:[nr(tri[3]+tri[4]+tri[5],1), nr(tri[0]+tri[1],1), nr(c+1.5,1)], u:' %',
+         ex:`Les trois plus petites : ${tri.slice(0,3).map(x=>fmtF(x,1)+' %').join(' + ')} = ${fmtF(c,1)} %.`}; })(),
+      (()=>{ const X = ri(2,8)*1000, avant = total*parts[4]/100, c = nPct(100*(avant+X)/(total+X));
+        return {q:`Si la rubrique « ${noms[4]} » recevait ${fmtF(X)} M€ de plus, les autres rubriques restant inchangées, quelle serait sa nouvelle part de l'enveloppe (%) ?`,
+         c, d:[nPct(parts[4]+100*X/total), nPct(100*(avant+X)/total), nPct(parts[4]*(1+X/total))], u:' %',
+         ex:`Montant : ${fmtF(Math.round(avant))} + ${fmtF(X)} = ${fmtF(Math.round(avant+X))} M€. L'enveloppe augmente aussi : ${fmtF(total+X)} M€. Part : ${fmtF(c,1)} %.`}; })(),
+    ]};
   },
 
   /* 11. Prix d'un panier et taux de change. */
@@ -3612,12 +3811,21 @@ const NUM_SETS = [
        ex:`Prix en euros : ${rows.map(r=>r.n+' '+fmtF(nr(e(r),2),2)+' €').join(', ')}. Écart entre le plus cher et le moins cher : ${fmtF(q2,2)} €. Les prix en monnaie locale ne sont pas comparables entre eux.`},
       {q:`De combien de pour cent le panier est-il plus cher (ou moins cher) ${enPays(X.n)} qu'${enPays(Y.n)}, une fois converti en euros ?`,
        c:q3, d:[nPct(100*(e(Y)/e(X)-1)), nPct(100*(X.loc/Y.loc-1)), nPct(100*(1-e(Y)/e(X)))], u:' %',
-       ex:`${fmtF(nr(e(X),2),2)} € contre ${fmtF(nr(e(Y),2),2)} € : ${fmtF(nr(e(X),2),2)} ÷ ${fmtF(nr(e(Y),2),2)} − 1 = ${fmtF(q3,1)} %. La base de comparaison est le second pays.`}]};
+       ex:`${fmtF(nr(e(X),2),2)} € contre ${fmtF(nr(e(Y),2),2)} € : ${fmtF(nr(e(X),2),2)} ÷ ${fmtF(nr(e(Y),2),2)} − 1 = ${fmtF(q3,1)} %. La base de comparaison est le second pays.`},
+      (()=>{ const m = Math.min(...rows.map(e)), i = rows.findIndex(r=>e(r)===m);
+        return {q:`Dans quel pays le panier est-il le moins cher une fois converti en euros ?`,
+         c:rows[i].n, d:rows.filter((_,k)=>k!==i).map(r=>r.n), u:'',
+         ex:`Prix en euros : ${rows.map(r=>r.n+' '+fmtF(nr(e(r),2),2)+' €').join(', ')}. Les prix en monnaie locale ne se comparent pas.`}; })(),
+      (()=>{ const c = nr(Y.loc/(Y.t*1.05),2);
+        return {q:`Si l'euro s'appréciait de 5 % face à la monnaie de ${lePays(Y.n)}, prix local inchangé, combien coûterait le panier ${enPays(Y.n)} en euros ?`,
+         c, d:[nr(Y.loc/Y.t*1.05,2), nr(Y.loc/(Y.t*0.95),2), nr(Y.loc/Y.t,2)], u:' €',
+         ex:`Un euro vaut alors ${fmtF(nr(Y.t*1.05, Y.t>100?1:4), Y.t>100?1:4)} ${Y.dev}. Prix : ${fmtF(Y.loc)} ÷ ce taux ≈ ${fmtF(c,2)} €. Un euro plus fort rend le panier moins cher en euros.`}; })(),
+    ]};
   },
 
   /* 12. Réseau de fret ferroviaire : capacité totale, rattrapage, part. */
   ()=>{
-    const p = pickN(PAYS,4);
+    const p = pickN(PAYS,5);
     const rows = p.map(n=>({n, km:nr(ri(120,980)/100,2), cap:nr(ri(3000,30000)/100,2)}));  // centaines de km ; milliers de t/jour par km
     const html = nTab('Réseau ferroviaire de fret, 2024', ['Pays','Longueur des lignes (centaines de km)','Capacité par km (t par jour)'],
       rows.map(r=>[r.n, fmtF(r.km,2), fmtF(r.cap,2)]));
@@ -3628,27 +3836,293 @@ const NUM_SETS = [
     const q3 = nPct(100*tot(rows[2])/rows.reduce((a,r)=>a+tot(r),0));
     return {html, qs:[
       {q:`Quel pays dispose de la deuxième plus grande capacité totale de transport de fret par jour ?`,
-       c:tri[1].n, d:[tri[0].n, tri[2].n, tri[3].n], u:'',
+       c:tri[1].n, d:[tri[0].n, tri[2].n, tri[3].n, tri[4].n], u:'',
        ex:`Capacité totale = longueur × capacité par km : ${rows.map(r=>r.n+' ≈ '+fmtF(Math.round(tot(r)/1000))+' milliers de t').join(', ')}. Deuxième : ${tri[1].n}. Classer d'après une seule colonne mène à l'erreur.`},
       {q:`De combien la capacité totale ${duPays(X.n)} devrait-elle varier pour atteindre la capacité par km ${duPays(Y.n)} (milliers de tonnes par jour, valeur négative en cas de baisse) ?`,
        c:q2, d:[Math.round((Y.cap-X.cap)*Y.km*100/1000), nr(Y.cap-X.cap,0), Math.round((tot(Y)-tot(X))/1000)], u:'',
        ex:`Il faut appliquer l'écart de capacité par km (${fmtF(nr(Y.cap-X.cap,2),2)} t) à la longueur ${duPays(X.n)} : ${fmtF(X.km,2)} × 100 km × ${fmtF(nr(Y.cap-X.cap,2),2)} ≈ ${fmtF(q2)} milliers de tonnes par jour.`},
-      {q:`Quelle part de la capacité totale des quatre pays représente celle ${duPays(rows[2].n)} (%) ?`,
-       c:q3, d:[nPct(100*rows[2].km/rows.reduce((a,r)=>a+r.km,0)), nPct(100*rows[2].cap/rows.reduce((a,r)=>a+r.cap,0)), nPct(25)], u:' %',
-       ex:`${fmtF(Math.round(tot(rows[2])/1000))} ÷ ${fmtF(Math.round(rows.reduce((a,r)=>a+tot(r),0)/1000))} milliers de t ≈ ${fmtF(q3,1)} %. Ni la longueur seule ni la capacité par km seule ne suffisent.`}]};
+      {q:`Quelle part de la capacité totale des cinq pays représente celle ${duPays(rows[2].n)} (%) ?`,
+       c:q3, d:[nPct(100*rows[2].km/rows.reduce((a,r)=>a+r.km,0)), nPct(100*rows[2].cap/rows.reduce((a,r)=>a+r.cap,0)), nPct(20)], u:' %',
+       ex:`${fmtF(Math.round(tot(rows[2])/1000))} ÷ ${fmtF(Math.round(rows.reduce((a,r)=>a+tot(r),0)/1000))} milliers de t ≈ ${fmtF(q3,1)} %. Ni la longueur seule ni la capacité par km seule ne suffisent.`},
+      (()=>{ const r = rows[3], c = Math.round(tot(r)/1000);
+        return {q:`Quelle est la capacité totale de transport de fret ${duPays(r.n)} (milliers de tonnes par jour) ?`,
+         c, d:[Math.round(r.km*r.cap), Math.round(tot(r)/10000), Math.round(r.km*r.cap*100)], u:'',
+         ex:`${fmtF(r.km,2)} centaines de km = ${fmtF(nr(r.km*100,0))} km ; × ${fmtF(r.cap,2)} t par jour et par km = ${fmtF(Math.round(tot(r)))} t, soit ${fmtF(c)} milliers de tonnes. L'unité « centaines de km » est le piège.`}; })(),
+      (()=>{ const a = rows[4], b = rows[1], c = nPct(100*(tot(a)/tot(b)-1));
+        return {q:`De combien de pour cent la capacité totale ${duPays(a.n)} diffère-t-elle de celle ${duPays(b.n)} (valeur négative si elle est inférieure) ?`,
+         c, d:[nPct(100*(a.cap/b.cap-1)), nPct(100*(a.km/b.km-1)), nPct(100*(1-tot(b)/tot(a)))], u:' %',
+         ex:`${fmtF(Math.round(tot(a)/1000))} ÷ ${fmtF(Math.round(tot(b)/1000))} − 1 ≈ ${fmtF(c,1)} %. Il faut comparer les capacités totales, pas une seule colonne.`}; })(),
+    ]};
+  },
+
+  /* 13. Tourisme : nuitées, durée de séjour, arrivées reconstituées. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>{ const a=ri(80,900)*100, b=Math.round(a*(1+ri(-8,18)/100)), c=Math.round(b*(1+ri(-5,15)/100)); return {n, a, b, c, d:nr(ri(18,52)/10,1)}; });
+    const html = nTab('Nuitées dans l\'hôtellerie (milliers) et durée moyenne de séjour', ['Pays','Nuitées 2022','Nuitées 2023','Nuitées 2024','Durée moyenne 2024 (nuits)'],
+      rows.map(r=>[r.n, fmtF(r.a), fmtF(r.b), fmtF(r.c), fmtF(r.d,1)]));
+    const arr = r => r.c/r.d;
+    const [X,Y,Z] = rows;
+    const k = absPick([0.3,0.5,0.8]);
+    const ar = rows.map(arr), mx = Math.max(...ar), ib = ar.indexOf(mx);
+    const totC = rows.reduce((a,r)=>a+r.c,0);
+    return {html, qs:[
+      {q:`Combien d'arrivées de touristes a-t-on comptées ${enPays(X.n)} en 2024 (milliers) ?`,
+       c:nr(arr(X),1), d:[nr(X.c*X.d,0), nr(X.b/X.d,1), nr(arr(X)/10,1)], u:'',
+       ex:`Arrivées = nuitées ÷ durée moyenne : ${fmtF(X.c)} ÷ ${fmtF(X.d,1)} ≈ ${fmtF(nr(arr(X),1),1)} milliers.`},
+      {q:`De combien de pour cent les nuitées ${duPays(Y.n)} ont-elles varié entre 2022 et 2024 ?`,
+       c:nPct(100*(Y.c/Y.a-1)), d:[nPct(100*(Y.c/Y.b-1)), nPct(100*(Y.c-Y.a)/Y.c), nPct(100*(Y.b/Y.a-1))], u:' %',
+       ex:`${fmtF(Y.c)} ÷ ${fmtF(Y.a)} − 1 = ${fmtF(nPct(100*(Y.c/Y.a-1)),1)} %.`},
+      {q:`Avec le même nombre d'arrivées, combien de nuitées supplémentaires ${enPays(Z.n)} aurait-on comptées en 2024 si la durée moyenne de séjour avait été plus longue de ${fmtF(k,1)} nuit (milliers) ?`,
+       c:nr(arr(Z)*k,1), d:[nr(Z.c*k,1), nr(Z.c*k/100,1), nr(arr(Z)*(Z.d+k)-Z.b,1)], u:'',
+       ex:`Arrivées : ${fmtF(Z.c)} ÷ ${fmtF(Z.d,1)} ≈ ${fmtF(nr(arr(Z),2),2)} milliers. Chaque arrivée ajoute ${fmtF(k,1)} nuit : ${fmtF(nr(arr(Z)*k,1),1)} milliers de nuitées en plus.`},
+      (ar.filter(x=>Math.abs(x-mx)<1e-9).length>1) ? null :
+      {q:`Quel pays a accueilli le plus grand nombre d'arrivées en 2024 ?`,
+       c:rows[ib].n, d:rows.filter((_,i)=>i!==ib).map(r=>r.n), u:'',
+       ex:`Arrivées = nuitées ÷ durée : ${rows.map((r,i)=>r.n+' ≈ '+fmtF(nr(ar[i],0))).join(', ')} milliers. Le pays aux nuitées les plus nombreuses peut avoir des séjours plus longs.`},
+      {q:`Quelle part des nuitées des cinq pays a été enregistrée ${enPays(X.n)} en 2024 (%) ?`,
+       c:nPct(100*X.c/totC), d:[nPct(100*X.c/(totC-X.c)), nPct(100*X.a/rows.reduce((a,r)=>a+r.a,0)), nPct(20)], u:' %',
+       ex:`${fmtF(X.c)} ÷ ${fmtF(totC)} = ${fmtF(nPct(100*X.c/totC),1)} %.`},
+    ]};
+  },
+
+  /* 14. Facture d'électricité : prix (graphique), consommation et taxes (tableau). */
+  ()=>{
+    const p = pickN(PAYS,4);
+    const p22 = p.map(()=>nr(ri(180,420)/1000,3)), p24 = p22.map(v=>nr(v*(1+ri(-12,25)/100),3));
+    const cons = p.map(()=>ri(22,55)*100), tax = p.map(()=>ri(15,45));
+    const chart = svgBars('Prix de l\'électricité pour les ménages (€ par kWh, toutes taxes comprises)', p, [{name:'2022',values:p22},{name:'2024',values:p24}], 3);
+    const html = chart + nTab('Ménages, 2024', ['Pays','Consommation annuelle moyenne (kWh)','Part des taxes dans le prix (%)'], p.map((n,i)=>[n, fmtF(cons[i]), fmtF(tax[i])]));
+    const fac = i => p24[i]*cons[i];
+    const k = absPick([5,8,10,12]);
+    const f = p.map((_,i)=>fac(i)), mx = Math.max(...f), ib = f.indexOf(mx);
+    return {html, qs:[
+      {q:`Quel était le montant de la facture annuelle moyenne d'électricité d'un ménage ${enPays(p[0])} en 2024 (€) ?`,
+       c:Math.round(fac(0)), d:[Math.round(p22[0]*cons[0]), Math.round(fac(0)*(1-tax[0]/100)), Math.round(fac(0)/10)], u:' €',
+       ex:`${fmtF(p24[0],3)} €/kWh × ${fmtF(cons[0])} kWh ≈ ${fmtF(Math.round(fac(0)))} €.`},
+      {q:`Quel montant de taxes contenait la facture annuelle moyenne d'un ménage ${enPays(p[1])} en 2024 (€) ?`,
+       c:Math.round(fac(1)*tax[1]/100), d:[Math.round(fac(1)*(1-tax[1]/100)), Math.round(p24[1]*tax[1]*10), Math.round(fac(1)*tax[1]/(100+tax[1]))], u:' €',
+       ex:`Facture : ${fmtF(p24[1],3)} × ${fmtF(cons[1])} ≈ ${fmtF(Math.round(fac(1)))} €. Taxes : ${tax[1]} % de ce montant ≈ ${fmtF(Math.round(fac(1)*tax[1]/100))} €. La part des taxes est donnée sur le prix TTC : pas besoin de la retrancher d'abord.`},
+      {q:`Si un ménage ${enPays(p[2])} avait réduit sa consommation de ${k} % entre 2022 et 2024, de combien de pour cent sa facture aurait-elle varié ?`,
+       c:nPct(100*(p24[2]*(1-k/100)/p22[2]-1)), d:[nPct(100*(p24[2]/p22[2]-1)-k), nPct(100*(p24[2]/p22[2]-1)), nPct(100*(p22[2]*(1-k/100)/p24[2]-1))], u:' %',
+       ex:`Facture 2024 ÷ facture 2022 = (${fmtF(p24[2],3)} × ${fmtF(1-k/100,2)}) ÷ ${fmtF(p22[2],3)} = ${fmtF(nr(p24[2]*(1-k/100)/p22[2],4),4)}, soit ${fmtF(nPct(100*(p24[2]*(1-k/100)/p22[2]-1)),1)} %. Soustraire ${k} points au lieu de multiplier est une approximation, pas le résultat.`},
+      {q:`Quel était le prix hors taxes du kWh ${enPays(p[3])} en 2024 (€) ?`,
+       c:nr(p24[3]*(1-tax[3]/100),3), d:[nr(p24[3]/(1+tax[3]/100),3), nr(p24[3]-tax[3]/1000,3), nr(p22[3]*(1-tax[3]/100),3)], u:' €',
+       ex:`Les taxes représentent ${tax[3]} % du prix TTC : prix hors taxes = ${fmtF(p24[3],3)} × ${fmtF(1-tax[3]/100,2)} ≈ ${fmtF(nr(p24[3]*(1-tax[3]/100),3),3)} €. Diviser par 1,${String(tax[3]).padStart(2,'0')} supposerait une taxe exprimée sur le prix hors taxes.`},
+      {q:`Dans quel pays la facture annuelle moyenne d'électricité était-elle la plus élevée en 2024 ?`,
+       c:p[ib], d:p.filter((_,i)=>i!==ib), u:'',
+       ex:`Facture = prix × consommation : ${p.map((n,i)=>n+' ≈ '+fmtF(Math.round(f[i]))+' €').join(', ')}. Le prix au kWh le plus élevé ne suffit pas.`},
+    ]};
+  },
+
+  /* 15. Marché du travail : population, taux d'emploi, temps partiel, heures. */
+  ()=>{
+    const p = pickN(PAYS,5);
+    const rows = p.map(n=>({n, pop:nr(ri(25,480)/10,1), te:nr(ri(620,810)/10,1), tp:nr(ri(80,380)/10,1), h:nr(ri(330,410)/10,1)}));
+    const html = nTab('Population de 20 à 64 ans et emploi, 2024', ['Pays','Population 20-64 ans (millions)','Taux d\'emploi (%)','Part du temps partiel dans l\'emploi (%)','Durée hebdomadaire moyenne (heures)'],
+      rows.map(r=>[r.n, fmtF(r.pop,1), fmtF(r.te,1), fmtF(r.tp,1), fmtF(r.h,1)]));
+    const emp = r => r.pop*r.te/100;   // millions
+    const [A,B,C,D] = rows;
+    const k = absPick([1,1.5,2,2.5]);
+    return {html, qs:[
+      {q:`Combien de personnes de 20 à 64 ans travaillaient à temps partiel ${enPays(A.n)} en 2024 (milliers) ?`,
+       c:Math.round(emp(A)*A.tp*10), d:[Math.round(A.pop*A.tp*10), Math.round(emp(A)*(100-A.tp)*10), Math.round(emp(A)*A.tp)], u:'',
+       ex:`Emploi : ${fmtF(A.pop,1)} × ${fmtF(A.te,1)} % ≈ ${fmtF(nr(emp(A),3),3)} millions. Temps partiel : ${fmtF(A.tp,1)} % de ce nombre ≈ ${fmtF(Math.round(emp(A)*A.tp*10))} milliers. Appliquer la part du temps partiel à toute la population est le piège.`},
+      {q:`Combien d'heures de travail par semaine les personnes en emploi ${enPays(B.n)} ont-elles effectuées au total (millions d'heures) ?`,
+       c:nr(emp(B)*B.h,1), d:[nr(B.pop*B.h,1), nr(emp(B)*B.h*(1-B.tp/100),1), nr(emp(B)*40,1)], u:'',
+       ex:`${fmtF(nr(emp(B),3),3)} millions de personnes × ${fmtF(B.h,1)} h ≈ ${fmtF(nr(emp(B)*B.h,1),1)} millions d'heures.`},
+      {q:`Si le taux d'emploi ${duPays(C.n)} progressait de ${fmtF(k,1)} point${k>1?'s':''} à population constante, combien d'emplois supplémentaires cela représenterait-il (milliers) ?`,
+       c:Math.round(C.pop*k*10), d:[Math.round(emp(C)*k*10), Math.round(C.pop*k), Math.round(C.pop*k*100)], u:'',
+       ex:`Un point de taux d'emploi = 1 % de la population de référence : ${fmtF(k,1)} % × ${fmtF(C.pop,1)} millions = ${fmtF(Math.round(C.pop*k*10))} milliers. L'appliquer au nombre d'emplois existant est l'erreur classique.`},
+      {q:`Quel est l'écart entre le nombre de personnes en emploi ${duPays(A.n)} et ${duPays(D.n)} (milliers) ?`,
+       c:Math.round(Math.abs(emp(A)-emp(D))*1000), d:[Math.round(Math.abs(A.pop-D.pop)*1000), Math.round(Math.abs(A.te-D.te)*10), Math.round(Math.abs(emp(A)-emp(D))*100)], u:'',
+       ex:`${A.n} : ${fmtF(nr(emp(A),3),3)} M ; ${D.n} : ${fmtF(nr(emp(D),3),3)} M ; écart ≈ ${fmtF(Math.round(Math.abs(emp(A)-emp(D))*1000))} milliers.`},
+      {q:`Combien de fois le nombre de travailleurs à temps partiel ${duPays(B.n)} est-il plus élevé que celui ${duPays(D.n)} ?`,
+       c:nr(emp(B)*B.tp/(emp(D)*D.tp),2), d:[nr(B.tp/D.tp,2), nr(emp(B)/emp(D),2), nr(emp(D)*D.tp/(emp(B)*B.tp),2)], u:'',
+       ex:`${fmtF(nr(emp(B)*B.tp/100,3),3)} M ÷ ${fmtF(nr(emp(D)*D.tp/100,3),3)} M ≈ ${fmtF(nr(emp(B)*B.tp/(emp(D)*D.tp),2),2)}.`},
+    ]};
+  },
+
+  /* 16. Inflation (courbes) : indice chaîné, inflation cumulée, pouvoir d'achat. */
+  ()=>{
+    const [P1,P2] = pickN(PAYS,2);
+    const ys = [2020,2021,2022,2023,2024,2025];
+    const r1 = ys.map(()=>nr(ri(4,95)/10,1)), r2 = ys.map(()=>nr(ri(4,95)/10,1));
+    const chart = svgLines('Inflation annuelle (%)', ys.map(String), [{name:P1,values:r1},{name:P2,values:r2}], 1);
+    const idx = (r,a,b) => r.slice(a,b+1).reduce((x,v)=>x*(1+v/100),1);   // a..b inclus
+    const ec = ys.map((_,i)=>Math.abs(r1[i]-r2[i])), mx = Math.max(...ec), im = ec.indexOf(mx);
+    const s = absPick([1.5,2,2.5,3]), prix = ri(20,90)*10;
+    return {html:chart, qs:[
+      {q:`Avec une base 100 à la fin de 2020, quelle était la valeur de l'indice des prix ${duPays(P1)} à la fin de 2023 ?`,
+       c:nr(100*idx(r1,1,3),1), d:[nr(100+r1[1]+r1[2]+r1[3],1), nr(100*idx(r1,0,3),1), nr(100*idx(r1,1,2),1)], u:'',
+       ex:`100 × ${[1,2,3].map(i=>fmtF(1+r1[i]/100,3)).join(' × ')} ≈ ${fmtF(nr(100*idx(r1,1,3),1),1)}. Additionner les taux ignore l'effet cumulatif.`},
+      {q:`Quelle a été l'inflation cumulée ${enPays(P2)} de 2021 à 2025 inclus (%) ?`,
+       c:nPct(100*(idx(r2,1,5)-1)), d:[nPct(r2.slice(1).reduce((a,v)=>a+v,0)), nPct(100*(idx(r2,0,5)-1)), nPct(100*(idx(r2,1,4)-1))], u:' %',
+       ex:`Produit des coefficients 2021 à 2025 − 1 = ${fmtF(nPct(100*(idx(r2,1,5)-1)),1)} %.`},
+      (ec.filter(x=>Math.abs(x-mx)<1e-9).length>1) ? null :
+      {q:`Quelle année l'écart entre les taux d'inflation des deux pays a-t-il été le plus grand ?`,
+       c:String(ys[im]), d:ys.filter((_,i)=>i!==im).map(String), u:'',
+       ex:`Écarts : ${ys.map((y,i)=>y+' : '+fmtF(nr(ec[i],1),1)+' pt').join(' ; ')}.`},
+      {q:`Un salaire ${enPays(P1)} augmente de ${fmtF(s,1)} % par an de 2021 à 2025. De combien de pour cent son pouvoir d'achat a-t-il varié sur la période ?`,
+       c:nPct(100*(Math.pow(1+s/100,5)/idx(r1,1,5)-1)), d:[nPct(5*s - r1.slice(1).reduce((a,v)=>a+v,0)), nPct(100*(Math.pow(1+s/100,5)-idx(r1,1,5))), nPct(100*(idx(r1,1,5)/Math.pow(1+s/100,5)-1))], u:' %',
+       ex:`Salaire : × ${fmtF(nr(Math.pow(1+s/100,5),4),4)} ; prix : × ${fmtF(nr(idx(r1,1,5),4),4)}. Pouvoir d'achat : rapport des deux − 1 ≈ ${fmtF(nPct(100*(Math.pow(1+s/100,5)/idx(r1,1,5)-1)),1)} %.`},
+      {q:`Un produit coûtait ${fmtF(prix)} € ${enPays(P2)} à la fin de 2022. Si son prix a suivi l'inflation, combien coûtait-il à la fin de 2024 (€) ?`,
+       c:nr(prix*idx(r2,3,4),2), d:[nr(prix*(1+(r2[3]+r2[4])/100),2), nr(prix*idx(r2,2,4),2), nr(prix*idx(r2,3,5),2)], u:' €',
+       ex:`${fmtF(prix)} × ${fmtF(1+r2[3]/100,3)} × ${fmtF(1+r2[4]/100,3)} ≈ ${fmtF(nr(prix*idx(r2,3,4),2),2)} €. Seules les inflations de 2023 et 2024 s'appliquent.`},
+    ]};
+  },
+
+  /* 17. Enquête : répondants par tranche d'âge et part de réponses positives. */
+  ()=>{
+    const g = ['18-24 ans','25-34 ans','35-49 ans','50-64 ans','65 ans et plus'];
+    const n = g.map(()=>ri(30,140)*10), pr = g.map(()=>ri(18,82));
+    const html = nTab('Enquête : « Faites-vous confiance aux informations publiées en ligne ? »', ['Tranche d\'âge','Répondants','Réponses « oui » (%)'],
+      g.map((x,i)=>[x, fmtF(n[i]), fmtF(pr[i])]));
+    const oui = n.map((v,i)=>v*pr[i]/100), totO = oui.reduce((a,b)=>a+b,0), totN = n.reduce((a,b)=>a+b,0);
+    const k = ri(10,40)*10, j = ri(0,4), mx = Math.max(...oui), im = oui.indexOf(mx), h = ri(0,4);
+    return {html, qs:[
+      {q:`Combien de répondants ont répondu « oui » au total ?`,
+       c:Math.round(totO), d:[Math.round(totN*pr.reduce((a,b)=>a+b,0)/500), Math.round(totN/2), Math.round(totO*1.1)], u:'',
+       ex:`Somme des répondants × part de « oui » : ${g.map((x,i)=>fmtF(n[i])+' × '+pr[i]+' %').join(' + ')} ≈ ${fmtF(Math.round(totO))}.`},
+      {q:`Quelle est la part de « oui » sur l'ensemble des répondants (%) ?`,
+       c:nPct(100*totO/totN), d:[nPct(pr.reduce((a,b)=>a+b,0)/5), nPct(100*totO/totN+3), nPct(100-100*totO/totN)], u:' %',
+       ex:`${fmtF(Math.round(totO))} ÷ ${fmtF(totN)} ≈ ${fmtF(nPct(100*totO/totN),1)} %. La moyenne simple des cinq pourcentages ignore la taille des tranches.`},
+      {q:`Si la tranche « ${g[j]} » avait compté ${k} répondants de plus, avec la même proportion de « oui », quelle aurait été la part de « oui » sur l'ensemble (%) ?`,
+       c:nPct(100*(totO+k*pr[j]/100)/(totN+k)), d:[nPct(100*(totO+k*pr[j]/100)/totN), nPct(100*totO/(totN+k)), nPct(100*(totO+k)/(totN+k))], u:' %',
+       ex:`« Oui » : ${fmtF(Math.round(totO))} + ${k} × ${pr[j]} % ; répondants : ${fmtF(totN)} + ${k}. Part : ${fmtF(nPct(100*(totO+k*pr[j]/100)/(totN+k)),1)} %. Le total des répondants change aussi.`},
+      (oui.filter(x=>Math.abs(x-mx)<1e-9).length>1) ? null :
+      {q:`Quelle tranche d'âge compte le plus grand nombre de réponses « oui » ?`,
+       c:g[im], d:g.filter((_,i)=>i!==im), u:'',
+       ex:`Nombre de « oui » : ${g.map((x,i)=>x+' '+fmtF(Math.round(oui[i]))).join(', ')}. La plus forte proportion ne fait pas le plus grand nombre.`},
+      {q:`Combien de répondants de la tranche « ${g[h]} » n'ont pas répondu « oui » ?`,
+       c:Math.round(n[h]*(100-pr[h])/100), d:[Math.round(n[h]*pr[h]/100), Math.round(totN*(100-pr[h])/100), Math.round(n[h]*(100-pr[h])/10)], u:'',
+       ex:`${fmtF(n[h])} × (100 − ${pr[h]}) % = ${fmtF(Math.round(n[h]*(100-pr[h])/100))}.`},
+    ]};
+  },
+
+  /* 18. Aéroport : trafic trimestriel (barres) et sièges offerts (tableau). */
+  ()=>{
+    const nom = absPick(['Aéroport de Valmont','Aéroport de Port-Ascal','Aéroport de Lisière','Aéroport de Brévannes']);
+    const T = ['T1','T2','T3','T4'];
+    const a = T.map(()=>nr(ri(18,52)/10,1)), b = a.map(v=>nr(v*(1+ri(-6,18)/100),1));
+    const sieges = b.map(v=>nr(v/(ri(68,92)/100),1));
+    const chart = svgBars('Passagers par trimestre (millions) · '+nom, T, [{name:'2023',values:a},{name:'2024',values:b}], 1);
+    const html = chart + nTab('Sièges offerts en 2024 (millions)', ['Trimestre'].concat(T), [['Sièges'].concat(sieges.map(v=>fmtF(v,1)))]);
+    const sa = a.reduce((x,y)=>x+y,0), sb = b.reduce((x,y)=>x+y,0);
+    const t = absPick([0,1,2]), cible = absPick([85,88,90]);
+    const hausse = T.map((_,i)=>b[i]/a[i]-1), mx = Math.max(...hausse), im = hausse.indexOf(mx);
+    return {html, qs:[
+      {q:`Quel a été le taux de remplissage au trimestre ${T[2]} 2024 (%) ?`,
+       c:nPct(100*b[2]/sieges[2]), d:[nPct(100*a[2]/sieges[2]), nPct(100*sieges[2]/b[2]), nPct(100*b[2]/sieges[3])], u:' %',
+       ex:`Passagers ÷ sièges : ${fmtF(b[2],1)} ÷ ${fmtF(sieges[2],1)} ≈ ${fmtF(nPct(100*b[2]/sieges[2]),1)} %.`},
+      {q:`De combien de pour cent le trafic annuel a-t-il varié entre 2023 et 2024 ?`,
+       c:nPct(100*(sb/sa-1)), d:[nPct(100*hausse.reduce((x,y)=>x+y,0)/4), nPct(100*(b[3]/a[3]-1)), nPct(100*(sb-sa)/sb)], u:' %',
+       ex:`2023 : ${fmtF(nr(sa,1),1)} M ; 2024 : ${fmtF(nr(sb,1),1)} M ; variation ≈ ${fmtF(nPct(100*(sb/sa-1)),1)} %. La moyenne des quatre variations trimestrielles n'est pas la variation annuelle.`},
+      {q:`Combien de passagers supplémentaires (millions) aurait-il fallu au trimestre ${T[t]} 2024 pour atteindre un taux de remplissage de ${cible} % ?`,
+       c:nr(cible/100*sieges[t]-b[t],2), d:[nr(cible/100*sieges[t],2), nr(cible/100*b[t],2), nr((cible/100-b[t]/sieges[t])*b[t],2)], u:'',
+       ex:`${cible} % de ${fmtF(sieges[t],1)} M = ${fmtF(nr(cible/100*sieges[t],2),2)} M. Il en manquait ${fmtF(nr(cible/100*sieges[t]-b[t],2),2)} M.`},
+      (hausse.filter(x=>Math.abs(x-mx)<1e-9).length>1) ? null :
+      {q:`Quel trimestre de 2024 a connu la plus forte hausse du trafic, en pourcentage, par rapport au même trimestre de 2023 ?`,
+       c:T[im], d:T.filter((_,i)=>i!==im), u:'',
+       ex:`Variations : ${T.map((x,i)=>x+' '+fmtF(nPct(100*hausse[i]),1)+' %').join(', ')}.`},
+      {q:`Quelle part du trafic annuel de 2024 le trimestre ${T[3]} représentait-il (%) ?`,
+       c:nPct(100*b[3]/sb), d:[nPct(100*b[3]/sa), nPct(25), nPct(100*a[3]/sa)], u:' %',
+       ex:`${fmtF(b[3],1)} ÷ ${fmtF(nr(sb,1),1)} ≈ ${fmtF(nPct(100*b[3]/sb),1)} %.`},
+    ]};
+  },
+
+  /* 19. Usines : coûts fixes, coûts variables, prix de vente, seuil de rentabilité. */
+  ()=>{
+    const U = ['Usine A','Usine B','Usine C','Usine D','Usine E'];
+    let rows;
+    do {
+      rows = U.map(n=>{ const prix=ri(40,120), varc=Math.round(prix*ri(45,75)/100); return {n, fix:ri(80,600)*10, varc, prix, q:ri(30,160)}; });   // k€ ; € ; € ; milliers d'unités
+    } while(new Set(rows.map(r=>r.q*(r.prix-r.varc)-r.fix)).size<5);
+    const html = nTab('Coûts et ventes, 2024', ['Site','Coûts fixes (k€)','Coût variable par unité (€)','Prix de vente (€)','Unités vendues (milliers)'],
+      rows.map(r=>[r.n, fmtF(r.fix), fmtF(r.varc), fmtF(r.prix), fmtF(r.q)]));
+    const ben = r => r.q*(r.prix-r.varc) - r.fix;   // k€
+    const [X,Y,Z] = rows;
+    const k = absPick([5,10]);
+    const b = rows.map(ben), mx = Math.max(...b), im = b.indexOf(mx);
+    const nouv = X.prix*(1-k/100);
+    return {html, qs:[
+      {q:`Quel a été le bénéfice de l'${X.n.slice(0,1).toLowerCase()+X.n.slice(1)} en 2024 (k€) ?`,
+       c:ben(X), d:[X.q*X.prix-X.fix, X.q*(X.prix-X.varc), X.q*X.prix - X.q*X.varc*1.1 - X.fix], u:' k€',
+       ex:`Marge par unité : ${X.prix} − ${X.varc} = ${X.prix-X.varc} €. × ${fmtF(X.q)} milliers d'unités = ${fmtF(X.q*(X.prix-X.varc))} k€, moins ${fmtF(X.fix)} k€ de coûts fixes = ${fmtF(ben(X))} k€.`},
+      {q:`À partir de combien d'unités vendues l'${Y.n.slice(0,1).toLowerCase()+Y.n.slice(1)} couvre-t-elle ses coûts fixes (milliers d'unités) ?`,
+       c:nr(Y.fix/(Y.prix-Y.varc),1), d:[nr(Y.fix/Y.prix,1), nr(Y.fix/Y.varc,1), nr((Y.fix+Y.q*Y.varc)/Y.prix,1)], u:'',
+       ex:`Seuil = coûts fixes ÷ marge par unité : ${fmtF(Y.fix)} ÷ (${Y.prix} − ${Y.varc}) ≈ ${fmtF(nr(Y.fix/(Y.prix-Y.varc),1),1)} milliers d'unités.`},
+      {q:`Quelle part du prix de vente la marge par unité représente-t-elle pour l'${Z.n.slice(0,1).toLowerCase()+Z.n.slice(1)} (%) ?`,
+       c:nPct(100*(Z.prix-Z.varc)/Z.prix), d:[nPct(100*(Z.prix-Z.varc)/Z.varc), nPct(100*Z.varc/Z.prix), nPct(100*ben(Z)/(Z.q*Z.prix))], u:' %',
+       ex:`(${Z.prix} − ${Z.varc}) ÷ ${Z.prix} ≈ ${fmtF(nPct(100*(Z.prix-Z.varc)/Z.prix),1)} %.`},
+      {q:`Si l'${X.n.slice(0,1).toLowerCase()+X.n.slice(1)} baissait son prix de vente de ${k} %, combien d'unités devrait-elle vendre pour conserver le même bénéfice (milliers) ?`,
+       c:nr((ben(X)+X.fix)/(nouv-X.varc),1), d:[nr(X.q*(1+k/100),1), nr(ben(X)/(nouv-X.varc),1), nr((ben(X)+X.fix)/nouv,1)], u:'',
+       ex:`Nouvelle marge par unité : ${fmtF(nr(nouv,2),2)} − ${X.varc} = ${fmtF(nr(nouv-X.varc,2),2)} €. Il faut couvrir ${fmtF(X.fix)} + ${fmtF(ben(X))} k€ : ${fmtF(nr((ben(X)+X.fix)/(nouv-X.varc),1),1)} milliers d'unités.`},
+      {q:`Quel site a réalisé le bénéfice le plus élevé en 2024 ?`,
+       c:rows[im].n, d:rows.filter((_,i)=>i!==im).map(r=>r.n), u:'',
+       ex:`Bénéfices : ${rows.map((r,i)=>r.n+' '+fmtF(b[i])+' k€').join(', ')}. Ni le prix le plus élevé ni les plus gros volumes ne suffisent.`},
+    ]};
+  },
+
+  /* 20. Régions : superficie, population, croissance démographique. */
+  ()=>{
+    const R = pickN(['Alvérie','Bronsac','Coralie-Est','Dunemont','Estuaire','Faucigny-Bas','Glanois','Haute-Ravine'],5);
+    let rows;
+    do { rows = R.map(n=>({n, s:ri(30,250)*100, pop:ri(300,4800), g:nr(ri(-8,18)/10,1)})); }   // km² ; milliers ; %
+    while(new Set(rows.map(r=>Math.round(1000*r.pop/r.s))).size<5);
+    const html = nTab('Régions d\'un État fictif, 2024', ['Région','Superficie (km²)','Population (milliers)','Croissance démographique annuelle (%)'],
+      rows.map(r=>[r.n, fmtF(r.s), fmtF(r.pop), fmtF(r.g,1)]));
+    const dens = r => 1000*r.pop/r.s;
+    const [A,B,C] = rows;
+    const d = rows.map(dens), mx = Math.max(...d), im = d.indexOf(mx);
+    const totP = rows.reduce((a,r)=>a+r.pop,0);
+    return {html, qs:[
+      {q:`Quelle est la densité de population de la région ${A.n} (habitants par km²) ?`,
+       c:nr(dens(A),1), d:[nr(A.pop/A.s,1), nr(A.s/A.pop,1), nr(dens(A)/10,1)], u:'',
+       ex:`${fmtF(A.pop)} milliers = ${fmtF(A.pop*1000)} habitants ÷ ${fmtF(A.s)} km² ≈ ${fmtF(nr(dens(A),1),1)}. Oublier les milliers donne un résultat mille fois trop petit.`},
+      {q:`Si sa croissance annuelle reste constante, quelle sera la population de la région ${B.n} dans deux ans (milliers) ?`,
+       c:nr(B.pop*Math.pow(1+B.g/100,2),1), d:[nr(B.pop*(1+2*B.g/100),1)===nr(B.pop*Math.pow(1+B.g/100,2),1) ? nr(B.pop*(1+B.g/100),1) : nr(B.pop*(1+2*B.g/100),1), nr(B.pop*(1+B.g/100),1), nr(B.pop+2*B.g,1)], u:'',
+       ex:`${fmtF(B.pop)} × ${fmtF(1+B.g/100,3)}² ≈ ${fmtF(nr(B.pop*Math.pow(1+B.g/100,2),1),1)} milliers.`},
+      {q:`Quelle région a la densité de population la plus élevée ?`,
+       c:rows[im].n, d:rows.filter((_,i)=>i!==im).map(r=>r.n), u:'',
+       ex:`Densités : ${rows.map((r,i)=>r.n+' '+fmtF(nr(d[i],1),1)).join(', ')} habitants par km².`},
+      {q:`Quelle superficie (km²) la région ${C.n} devrait-elle avoir pour présenter, à population égale, la même densité que la région ${A.n} ?`,
+       c:Math.round(1000*C.pop/dens(A)), d:[Math.round(C.s*dens(A)/dens(C)), Math.round(A.s*C.pop/A.pop/1000), Math.round(C.s*dens(C)/dens(A)*1.1)], u:' km²',
+       ex:`Superficie = population ÷ densité : ${fmtF(C.pop*1000)} ÷ ${fmtF(nr(dens(A),2),2)} ≈ ${fmtF(Math.round(1000*C.pop/dens(A)))} km².`},
+      {q:`Quelle part de la population des cinq régions vit dans la région ${C.n} (%) ?`,
+       c:nPct(100*C.pop/totP), d:[nPct(100*C.s/rows.reduce((a,r)=>a+r.s,0)), nPct(100*C.pop/(totP-C.pop)), nPct(20)], u:' %',
+       ex:`${fmtF(C.pop)} ÷ ${fmtF(totP)} ≈ ${fmtF(nPct(100*C.pop/totP),1)} %.`},
+    ]};
   },
 ];
 
 /* Une session d'examen : dix questions tirées de séries de trois, posées dans
    l'ordre, chaque série partageant son jeu de données. */
+/* Tirage sans remise qui se poursuit d'une session à l'autre : une famille ne
+   revient qu'une fois toutes les autres passées. Le sac est gardé localement. */
+function sacTirer(cle, n){
+  let sac = [];
+  try{ sac = JSON.parse(localStorage.getItem(cle)||'[]'); }catch(e){}
+  sac = Array.isArray(sac) ? sac.filter(i=>Number.isInteger(i) && i>=0 && i<n) : [];
+  if(!sac.length) sac = shuffle([...Array(n).keys()]);
+  const i = sac.pop();
+  try{ localStorage.setItem(cle, JSON.stringify(sac)); }catch(e){}
+  return i;
+}
 function mkNumericExam(n){
   const out = [];
   let fam = [];
   let s = 0;
   while(out.length < n){
-    if(!fam.length) fam = shuffle(NUM_SETS.map((_,i)=>i));
-    const set = NUM_SETS[fam.pop()]();
+    let f = sacTirer('epso-num-fam', NUM_SETS.length), essais = 0;
+    while(fam.indexOf(f)>=0 && essais++<20) f = sacTirer('epso-num-fam', NUM_SETS.length);
+    fam.push(f);
+    const set = NUM_SETS[f]();
     s++;
+    /* Chaque jeu de données porte cinq questions possibles : trois sont tirées,
+       dans l'ordre, pour qu'un même tableau ne ramène pas toujours les mêmes. */
+    const dispo = set.qs.filter(Boolean);
+    set.qs = shuffle(dispo.map((_,i)=>i)).slice(0,3).sort((a,b)=>a-b).map(i=>dispo[i]);
     set.qs.forEach((q,k)=>{
       if(out.length >= n) return;
       const it = mkNum(q.q, q.c, q.d, q.ex, q.u, set.html);
@@ -4115,25 +4589,26 @@ const axPas = s => Math.abs(s)===1 ? 'd\'un cran' : 'de '+Math.abs(s)+' crans';
       une troisième n'apparaît qu'un cadre sur deux. */
 function axHexa(){
   for(let essai=0; essai<200; essai++){
+    const N = absPick([6,8]), A = 360/N;
     const sb = absPick([1,-1]), sg = absPick([2,-2,1,-1].filter(x=>x!==sb)), sh = absPick([1,-1,2,-2,3]);
-    const b0=ri(0,5), g0=ri(0,5), h0=ri(0,5), hOn = ri(0,1);   // hachuré présent aux cadres de parité hOn
-    const st = k => ({b:axMod(b0+sb*k,6), g:axMod(g0+sg*k,6), h:(k%2===hOn)?axMod(h0+sh*Math.floor(k/2),6):-1});
+    const b0=ri(0,N-1), g0=ri(0,N-1), h0=ri(0,N-1), hOn = ri(0,1);   // hachuré présent aux cadres de parité hOn
+    const st = k => ({b:axMod(b0+sb*k,N), g:axMod(g0+sg*k,N), h:(k%2===hOn)?axMod(h0+sh*Math.floor(k/2),N):-1});
     const fr = [0,1,2,3,4,5].map(st);
     if(fr.some(f=>f.b===f.g || f.b===f.h || f.g===f.h)) continue;
     const ans = fr[5];
     const wrong = [
-      [{...ans,b:axMod(ans.b+sb,6)}, `le triangle noir a avancé d'un cran de trop (règle 1)`],
-      [{...ans,b:axMod(ans.b-2*sb,6)}, `le triangle noir tourne dans le mauvais sens (règle 1)`],
-      [{...ans,g:axMod(ans.g-sg,6)}, `le triangle gris n'a pas bougé depuis la cinquième figure (règle 2)`],
-      [{...ans,g:axMod(ans.g+sg,6)}, `le triangle gris a avancé de deux pas au lieu d'un (règle 2)`],
-      [ans.h<0 ? {...ans,h:axMod(fr[4].h+sh,6)} : {...ans,h:-1}, ans.h<0 ? `le triangle hachuré est présent alors qu'il ne revient qu'un cadre sur deux (règle 3)` : `le triangle hachuré manque alors que c'est son tour d'apparaître (règle 3)`],
+      [{...ans,b:axMod(ans.b+sb,N)}, `le triangle noir a avancé d'un cran de trop (règle 1)`],
+      [{...ans,b:axMod(ans.b-2*sb,N)}, `le triangle noir tourne dans le mauvais sens (règle 1)`],
+      [{...ans,g:axMod(ans.g-sg,N)}, `le triangle gris n'a pas bougé depuis la cinquième figure (règle 2)`],
+      [{...ans,g:axMod(ans.g+sg,N)}, `le triangle gris a avancé de deux pas au lieu d'un (règle 2)`],
+      [ans.h<0 ? {...ans,h:axMod(fr[4].h+sh,N)} : {...ans,h:-1}, ans.h<0 ? `le triangle hachuré est présent alors qu'il ne revient qu'un cadre sur deux (règle 3)` : `le triangle hachuré manque alors que c'est son tour d'apparaître (règle 3)`],
       [{...ans,b:ans.g,g:ans.b}, `les triangles noir et gris sont inversés (règles 1 et 2)`],
     ].filter(([w])=>w.b!==w.g && w.b!==w.h && w.g!==w.h);
-    const sect = (i,fill) => { const a=(-90+i*60)*Math.PI/180, c=(-90+(i+1)*60)*Math.PI/180;
+    const sect = (i,fill) => { const a=(-90+i*A)*Math.PI/180, c=(-90+(i+1)*A)*Math.PI/180;
       return '<polygon points="50,50 '+(50+40*Math.cos(a)).toFixed(1)+','+(50+40*Math.sin(a)).toFixed(1)+' '+(50+40*Math.cos(c)).toFixed(1)+','+(50+40*Math.sin(c)).toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>'; };
-    return {title:`Hexagone : trois éléments, trois règles`,
+    return {title:`${N===6?'Hexagone':'Octogone'} : trois éléments, trois règles`,
       frames:fr, wrong,
-      draw:s=>axFrame([0,1,2,3,4,5].map(i=>sect(i, i===s.b?AX.ink : i===s.g?AX.grey : i===s.h?'HATCH':AX.white)).join('')),
+      draw:s=>axFrame([...Array(N).keys()].map(i=>sect(i, i===s.b?AX.ink : i===s.g?AX.grey : i===s.h?'HATCH':AX.white)).join('')),
       key:s=>s.b+'|'+s.g+'|'+s.h,
       rules:[`Le triangle noir tourne ${axPas(sb)} ${axSens(sb)} à chaque figure.`,
              `Le triangle gris tourne ${axPas(sg)} ${axSens(sg)} à chaque figure.`,
@@ -4145,7 +4620,7 @@ function axHexa(){
 /* 2. Carrés concentriques : une bande noire rentre, une bande grise sort ;
       quand elles se superposent, la bande apparaît hachurée. */
 function axBandes(){
-  const N = 5, dn = 1, dg = -1;
+  const N = 5, dn = absPick([1,-1]), dg = -dn, rond = ri(0,1)===1;
   const n0 = ri(0,4), g0 = ri(0,4);
   const st = k => ({n:axMod(n0+dn*k,N), g:axMod(g0+dg*k,N)});
   const fr = [0,1,2,3,4,5].map(st);
@@ -4160,12 +4635,13 @@ function axBandes(){
   ];
   const draw = s => { let o=''; for(let i=0;i<N;i++){ const m=8+i*8.4, w=84-2*i*8.4;
       const fill = (i===s.n && i===s.g) ? 'HATCH' : i===s.n ? AX.ink : i===s.g ? AX.grey : AX.white;
-      o += '<rect x="'+m.toFixed(1)+'" y="'+m.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+w.toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'; }
+      o += rond ? '<circle cx="50" cy="50" r="'+(w/2).toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'
+                : '<rect x="'+m.toFixed(1)+'" y="'+m.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+w.toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'; }
     return axFrame(o); };
-  return {title:`Carrés concentriques : bandes en mouvement`, frames:fr, wrong, draw,
+  return {title:`${rond?'Cercles':'Carrés'} concentriques : bandes en mouvement`, frames:fr, wrong, draw,
     key:s=>s.n+'|'+s.g,
-    rules:[`La bande noire se déplace d'un cran vers le centre à chaque figure ; arrivée au centre, elle repart du bord extérieur.`,
-           `La bande grise se déplace d'un cran vers l'extérieur à chaque figure ; arrivée au bord, elle repart du centre.`,
+    rules:[dn>0 ? `La bande noire se déplace d'un cran vers le centre à chaque figure ; arrivée au centre, elle repart du bord extérieur.` : `La bande noire se déplace d'un cran vers l'extérieur à chaque figure ; arrivée au bord, elle repart du centre.`,
+           dg>0 ? `La bande grise se déplace d'un cran vers le centre à chaque figure ; arrivée au centre, elle repart du bord extérieur.` : `La bande grise se déplace d'un cran vers l'extérieur à chaque figure ; arrivée au bord, elle repart du centre.`,
            `Quand les deux bandes occupent la même position, elle apparaît hachurée.`],
     tip:`La bande hachurée n'est pas un troisième élément : c'est la superposition des deux autres. Le comprendre tôt évite de chercher une règle qui n'existe pas.`};
 }
@@ -4277,6 +4753,7 @@ function axConditionnel(){
 
 /* 6. Comptage par zones : des anneaux à l'intérieur et à l'extérieur d'une zone grise. */
 function axZones(){
+  const rond = ri(0,1)===1;
   const cats = ['ni','bi','ne','be'];   // noirs intérieurs, blancs intérieurs, noirs extérieurs, blancs extérieurs
   const base = {ni:ri(1,2), bi:ri(1,2), ne:ri(1,2), be:ri(1,2)};
   const inc = shuffle(cats.slice()).slice(0,2);
@@ -4295,7 +4772,8 @@ function axZones(){
   ].filter(([w])=>w.ni+w.bi<=9 && w.ne+w.be<=11);
   const IN = [[34,34],[50,34],[66,34],[34,50],[50,50],[66,50],[34,66],[50,66],[66,66]];
   const OUT = [[11,11],[30,11],[50,11],[70,11],[89,11],[89,50],[89,89],[70,89],[50,89],[30,89],[11,89]];
-  const draw = s => { let o = '<rect x="22" y="22" width="56" height="56" rx="14" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.4"/>';
+  const draw = s => { let o = rond ? '<circle cx="50" cy="50" r="31" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'
+                                   : '<rect x="22" y="22" width="56" height="56" rx="14" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.4"/>';
     const ring = ([x,y],noir) => noir
       ? '<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="'+AX.ink+'"/><circle cx="'+x+'" cy="'+y+'" r="2.6" fill="#FFFFFF"/>'
       : '<circle cx="'+x+'" cy="'+y+'" r="6.5" fill="#FFFFFF" stroke="'+AX.ink+'" stroke-width="1.6"/><circle cx="'+x+'" cy="'+y+'" r="2.6" fill="none" stroke="'+AX.ink+'" stroke-width="1.2"/>';
@@ -4313,7 +4791,222 @@ function axZones(){
     tip:`Les anneaux changent de place d'une figure à l'autre pour brouiller la lecture : seule leur répartition par zone et par couleur compte. Compter le total d'abord élimine vite deux options.`};
 }
 
-const AX_FAMILLES = [axHexa, axBandes, axLigneColonne, axFlecheTraits, axConditionnel, axZones];
+const axPasN = (s, un, plur, fem) => Math.abs(s)===1 ? (fem?'d\'une ':'d\'un ')+un : 'de '+Math.abs(s)+' '+plur;
+/* 7. Grille 3 × 3 : un carré noir parcourt la grille dans l'ordre de lecture, un
+      disque gris colonne par colonne ; un petit triangle alterne entre deux coins. */
+function axGrille(){
+  const colCell = j => (axMod(j,9)%3)*3 + Math.floor(axMod(j,9)/3);   // rang j en ordre « colonnes » vers la case
+  for(let essai=0; essai<300; essai++){
+    const s1 = absPick([1,2,-1,4,-2]), s2 = absPick([1,2,-1]);
+    const b0 = ri(0,8), g0 = ri(0,8), t0 = ri(0,1);
+    const st = k => ({b:axMod(b0+s1*k,9), g:axMod(g0+s2*k,9), t:(k+t0)%2});
+    const fr = [0,1,2,3,4,5].map(st);
+    if(fr.some(f=>f.b===colCell(f.g))) continue;
+    const ans = fr[5];
+    const wrong = [
+      [{...ans,b:axMod(ans.b+s1,9)}, `le carré noir a avancé d'un pas de trop (règle 1)`],
+      [{...ans,b:axMod(ans.b-2*s1,9)}, `le carré noir est reparti dans le mauvais sens (règle 1)`],
+      [{...ans,g:axMod(ans.g-s2,9)}, `le disque gris n'a pas bougé depuis la cinquième figure (règle 2)`],
+      [{...ans,g:axMod(ans.g+s2,9)}, `le disque gris a avancé de deux pas (règle 2)`],
+      [{...ans,t:1-ans.t}, `le petit triangle n'est pas dans le bon coin (règle 3)`],
+      [{...ans,b:colCell(ans.g), g:(()=>{ for(let j=0;j<9;j++) if(colCell(j)===ans.b) return j; })()}, `le carré noir et le disque gris ont échangé leurs cases (règles 1 et 2)`],
+    ].filter(([w])=>w.b!==colCell(w.g));
+    const cx = i => 26+(i%3)*24, cy = i => 26+Math.floor(i/3)*24;
+    const draw = s => { let o='';
+      for(let i=0;i<9;i++) o+='<rect x="'+(cx(i)-12)+'" y="'+(cy(i)-12)+'" width="24" height="24" fill="'+(i===s.b?AX.ink:AX.white)+'" stroke="'+AX.ink+'" stroke-width="1.2"/>';
+      const c = colCell(s.g); o+='<circle cx="'+cx(c)+'" cy="'+cy(c)+'" r="8" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.4"/>';
+      o += s.t===0 ? '<polygon points="4,12 8,4 12,12" fill="'+AX.ink+'"/>' : '<polygon points="88,96 92,88 96,96" fill="'+AX.ink+'"/>';
+      return axFrame(o); };
+    return {title:`Grille : deux parcours différents`, frames:fr, wrong, draw,
+      key:s=>s.b+'|'+s.g+'|'+s.t,
+      rules:[`Le carré noir avance ${axPasN(s1,'case','cases',true)} ${s1>0?'vers l\'avant':'vers l\'arrière'} dans l'ordre de lecture (de gauche à droite, puis ligne suivante) ; arrivé au bout, il repart de l'autre extrémité.`,
+             `Le disque gris avance ${axPasN(s2,'case','cases',true)} ${s2>0?'vers l\'avant':'vers l\'arrière'} colonne par colonne (de haut en bas, puis colonne suivante).`,
+             `Le petit triangle change de coin à chaque figure : haut gauche, puis bas droit.`],
+      tip:`Deux éléments qui se déplacent sur la même grille suivent rarement le même parcours. Numéroter mentalement les cases 1 à 9 et noter la case de chaque élément sur trois figures suffit à trouver les deux pas.`};
+  }
+}
+
+/* 8. Cadran à deux aiguilles : chacune tourne de son propre pas ; le fond
+      change de couleur toutes les deux figures. */
+function axHorloge(){
+  for(let essai=0; essai<300; essai++){
+    const pa = absPick([45,90,135,-45,-90]), pb = absPick([45,-45,90,-90,180].filter(x=>x!==pa));
+    const a0 = ri(0,7)*45, b0 = ri(0,7)*45, o = ri(0,1);
+    const st = k => ({a:axMod(a0+pa*k,360), b:axMod(b0+pb*k,360), f:Math.floor((k+o)/2)%2});
+    const fr = [0,1,2,3,4,5].map(st);
+    if(fr.some(f=>f.a===f.b)) continue;
+    const ans = fr[5];
+    const wrong = [
+      [{...ans,a:axMod(ans.a+pa,360)}, `la grande aiguille a tourné de deux pas (règle 1)`],
+      [{...ans,a:axMod(ans.a-2*pa,360)}, `la grande aiguille tourne dans le mauvais sens (règle 1)`],
+      [{...ans,b:axMod(ans.b-pb,360)}, `la petite aiguille n'a pas bougé (règle 2)`],
+      [{...ans,b:axMod(ans.b+pb,360)}, `la petite aiguille a tourné de deux pas (règle 2)`],
+      [{...ans,f:1-ans.f}, `le fond du cadran n'a pas la bonne couleur (règle 3)`],
+      [{...ans,a:ans.b,b:ans.a}, `les deux aiguilles sont inversées (règles 1 et 2)`],
+    ].filter(([w])=>w.a!==w.b);
+    const hand = (ang,len,w) => { const r=ang*Math.PI/180; return '<line x1="50" y1="50" x2="'+(50+len*Math.sin(r)).toFixed(1)+'" y2="'+(50-len*Math.cos(r)).toFixed(1)+'" stroke="'+AX.ink+'" stroke-width="'+w+'" stroke-linecap="round"/>'; };
+    const ticks = [0,90,180,270].map(t=>{ const r=t*Math.PI/180; return '<line x1="'+(50+34*Math.sin(r)).toFixed(1)+'" y1="'+(50-34*Math.cos(r)).toFixed(1)+'" x2="'+(50+40*Math.sin(r)).toFixed(1)+'" y2="'+(50-40*Math.cos(r)).toFixed(1)+'" stroke="'+AX.ink+'" stroke-width="2"/>'; }).join('');
+    const draw = s => axFrame('<circle cx="50" cy="50" r="42" fill="'+(s.f?AX.grey:AX.white)+'" stroke="'+AX.ink+'" stroke-width="2"/>'+ticks
+      + hand(s.a,34,2.4) + hand(s.b,20,6) + '<circle cx="50" cy="50" r="3.5" fill="'+AX.ink+'"/>');
+    return {title:`Cadran : deux aiguilles, deux vitesses`, frames:fr, wrong, draw,
+      key:s=>s.a+'|'+s.b+'|'+s.f,
+      rules:[`La grande aiguille (fine) tourne de ${Math.abs(pa)}° ${axSens(pa)} à chaque figure.`,
+             `La petite aiguille (épaisse) tourne de ${Math.abs(pb)}° ${pb===180?'':axSens(pb)} à chaque figure.`.replace('  ',' '),
+             `Le fond du cadran change de couleur toutes les deux figures (deux blanches, deux grises, et ainsi de suite).`],
+      tip:`Distinguer les aiguilles par leur épaisseur avant de mesurer les angles. Une règle « toutes les deux figures » ne se voit qu'en regardant au moins quatre cadres.`};
+  }
+}
+
+/* 9. Polygone : nombre de côtés en progression, points intérieurs en cycle,
+      remplissage commandé par la parité du nombre de côtés. */
+function axCotes(){
+  const up = ri(0,1)===1, d0 = ri(1,3), inv = ri(0,1)===1;
+  const st = k => { const n = up ? 3+k : 8-k; return {n, d:axMod(d0-1+k,3)+1, g:((n%2===0)!==inv)}; };
+  const fr = [0,1,2,3,4,5].map(st);
+  const ans = fr[5], prev = fr[4];
+  const wrong = [
+    [{...ans,n:prev.n, g:((prev.n%2===0)!==inv)}, `le polygone n'a pas ${up?'gagné':'perdu'} de côté (règle 1)`],
+    [{...ans,n:up?ans.n-2:ans.n+2, g:ans.g}, `le nombre de côtés ne suit pas la progression (règle 1)`],
+    [{...ans,d:axMod(ans.d,3)+1}, `le nombre de points ne suit pas le cycle 1, 2, 3 (règle 2)`],
+    [{...ans,d:prev.d}, `le nombre de points n'a pas changé (règle 2)`],
+    [{...ans,g:!ans.g}, `le remplissage ne correspond pas à la parité du nombre de côtés (règle 3)`],
+  ];
+  const draw = s => { const pts = regularPoly(50,52,36,s.n,0);
+    let o = '<polygon points="'+pts+'" fill="'+(s.g?AX.grey:AX.white)+'" stroke="'+AX.ink+'" stroke-width="2"/>';
+    for(let i=0;i<s.d;i++) o += '<circle cx="'+(50+(i-(s.d-1)/2)*13)+'" cy="54" r="4.5" fill="'+AX.ink+'"/>';
+    return axFrame(o); };
+  return {title:`Polygone : côtés, points et parité`, frames:fr, wrong, draw,
+    key:s=>s.n+'|'+s.d+'|'+s.g,
+    rules:[`Le polygone ${up?'gagne':'perd'} un côté à chaque figure.`,
+           `Le nombre de points intérieurs suit le cycle 1, 2, 3, 1, 2, 3.`,
+           `Le polygone est gris quand son nombre de côtés est ${inv?'impair':'pair'}, blanc sinon.`],
+    tip:`Compter les côtés est lent : il suffit de vérifier que chaque figure en a un de ${up?'plus':'moins'} que la précédente. La couleur n'a pas de suite propre, elle dépend du nombre de côtés.`};
+}
+
+/* 10. Pile de quatre formes : les formes défilent, la case noire remonte à son
+       propre rythme, une flèche latérale alterne. */
+function axPile(){
+  /* La case noire ne doit jamais avancer au rythme des formes : elle semblerait
+     alors suivre une forme, et la règle 2 deviendrait indiscernable. */
+  const formes = shuffle(AX_FORMES.slice()).slice(0,4), dir = absPick([1,-1]), m0 = ri(0,3), a0 = ri(0,1);
+  const md = absPick([1,-1,2].filter(x=>axMod(-x,4)!==axMod(dir,4)));
+  const rot = (arr,k) => arr.map((_,i)=>arr[axMod(i-dir*k,4)]);
+  const st = k => ({f:rot(formes,k), m:axMod(m0-md*k,4), a:(k+a0)%2});
+  const fr = [0,1,2,3,4,5].map(st);
+  const ans = fr[5], prev = fr[4];
+  const wrong = [
+    [{...ans,f:prev.f}, `les formes n'ont pas défilé (règle 1)`],
+    [{...ans,f:rot(formes,3)}, `les formes ont défilé dans le mauvais sens (règle 1)`],
+    [{...ans,m:prev.m}, `la case noire n'a pas bougé (règle 2)`],
+    [{...ans,m:axMod(prev.m+dir,4)}, `la case noire a suivi le défilement des formes au lieu de son propre rythme (règle 2)`],
+    [{...ans,a:1-ans.a}, `la flèche pointe dans le mauvais sens (règle 3)`],
+  ];
+  const draw = s => { let o = '';
+    s.f.forEach((f,i)=>{ o += axForme(f, 38, 17+i*22, i===s.m?AX.ink:AX.white); });
+    o += '<line x1="74" y1="26" x2="74" y2="74" stroke="'+AX.ink+'" stroke-width="2.4"/>';
+    o += s.a===0 ? '<polygon points="74,16 67,30 81,30" fill="'+AX.ink+'"/>' : '<polygon points="74,84 67,70 81,70" fill="'+AX.ink+'"/>';
+    return axFrame(o); };
+  return {title:`Pile : défilement et case marquée`, frames:fr, wrong, draw,
+    key:s=>s.f.join(',')+'|'+s.m+'|'+s.a,
+    rules:[`Les quatre formes défilent d'une place vers le ${dir>0?'bas':'haut'} à chaque figure ; celle qui sort ${dir>0?'en bas revient en haut':'en haut revient en bas'}.`,
+           `La case noire est une position, pas une forme : elle se déplace ${axPasN(md,'place','places',true)} vers le ${md>0?'haut':'bas'} à chaque figure, indépendamment des formes.`,
+           `La flèche de droite change de sens à chaque figure.`],
+    tip:`Le piège consiste à suivre la forme noire. Il faut suivre la position noire : elle ne défile pas avec les formes.`};
+}
+
+/* 11. Disque en huit secteurs : un secteur grisé de plus à chaque figure, point
+       de départ qui tourne, centre commandé par la parité. */
+function axSecteurs(){
+  for(let essai=0; essai<100; essai++){
+    const s0 = ri(0,7), step = absPick([1,-1,2,-2,3]), inv = ri(0,1)===1;
+    const st = k => ({n:k+1, s:axMod(s0+step*k,8), c:(((k+1)%2===1)!==inv)});
+    const fr = [0,1,2,3,4,5].map(st);
+    const ans = fr[5], prev = fr[4];
+    const wrong = [
+      [{...ans,n:5, c:((5%2===1)!==inv)}, `il manque un secteur grisé (règle 1)`],
+      [{...ans,n:7, c:((7%2===1)!==inv)}, `il y a un secteur grisé de trop (règle 1)`],
+      [{...ans,s:prev.s}, `le premier secteur grisé n'a pas tourné (règle 2)`],
+      [{...ans,s:axMod(ans.s-2*step,8)}, `le premier secteur grisé a tourné dans le mauvais sens (règle 2)`],
+      [{...ans,c:!ans.c}, `le centre n'a pas la couleur qu'impose le nombre de secteurs (règle 3)`],
+    ];
+    const sect = (i,fill) => { const a=(-90+i*45)*Math.PI/180, b=(-90+(i+1)*45)*Math.PI/180;
+      return '<path d="M50,50 L'+(50+40*Math.cos(a)).toFixed(1)+','+(50+40*Math.sin(a)).toFixed(1)+' A40,40 0 0,1 '+(50+40*Math.cos(b)).toFixed(1)+','+(50+40*Math.sin(b)).toFixed(1)+' Z" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.4"/>'; };
+    const draw = s => { let o=''; const on = new Set(); for(let k=0;k<s.n;k++) on.add(axMod(s.s+k,8));
+      for(let i=0;i<8;i++) o+=sect(i, on.has(i)?AX.grey:AX.white);
+      o += '<circle cx="50" cy="50" r="10" fill="'+(s.c?AX.ink:AX.white)+'" stroke="'+AX.ink+'" stroke-width="1.8"/>';
+      return axFrame(o); };
+    return {title:`Disque : secteurs, départ et parité`, frames:fr, wrong, draw,
+      key:s=>s.n+'|'+s.s+'|'+s.c,
+      rules:[`Le nombre de secteurs grisés augmente de 1 à chaque figure.`,
+             `Le premier secteur grisé (dans le sens horaire) se déplace ${axPasN(step,'secteur','secteurs',false)} ${axSens(step)} à chaque figure ; les autres le suivent.`,
+             `Le centre est noir quand le nombre de secteurs grisés est ${inv?'pair':'impair'}, blanc sinon.`],
+      tip:`Compter d'abord les secteurs grisés : deux options tombent immédiatement. Repérer ensuite où commence le bloc grisé, pas où il finit.`};
+  }
+}
+
+/* 12. Trois formes de tailles différentes : les tailles tournent, la plus grande
+       est noire, un point se déplace au-dessus. */
+function axTailles(){
+  const ordre = shuffle(['cercle','carré','triangle','losange']).slice(0,3), dir = absPick([1,-1]), pd = absPick([1,-1]), p0 = ri(0,2);
+  const z0 = shuffle([0,1,2]);
+  const st = k => { const z = [0,1,2].map(i=>z0[axMod(i-dir*k,3)]); return {z, b:z.indexOf(2), p:axMod(p0+pd*k,3)}; };
+  const fr = [0,1,2,3,4,5].map(st);
+  const ans = fr[5], prev = fr[4];
+  const wrong = [
+    [{...prev, p:ans.p}, `les tailles n'ont pas tourné (règle 1)`],
+    [(()=>{ const z=[0,1,2].map(i=>prev.z[axMod(i+dir,3)]); return {z, b:z.indexOf(2), p:ans.p}; })(), `les tailles ont tourné dans le mauvais sens (règle 1)`],
+    [{...ans, b:ans.z.indexOf(1)}, `la forme noire n'est pas la plus grande (règle 2)`],
+    [{...ans, b:ans.z.indexOf(0)}, `c'est la plus petite forme qui est noire (règle 2)`],
+    [{...ans, p:prev.p}, `le point n'a pas bougé (règle 3)`],
+    [{...ans, p:axMod(ans.p+pd,3)}, `le point a avancé de deux places (règle 3)`],
+  ];
+  const R = [6.5,10.5,15], X = [22,50,78];
+  const shape = (f,x,y,r,fill) => f==='cercle' ? '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>'
+    : f==='carré' ? '<rect x="'+(x-r*0.88).toFixed(1)+'" y="'+(y-r*0.88).toFixed(1)+'" width="'+(r*1.76).toFixed(1)+'" height="'+(r*1.76).toFixed(1)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>'
+    : '<polygon points="'+regularPoly(x,y,r*1.12,f==='triangle'?3:4,0)+'" fill="'+fill+'" stroke="'+AX.ink+'" stroke-width="1.8"/>';
+  const draw = s => axFrame(ordre.map((f,i)=>shape(f, X[i], 60, R[s.z[i]], i===s.b?AX.ink:AX.white)).join('')
+    + '<circle cx="'+X[s.p]+'" cy="20" r="5" fill="'+AX.ink+'"/>');
+  return {title:`Tailles : rotation et couleur liée`, frames:fr, wrong, draw,
+    key:s=>s.z.join(',')+'|'+s.b+'|'+s.p,
+    rules:[`Les formes restent à leur place, mais les tailles passent d'une forme à sa voisine de ${dir>0?'droite':'gauche'} à chaque figure.`,
+           `La forme la plus grande est toujours noire, les deux autres blanches.`,
+           `Le point du haut se déplace d'une place vers la ${pd>0?'droite':'gauche'} à chaque figure ; arrivé au bord, il repart de l'autre côté.`],
+    tip:`La couleur n'a pas de règle propre : elle suit la taille. Suivre la grande forme règle deux questions d'un coup.`};
+}
+
+/* 13. Points sur le pourtour : un point noir et un point blanc tournent autour du
+       cadre à des pas différents, le carré central pivote. */
+function axPourtour(){
+  const P = [[14,14],[50,10],[86,14],[90,50],[86,86],[50,90],[14,86],[10,50]];
+  for(let essai=0; essai<200; essai++){
+    const sn = absPick([1,2,-1,3]), sb = absPick([-1,-2,1,2].filter(x=>x!==sn)), n0 = ri(0,7), b0 = ri(0,7), r0 = ri(0,1);
+    const st = k => ({n:axMod(n0+sn*k,8), b:axMod(b0+sb*k,8), r:(k+r0)%2});
+    const fr = [0,1,2,3,4,5].map(st);
+    if(fr.some(f=>f.n===f.b)) continue;
+    const ans = fr[5], prev = fr[4];
+    const wrong = [
+      [{...ans,n:prev.n}, `le point noir n'a pas bougé (règle 1)`],
+      [{...ans,n:axMod(ans.n+sn,8)}, `le point noir a avancé de deux pas (règle 1)`],
+      [{...ans,b:prev.b}, `le point blanc n'a pas bougé (règle 2)`],
+      [{...ans,b:axMod(ans.b-2*sb,8)}, `le point blanc tourne dans le mauvais sens (règle 2)`],
+      [{...ans,r:1-ans.r}, `le carré central n'a pas pivoté (règle 3)`],
+    ].filter(([w])=>w.n!==w.b);
+    const draw = s => axFrame(
+        (s.r ? '<polygon points="50,32 68,50 50,68 32,50" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.8"/>'
+             : '<rect x="37" y="37" width="26" height="26" fill="'+AX.grey+'" stroke="'+AX.ink+'" stroke-width="1.8"/>')
+      + '<circle cx="'+P[s.n][0]+'" cy="'+P[s.n][1]+'" r="6" fill="'+AX.ink+'"/>'
+      + '<circle cx="'+P[s.b][0]+'" cy="'+P[s.b][1]+'" r="6" fill="#FFFFFF" stroke="'+AX.ink+'" stroke-width="2"/>');
+    return {title:`Pourtour : deux points, deux pas`, frames:fr, wrong, draw,
+      key:s=>s.n+'|'+s.b+'|'+s.r,
+      rules:[`Le point noir se déplace ${axPasN(sn,'position','positions',true)} ${axSens(sn)} autour du cadre (huit positions : coins et milieux des côtés).`,
+             `Le point blanc se déplace ${axPasN(sb,'position','positions',true)} ${axSens(sb)}.`,
+             `Le carré central pivote de 45° à chaque figure.`],
+      tip:`Numéroter les huit positions comme sur une horloge. Les deux points ne sont pas liés : traiter l'un, puis l'autre.`};
+  }
+}
+
+const AX_FAMILLES = [axHexa, axBandes, axLigneColonne, axFlecheTraits, axConditionnel, axZones,
+  axGrille, axHorloge, axCotes, axPile, axSecteurs, axTailles, axPourtour];
 
 /* Un item : cinq cadres visibles, la bonne sixième figure et quatre distracteurs
    distincts, chacun accompagné de la règle qu'il enfreint. */
@@ -4357,8 +5050,10 @@ function mkAbsExam(n){
   let fams = [];
   const nSet = Math.round(n*0.3);
   while(out.length < n-nSet){
-    if(!fams.length) fams = shuffle(AX_FAMILLES.slice());
-    out.push(genAbstractExam(fams.pop()));
+    let f = sacTirer('epso-abs-fam', AX_FAMILLES.length), essais = 0;
+    while(fams.indexOf(f)>=0 && essais++<20) f = sacTirer('epso-abs-fam', AX_FAMILLES.length);
+    fams.push(f);
+    out.push(genAbstractExam(AX_FAMILLES[f]));
   }
   for(let i=0;i<nSet;i++) out.push(genAbstractSet(true));
   return shuffle(out);
@@ -7475,7 +8170,7 @@ function syncHeaderH(){
   if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
 }
 window.addEventListener('resize', syncHeaderH);
-function goTo(id){ clearInterval(ACTIVE_TIMER); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
+function goTo(id){ clearInterval(ACTIVE_TIMER); document.querySelectorAll('.tao-win').forEach(w=>w.remove()); document.body.classList.remove('tao-on'); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ================= ACCUEIL ================= */
 /* Carte « prochaine étape » : la première étape datée du calendrier non encore
@@ -7512,6 +8207,16 @@ function renderDashboard(){
     <button class="btn ghost wide" data-goto="concours">Modalités, calendrier et stratégie →</button>
   </div>
   ${prochaineEtape()}
+
+  <div class="card">
+    <span class="eyebrow">Examen blanc · mode TAO</span>
+    <h2 style="margin-top:6px;">La partie 1 en conditions réelles</h2>
+    <p class="lede" style="font-size:14.5px;">Verbal (20 textes, 35 min), puis numérique (10 questions, 20 min), puis abstrait
+    (10 séries, 10 min), dans l'interface décrite par les instructions TAO : minuteur par partie, navigation libre, signets,
+    vue d'ensemble, calculatrice à point décimal, bloc-notes, surligneur, élimination des réponses. Correction à la fin seulement.</p>
+    <button class="btn wide" id="examP1">Lancer l'examen blanc complet (65 min)</button>
+    ${dernierExamen()}
+  </div>
 
   <div class="card">
     <div class="section-title"><h2>Progression</h2>
@@ -7554,6 +8259,17 @@ function renderDashboard(){
     place, tous les candidats ex æquo passent.</p>
   </div>`;
   app.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.goto)));
+  document.getElementById('examP1').addEventListener('click',()=>runTAO(examenTAO('partie1','dashboard')));
+}
+/* Rappel du dernier examen blanc complet, s'il y en a un. */
+function dernierExamen(){
+  let h = [];
+  try{ h = JSON.parse(localStorage.getItem('epso-examens')||'[]'); }catch(e){}
+  const d = Array.isArray(h) ? h.filter(x=>x && Array.isArray(x.r) && x.r.length===3).pop() : null;
+  if(!d) return '';
+  const v = d.r.find(r=>r[0]==='verbal'), n = d.r.find(r=>r[0]==='numeric'), a = d.r.find(r=>r[0]==='abstract');
+  if(!v || !n || !a) return '';
+  return '<p class="exam-hist">Dernier examen blanc complet ('+d.d.split('-').reverse().join('/')+') : verbal '+v[1]+'/'+v[2]+', numérique + abstrait '+(n[1]+a[1])+'/'+(n[2]+a[2])+'.</p>';
 }
 
 /* ================= LE CONCOURS =================
@@ -7667,12 +8383,20 @@ function renderConcours(){
     <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Pendant le test</p>
     <ul class="jj">
       <li>Navigation libre entre les questions d'une même partie, marque-page pour y revenir, panneau de synthèse des réponses : répondre à tout avant de valider.</li>
-      <li>Outils à l'écran : calculatrice (décimales avec un <b>point</b>), bloc-notes, surligneur, élimination de réponses, règle de lecture, zoom et contraste.</li>
+      <li>Outils à l'écran : calculatrice (décimales avec un <b>point</b>), bloc-notes, surligneur, élimination de réponses, règle de lecture, zoom et contraste. L'examen blanc en mode TAO, sur l'accueil, reproduit cette interface.</li>
       <li>Les pages d'instructions ont leur propre compte à rebours, puis le test démarre seul.</li>
     </ul>
     <div class="info-box">Problème technique : appeler le support TAO pendant le créneau, puis déposer une
     réclamation écrite dans le Single Candidate Portal avec une preuve de l'appel. Sans vérification
     préalable ni appel au support, la réclamation est irrecevable.</div>
+    <div class="warn-box"><b>Le créneau ne se change pas.</b> La FAQ d'EPSO l'écrit en toutes lettres : il n'est pas
+    possible de modifier la date ou l'heure des tests, même pour un candidat dans un autre fuseau horaire. La politique
+    de force majeure (instructions TAO, point 5.1) ne couvre qu'un événement <b>imprévisible et indépendant de la
+    volonté</b> du candidat, justifié par une pièce (certificat médical, attestation de coupure, acte de décès), signalé
+    dans le Single Candidate Portal au plus tard dans le délai de réclamation. Elle précise que les obligations
+    professionnelles ou privées, <b>voyages privés compris</b>, n'en relèvent pas. Un test manqué met fin à la
+    participation, sauf force majeure reconnue. Un avion ou un aéroport ne permettent pas de passer le test : connexion
+    instable, personnes autour, pas de bureau à filmer.</div>
   </div>
 
   <div class="card">
@@ -7759,6 +8483,7 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ, extra){
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span>'
       +'<span class="session-score" id="sc">Score : '+score+' / '+idx+'</span></div>'
       +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
+      +(statKey==='numeric'?'<div class="tao-tools inline"><button data-t="calc">Calculatrice</button><button data-t="notes">Bloc-notes</button></div>':'')
       +(item.table?'<div class="data-wrap">'+item.table+'</div>':'')
       +'<div class="qcm-question"'+langAttr+'>'+item.q+'</div>'
       +'<div id="opts"'+langAttr+'>'+view.opts.map((o,i)=>'<button class="qcm-opt" data-i="'+i+'">'+o+'</button>').join('')+'</div>'
@@ -7766,6 +8491,7 @@ function runQCMSession(bank, statKey, secPerQ, title, ep, backTo, maxQ, extra){
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo(backTo));
+    app.querySelectorAll('.tao-tools [data-t]').forEach(b=>b.addEventListener('click',()=>b.dataset.t==='calc'?taoCalculatrice():taoBlocNotes()));
     app.querySelectorAll('.qcm-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
       idx++;
@@ -7873,8 +8599,10 @@ function renderVerbal(){
     à recouper. Après chaque réponse, la correction donne le verdict de chacune des quatre affirmations :
     vrai, faux ou « ne peut pas dire », et pourquoi. Chaque session tire en priorité des textes pas encore vus.</div>
     <button class="btn wide" id="startVerbal">Démarrer une session (${VERB_COUNT} textes · ${fmtTime(VERB_COUNT*VERB_SEC)} au total)</button>
+    <button class="btn ghost wide" id="examVerbal" style="margin-top:8px;">Examen blanc en mode TAO (20 textes · 35 min · correction à la fin)</button>
   </div>`;
   document.getElementById('startVerbal').addEventListener('click', ()=>runVerbalSession(VERBAL_ALL));
+  document.getElementById('examVerbal').addEventListener('click', ()=>runTAO(examenTAO('verbal','verbal')));
 }
 /* Tirage qui privilégie les textes pas encore proposés : la liste des textes vus
    est gardée localement et remise à zéro quand toute la banque y est passée. */
@@ -7982,7 +8710,7 @@ function renderNumAbs(){
       <tr><td>Brouillon</td><td>aucun papier ni stylo : bloc-notes à l'écran uniquement</td></tr>
       <tr><td>Options par question</td><td><b>cinq</b> (A à E) dans les deux tests</td></tr>
     </table>
-    <div class="warn-box"><b>Vérifié sur l'épreuve blanche officielle.</b> Les deux tests proposent <b>cinq</b> options, pas quatre. En numérique, la cinquième est toujours « Aucune de ces réponses » et elle est parfois la bonne : ne jamais la cocher est un réflexe qui coûte des points. Chaque question numérique repose sur un <b>tableau de données</b> et demande deux ou trois opérations enchaînées, avec des colonnes présentes uniquement pour t'égarer. En abstrait, les cinq figures candidates sont étiquetées A à E.</div>
+    <div class="warn-box"><b>Vérifié sur l'épreuve blanche officielle.</b> Les deux tests proposent <b>cinq</b> options, pas quatre. En numérique, la cinquième est souvent « Aucune de ces réponses » et elle est parfois la bonne : ne jamais la cocher est un réflexe qui coûte des points. Chaque question numérique repose sur un <b>tableau de données</b> et demande deux ou trois opérations enchaînées, avec des colonnes présentes uniquement pour t'égarer. En abstrait, les cinq figures candidates sont étiquetées A à E.</div>
     <div class="warn-box">Les deux tests sont chronométrés <b>séparément</b> : le temps non utilisé en numérique n'est pas reportable sur l'abstrait. Ici chaque session reproduit son propre chrono global.</div>
     <p style="font-size:14px;">Ce test ne rapporte aucun point de classement, mais son échec élimine quel que soit ton score ailleurs. Stratégie : atteindre confortablement le seuil, sans y engloutir du temps de verbal.</p>
     <div class="info-box"><b>Numérique :</b> pourcentages, ratios, moyennes, taux de croissance, lecture de tableaux et graphiques. Pas de maths avancées, mais de la vitesse. Une partie des questions est générée avec des chiffres différents à chaque session. <b>Abstrait :</b> séquences de formes suivant une ou plusieurs règles simultanées.</div>
@@ -8047,7 +8775,13 @@ function renderNumAbs(){
     <button class="btn ghost wide" id="startNumWarm" style="margin-bottom:8px;">Session numérique d'échauffement (questions courtes)</button>
     <button class="btn wide" id="startAbsExam">Session abstraite niveau examen (${ABS_COUNT} séries · 10 min au total)</button>
     <button class="btn ghost wide" id="startAbs" style="margin-top:8px;">Session abstraite d'échauffement (règles simples)</button>
+    <p class="eyebrow" style="color:var(--accent);margin:18px 0 8px;">EXAMEN BLANC EN MODE TAO</p>
+    <p style="font-size:14px;">L'interface du concours : minuteur par partie, navigation libre, signets, vue d'ensemble, calculatrice à l'écran (point décimal), bloc-notes, élimination des réponses. Aucune correction avant la fin.</p>
+    <button class="btn ghost wide" id="examNum" style="margin-bottom:8px;">Examen blanc numérique (10 questions · 20 min)</button>
+    <button class="btn ghost wide" id="examAbs">Examen blanc abstrait (10 séries · 10 min)</button>
   </div>`;
+  document.getElementById('examNum').addEventListener('click',()=>runTAO(examenTAO('numeric','numabs')));
+  document.getElementById('examAbs').addEventListener('click',()=>runTAO(examenTAO('abstract','numabs')));
   document.getElementById('startNum').addEventListener('click',()=>runQCMSession(mkNumericExam(NUM_COUNT),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT,{ordered:true, regen:()=>mkNumericExam(NUM_COUNT)}));
   document.getElementById('startNumWarm').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
   document.getElementById('startAbsExam').addEventListener('click', ()=>runAbstractSession(mkAbsExam));
@@ -8079,6 +8813,7 @@ function runAbstractSession(mk){
       +'<span class="q-count" id="sc">Score : '+score+' / '+idx+'</span></div>'
       +'<div class="timer-wrap"><span class="timer-txt" id="tmr">'+fmtTime(timeLeft)+'</span></div>'
       +'<div class="session-prog"><i style="width:'+Math.round(100*idx/order.length)+'%"></i></div>'
+      +'<div class="tao-tools inline"><button data-t="notes">Bloc-notes</button></div>'
       +'<p style="font-size:16px;">'+(item.kind==='set'
           ? 'Ces cinq figures respectent toutes une même règle. Laquelle des propositions respecte la même règle ?'
           : item.kind==='multi' ? 'Quelle figure doit venir en sixième position ?'
@@ -8102,6 +8837,7 @@ function runAbstractSession(mk){
       +'<button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">Suivant →</button></div>'
       +'<div class="quit-row"><button id="exitBtn">Quitter la session</button></div>';
     document.getElementById('exitBtn').addEventListener('click',()=>goTo('numabs'));
+    app.querySelectorAll('.tao-tools [data-t]').forEach(b=>b.addEventListener('click',()=>taoBlocNotes()));
     app.querySelectorAll('.abs-opt').forEach(b=>b.addEventListener('click',()=>submit(parseInt(b.dataset.i))));
     document.getElementById('nextBtn').addEventListener('click',()=>{
       idx++;
@@ -8143,6 +8879,373 @@ function runAbstractSession(mk){
   }
   renderQ();
   startClock();
+}
+
+/* ================= MODE EXAMEN (SIMULATION TAO) =================
+   Reproduit l'interface décrite dans les instructions TAO du concours
+   (427-26 V1, annexe I) : minuteur par partie en haut de l'écran, barre de
+   navigation numérotée, signets et panneau « vue d'ensemble », réponses
+   modifiables jusqu'à la soumission, calculatrice à l'écran (point décimal
+   uniquement), bloc-notes, surligneur, élimination des réponses, zoom,
+   avertissements avant de soumettre. Aucune correction avant la fin : elle
+   arrive d'un bloc, partie par partie. */
+const TAO_SPEC = {
+  verbal:   {nom:'Raisonnement verbal',    n:20, duree:35*60},
+  numeric:  {nom:'Raisonnement numérique', n:10, duree:20*60},
+  abstract: {nom:'Raisonnement abstrait',  n:10, duree:10*60},
+};
+const TAO_INSTR_SEC = 60;
+
+/* Calculatrice : analyse sans eval, + − × ÷ et parenthèses, moins unaire. */
+function calcEval(src){
+  const s = src.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\s+/g,'');
+  if(/,/.test(s)) throw new Error('virgule');
+  if(!/^[0-9.+\-*/()]*$/.test(s) || !s) throw new Error('syntaxe');
+  let i = 0;
+  const peek = () => s[i];
+  function nombre(){
+    const m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
+    if(!m) throw new Error('syntaxe');
+    i += m[0].length; return parseFloat(m[0]);
+  }
+  function facteur(){
+    if(peek()==='-'){ i++; return -facteur(); }
+    if(peek()==='+'){ i++; return facteur(); }
+    if(peek()==='('){ i++; const v = expr(); if(peek()!==')') throw new Error('syntaxe'); i++; return v; }
+    return nombre();
+  }
+  function terme(){
+    let v = facteur();
+    while(peek()==='*' || peek()==='/'){ const o = s[i++]; const w = facteur(); v = o==='*' ? v*w : v/w; }
+    return v;
+  }
+  function expr(){
+    let v = terme();
+    while(peek()==='+' || peek()==='-'){ const o = s[i++]; const w = terme(); v = o==='+' ? v+w : v-w; }
+    return v;
+  }
+  const v = expr();
+  if(i !== s.length) throw new Error('syntaxe');
+  if(!isFinite(v)) throw new Error('division');
+  return +v.toPrecision(12);
+}
+
+/* Fenêtres flottantes (calculatrice, bloc-notes) : déplaçables par l'en-tête,
+   redimensionnables. Elles vivent hors de #app pour survivre au changement de
+   question ; goTo() les retire en quittant l'écran. */
+function taoFenetre(id, titre, corps, x, y){
+  let f = document.getElementById(id);
+  /* Sur un écran étroit, deux fenêtres se recouvriraient : on n'en garde qu'une. */
+  const seule = ()=>{ if(innerWidth<700) document.querySelectorAll('.tao-win').forEach(w=>{ if(w.id!==id) w.classList.add('hidden'); }); };
+  if(f){ f.classList.toggle('hidden'); if(!f.classList.contains('hidden')) seule(); return f; }
+  seule();
+  f = document.createElement('div');
+  f.className = 'tao-win'; f.id = id;
+  f.style.left = Math.max(8, Math.min(x, innerWidth-300))+'px'; f.style.top = Math.max(8, Math.min(y, innerHeight-220))+'px';
+  f.innerHTML = '<div class="tao-win-h"><span>'+titre+'</span><button class="tao-x" aria-label="Fermer">×</button></div><div class="tao-win-b">'+corps+'</div>';
+  document.body.appendChild(f);
+  f.querySelector('.tao-x').addEventListener('click',()=>f.classList.add('hidden'));
+  const h = f.querySelector('.tao-win-h');
+  h.addEventListener('pointerdown', e=>{
+    if(e.target.closest('button')) return;
+    const r = f.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const move = ev=>{ f.style.left = Math.max(0, Math.min(ev.clientX-dx, innerWidth-80))+'px'; f.style.top = Math.max(0, Math.min(ev.clientY-dy, innerHeight-40))+'px'; };
+    const up = ()=>{ removeEventListener('pointermove',move); removeEventListener('pointerup',up); };
+    addEventListener('pointermove',move); addEventListener('pointerup',up);
+  });
+  return f;
+}
+function taoCalculatrice(){
+  const touches = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','=','+','(',')','C','⌫'];
+  const f = taoFenetre('taoCalc','Calculatrice',
+    '<div class="calc-hist" id="calcHist" aria-label="Opérations précédentes"></div>'
+    +'<input class="calc-in" id="calcIn" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Expression">'
+    +'<div class="calc-msg" id="calcMsg"></div>'
+    +'<div class="calc-keys">'+touches.map(t=>'<button data-k="'+t+'"'+(t==='='?' class="eq"':'')+'>'+t+'</button>').join('')+'</div>',
+    innerWidth-310, innerHeight-480);
+  if(f.dataset.ok) return; f.dataset.ok = '1';
+  const inp = f.querySelector('#calcIn'), msg = f.querySelector('#calcMsg'), hist = f.querySelector('#calcHist');
+  const calc = ()=>{
+    if(!inp.value.trim()) return;
+    try{
+      const v = calcEval(inp.value);
+      hist.insertAdjacentHTML('beforeend','<button class="calc-h" data-v="'+v+'">'+inp.value.replace(/</g,'&lt;')+' = <b>'+v+'</b></button>');
+      hist.scrollTop = hist.scrollHeight;
+      inp.value = String(v); msg.textContent = '';
+    }catch(e){
+      msg.textContent = e.message==='virgule' ? 'Séparateur décimal : le point (.), pas la virgule.'
+        : e.message==='division' ? 'Division par zéro.' : 'Expression incomplète.';
+    }
+  };
+  f.querySelectorAll('.calc-keys button').forEach(b=>b.addEventListener('click',()=>{
+    const k = b.dataset.k;
+    if(k==='=') calc();
+    else if(k==='C'){ inp.value=''; msg.textContent=''; }
+    else if(k==='⌫') inp.value = inp.value.slice(0,-1);
+    else inp.value += k;
+    inp.focus();
+  }));
+  hist.addEventListener('click', e=>{ const b = e.target.closest('.calc-h'); if(b){ inp.value += b.dataset.v; inp.focus(); } });
+  inp.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); calc(); }
+    else if(e.key==='Escape'){ inp.value=''; msg.textContent=''; }
+    else if(e.key===','){ e.preventDefault(); msg.textContent = 'Séparateur décimal : le point (.), pas la virgule.'; }
+  });
+  inp.focus();
+}
+function taoBlocNotes(){
+  const f = taoFenetre('taoNotes','Bloc-notes',
+    '<div class="notes-tabs"><button data-m="txt" class="on">Texte</button><button data-m="draw">Dessin</button><button data-m="clr">Effacer le dessin</button></div>'
+    +'<textarea id="notesTxt" spellcheck="false" placeholder="Notes et calculs intermédiaires. Effacées à la fin de l\'examen."></textarea>'
+    +'<canvas id="notesCv" width="560" height="360" class="hidden" aria-label="Zone de dessin"></canvas>',
+    10, innerHeight-430);
+  if(f.dataset.ok) return; f.dataset.ok = '1';
+  const ta = f.querySelector('#notesTxt'), cv = f.querySelector('#notesCv'), ctx = cv.getContext('2d');
+  f.querySelectorAll('.notes-tabs button').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.m==='clr'){ ctx.clearRect(0,0,cv.width,cv.height); return; }
+    f.querySelectorAll('.notes-tabs button[data-m="txt"],.notes-tabs button[data-m="draw"]').forEach(x=>x.classList.toggle('on', x===b));
+    ta.classList.toggle('hidden', b.dataset.m!=='txt'); cv.classList.toggle('hidden', b.dataset.m!=='draw');
+  }));
+  let trace = false;
+  const pt = e=>{ const r = cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width, (e.clientY-r.top)*cv.height/r.height]; };
+  cv.addEventListener('pointerdown', e=>{ trace = true; cv.setPointerCapture(e.pointerId); const [x,y] = pt(e); ctx.beginPath(); ctx.moveTo(x,y); });
+  cv.addEventListener('pointermove', e=>{ if(!trace) return; const [x,y] = pt(e); ctx.lineTo(x,y); ctx.strokeStyle = getComputedStyle(cv).color; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.stroke(); });
+  cv.addEventListener('pointerup', ()=>{ trace = false; });
+  ta.focus();
+}
+
+/* Prépare une partie : options mélangées une fois pour toutes, et verdicts du
+   verbal remis dans l'ordre affiché. */
+function taoPrepare(cle, items){
+  return items.map(it=>{
+    const v = shuffleOpts(it);
+    const why = it.why ? v.opts.map(o=>it.why[it.opts.indexOf(o)]) : null;
+    return {cle, src:it, opts:v.opts, c:v.c, why, ans:null, vu:false, flag:false, elim:new Set(), hl:null};
+  });
+}
+
+function runTAO(cfg){
+  const app = document.getElementById('app');
+  app.innerHTML = '<div id="taoRoot"></div>';
+  document.body.classList.add('tao-on');
+  const root = () => document.getElementById('taoRoot');
+  const parts = cfg.parties.map(p=>({...TAO_SPEC[p.cle], ...p, q:taoPrepare(p.cle, p.items), reste:p.duree||TAO_SPEC[p.cle].duree, fini:false, horsTemps:false}));
+  let ip = 0, iq = 0, timer = null, zoom = 1, elimMode = false;
+  const fig = o => typeof o==='string' ? o : shapeSVG(o);
+  const L = i => String.fromCharCode(65+i);
+
+  function stop(){ clearInterval(timer); }
+  function instructions(){
+    stop();
+    const P = parts[ip];
+    let t = TAO_INSTR_SEC;
+    root().innerHTML = '<div class="tao tao-instr"><div class="card">'
+      +'<span class="eyebrow">'+cfg.titre+' · partie '+(ip+1)+' sur '+parts.length+'</span>'
+      +'<h2 style="margin-top:6px;">'+P.nom+'</h2>'
+      +'<table class="spec-table"><tr><td>Questions</td><td>'+P.q.length+'</td></tr><tr><td>Durée</td><td>'+fmtTime(P.reste)+' pour cette partie, non reportable sur la suivante</td></tr>'
+      +'<tr><td>Options</td><td>'+(P.cle==='verbal'?'quatre affirmations, une seule correcte':'cinq propositions, une seule correcte')+'</td></tr></table>'
+      +'<ul class="tao-rules">'
+      +'<li>Navigation libre : barre numérotée, flèches, réponses modifiables jusqu\'à la soumission de la partie.</li>'
+      +'<li><b>Marquer</b> une question l\'ajoute à la section « Marquées » de la <b>vue d\'ensemble</b>.</li>'
+      +'<li>Outils : '+(P.cle==='verbal'?'surligneur, ':'')+'calculatrice (point décimal, pas de virgule), bloc-notes, élimination des réponses, zoom. Ni papier ni stylo.</li>'
+      +'<li>Aucune correction pendant l\'épreuve. À la fin du temps, la partie est soumise automatiquement.</li></ul>'
+      +'<div class="tao-count">La partie commence dans <b id="taoCd">'+t+'</b> s, comme sur TAO après la page d\'instructions.</div>'
+      +'<button class="btn wide" id="taoGo">Commencer maintenant</button>'
+      +'<div class="quit-row"><button id="taoQuit">Quitter l\'examen</button></div>'
+      +'</div></div>';
+    document.getElementById('taoGo').addEventListener('click', demarrer);
+    document.getElementById('taoQuit').addEventListener('click', ()=>{ stop(); goTo(cfg.retour); });
+    timer = ACTIVE_TIMER = setInterval(()=>{ t--; const c = document.getElementById('taoCd'); if(c) c.textContent = t; if(t<=0) demarrer(); },1000);
+  }
+  function demarrer(){
+    stop(); iq = 0; elimMode = false;
+    rendre();
+    timer = ACTIVE_TIMER = setInterval(()=>{
+      const P = parts[ip]; P.reste--;
+      const el = document.getElementById('taoTmr');
+      if(el){ el.textContent = fmtTime(P.reste); el.classList.toggle('low', P.reste<=60); }
+      if(P.reste<=0){ P.horsTemps = true; soumettre(true); }
+    },1000);
+  }
+  function sauverSurlignage(){
+    const P = parts[ip], Q = P.q[iq], box = document.getElementById('taoPassage');
+    if(Q && box) Q.hl = box.innerHTML;
+  }
+  function rendre(){
+    const P = parts[ip], Q = P.q[iq]; Q.vu = true;
+    const it = Q.src;
+    let corps = '';
+    if(P.cle==='verbal'){
+      corps = '<div class="passage-box" id="taoPassage">'+(Q.hl || it.passage)+'</div>'
+        +'<p class="tao-consigne">Parmi les propositions suivantes, laquelle est correcte ?</p>';
+    } else if(P.cle==='numeric'){
+      corps = (it.table?'<div class="data-wrap">'+it.table+'</div>':'')+'<div class="qcm-question">'+it.q+'</div>';
+    } else {
+      corps = '<p class="tao-consigne">'+(it.kind==='set' ? 'Ces cinq figures respectent toutes une même règle. Laquelle des propositions la respecte aussi ?' : it.kind==='multi' ? 'Quelle figure doit venir en sixième position ?' : 'Quelle forme complète la séquence ?')+'</p>'
+        +'<p class="abs-caption">'+(it.kind==='set'?'Énoncé':'La séquence')+'</p>'
+        +'<div class="abs-sequence">'
+        +(it.kind==='set' ? it.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('')
+          : it.kind==='multi' ? it.seqSvg.map((s,i)=>'<div class="abs-shape-box ax"><span class="ax-n">'+(i+1)+'</span>'+s+'</div>').join('')+'<div class="abs-q">?</div>'
+          : it.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')+'<span class="abs-arrow">→</span><div class="abs-q">?</div>')
+        +'</div>';
+    }
+    const opts = P.cle==='abstract'
+      ? '<p class="abs-caption">Propositions</p><div class="abs-options">'+Q.opts.map((o,i)=>'<button class="abs-opt tao-opt'+(it.kind==='multi'?' ax':'')+(Q.ans===i?' sel':'')+(Q.elim.has(i)?' elim':'')+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"><span class="abs-letter">'+L(i)+'</span>'+fig(o)+'</button>').join('')+'</div>'
+      : '<div>'+Q.opts.map((o,i)=>'<button class="qcm-opt tao-opt'+(Q.ans===i?' sel':'')+(Q.elim.has(i)?' elim':'')+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"><span class="tao-radio"></span><b>'+L(i)+'.</b> '+o+'</button>').join('')+'</div>';
+    const nav = P.q.map((x,i)=>'<button class="tao-n'+(x.ans!==null?' rep':x.vu?' vu':'')+(x.flag?' flag':'')+(i===iq?' cur':'')+'" data-q="'+i+'" aria-label="Question '+(i+1)+'">'+(i+1)+'</button>').join('');
+    root().innerHTML = '<div class="tao">'
+      +'<div class="tao-top">'
+        +'<div class="tao-id"><b>'+P.nom+'</b><span>Partie '+(ip+1)+'/'+parts.length+' · question '+(iq+1)+' sur '+P.q.length+'</span></div>'
+        +'<div class="tao-tmr" id="taoTmr" aria-live="off">'+fmtTime(P.reste)+'</div>'
+        +'<div class="tao-tools">'
+          +(P.cle==='verbal'?'<button data-t="hl" title="Surligner la sélection">Surligner</button><button data-t="hlx" title="Effacer les surlignages">Effacer</button>':'')
+          +'<button data-t="calc">Calculatrice</button><button data-t="notes">Bloc-notes</button>'
+          +'<button data-t="elim" class="'+(elimMode?'on':'')+'" aria-pressed="'+elimMode+'">Élimination</button>'
+          +'<button data-t="zm" aria-label="Zoom arrière">A−</button><button data-t="zp" aria-label="Zoom avant">A+</button>'
+        +'</div>'
+      +'</div>'
+      +'<div class="tao-nav">'+nav+'<button class="tao-ov" id="taoOv">Vue d\'ensemble</button></div>'
+      +(elimMode?'<div class="tao-elim-note">Élimination active : un clic barre ou débarre une proposition sans la choisir.</div>':'')
+      +'<div class="tao-q" id="taoQ" style="font-size:'+zoom+'em">'+corps+opts+'</div>'
+      +'<div class="tao-foot">'
+        +'<button class="tao-flag'+(Q.flag?' on':'')+'" id="taoFlag" aria-pressed="'+Q.flag+'">'+(Q.flag?'Marquée pour révision':'Marquer pour révision')+'</button>'
+        +'<span class="tao-sp"></span>'
+        +'<button class="btn ghost" id="taoPrev"'+(iq===0?' disabled':'')+'>← Précédente</button>'
+        +(iq<P.q.length-1 ? '<button class="btn ghost" id="taoNext">Suivante →</button>' : '')
+        +'<button class="btn" id="taoSub">'+(ip<parts.length-1?'Soumettre cette partie':'Terminer le test')+'</button>'
+      +'</div>'
+      +'<div class="quit-row"><button id="taoQuit">Quitter l\'examen</button></div>'
+      +'</div>';
+    app.querySelectorAll('.tao-opt').forEach(b=>b.addEventListener('click',()=>{
+      const i = +b.dataset.i;
+      if(elimMode){ Q.elim.has(i) ? Q.elim.delete(i) : Q.elim.add(i); if(Q.ans===i) Q.ans = null; }
+      else { Q.ans = Q.ans===i ? null : i; Q.elim.delete(i); }
+      aller(iq);
+    }));
+    app.querySelectorAll('.tao-n').forEach(b=>b.addEventListener('click',()=>aller(+b.dataset.q)));
+    document.getElementById('taoOv').addEventListener('click', vueEnsemble);
+    document.getElementById('taoFlag').addEventListener('click',()=>{ Q.flag = !Q.flag; aller(iq); });
+    document.getElementById('taoPrev').addEventListener('click',()=>aller(iq-1));
+    const nx = document.getElementById('taoNext'); if(nx) nx.addEventListener('click',()=>aller(iq+1));
+    document.getElementById('taoSub').addEventListener('click',()=>confirmer());
+    document.getElementById('taoQuit').addEventListener('click',()=>dialogue('Quitter l\'examen ?','Les réponses de cette simulation seront perdues.',[['Continuer l\'examen',null],['Quitter',()=>{ stop(); goTo(cfg.retour); }]]));
+    app.querySelectorAll('.tao-tools button').forEach(b=>b.addEventListener('click',()=>{
+      const t = b.dataset.t;
+      if(t==='calc') taoCalculatrice();
+      else if(t==='notes') taoBlocNotes();
+      else if(t==='elim'){ elimMode = !elimMode; aller(iq); }
+      else if(t==='zp'){ zoom = Math.min(1.6, +(zoom+0.1).toFixed(1)); document.getElementById('taoQ').style.fontSize = zoom+'em'; }
+      else if(t==='zm'){ zoom = Math.max(0.8, +(zoom-0.1).toFixed(1)); document.getElementById('taoQ').style.fontSize = zoom+'em'; }
+      else if(t==='hl'){
+        const sel = getSelection(), box = document.getElementById('taoPassage');
+        if(!sel.rangeCount || sel.isCollapsed || !box.contains(sel.anchorNode) || !box.contains(sel.focusNode)) return;
+        const r = sel.getRangeAt(0), m = document.createElement('mark'); m.className = 'tao-hl';
+        try{ m.appendChild(r.extractContents()); r.insertNode(m); sel.removeAllRanges(); sauverSurlignage(); }catch(e){}
+      }
+      else if(t==='hlx'){ Q.hl = null; document.getElementById('taoPassage').innerHTML = it.passage; }
+    }));
+  }
+  function aller(i){
+    const P = parts[ip];
+    if(P.cle==='verbal') sauverSurlignage();
+    iq = Math.max(0, Math.min(P.q.length-1, i));
+    const y = scrollY; rendre(); if(Math.abs(scrollY-y)>2) scrollTo(0,y);
+  }
+  function vueEnsemble(){
+    const P = parts[ip];
+    const rep = P.q.filter(x=>x.ans!==null).length, marq = P.q.map((x,i)=>x.flag?i:-1).filter(i=>i>=0);
+    dialogue('Vue d\'ensemble · '+P.nom,
+      '<div class="tao-ov-grid">'+P.q.map((x,i)=>'<button class="tao-n'+(x.ans!==null?' rep':x.vu?' vu':'')+(x.flag?' flag':'')+(i===iq?' cur':'')+'" data-q="'+i+'">'+(i+1)+'</button>').join('')+'</div>'
+      +'<p class="tao-leg"><span class="tao-n rep">1</span> réponse donnée <span class="tao-n vu">2</span> vue sans réponse <span class="tao-n">3</span> pas encore vue <span class="tao-n flag">4</span> marquée</p>'
+      +'<p><b>'+rep+'</b> réponse'+(rep>1?'s':'')+' sur '+P.q.length+'. <b>Marquées</b> ('+marq.length+') : '+(marq.length ? marq.map(i=>'<button class="tao-lnk" data-q="'+i+'">Q'+(i+1)+'</button>').join(' ') : 'aucune')+'</p>',
+      [['Fermer',null]]);
+    document.querySelectorAll('.tao-dlg [data-q]').forEach(b=>b.addEventListener('click',()=>{ fermerDialogue(); aller(+b.dataset.q); }));
+  }
+  function dialogue(titre, html, boutons){
+    fermerDialogue();
+    const d = document.createElement('div'); d.className = 'tao-dlg-fond';
+    d.innerHTML = '<div class="tao-dlg" role="dialog" aria-modal="true" aria-label="'+titre.replace(/"/g,'')+'"><h3>'+titre+'</h3><div>'+html+'</div><div class="tao-dlg-b">'
+      + boutons.map((b,i)=>'<button class="btn'+(i<boutons.length-1?' ghost':'')+'" data-b="'+i+'">'+b[0]+'</button>').join('')+'</div></div>';
+    app.appendChild(d);
+    d.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',()=>{ const f = boutons[+b.dataset.b][1]; fermerDialogue(); if(f) f(); }));
+    const premier = d.querySelector('[data-b]'); if(premier) premier.focus();
+  }
+  function fermerDialogue(){ const d = app.querySelector('.tao-dlg-fond'); if(d) d.remove(); }
+  function confirmer(){
+    const P = parts[ip], manque = P.q.filter(x=>x.ans===null).length, der = ip===parts.length-1;
+    const libelle = der ? 'Terminer le test' : 'Soumettre cette partie';
+    if(manque) dialogue('Questions sans réponse', 'Il reste <b>'+manque+'</b> question'+(manque>1?'s':'')+' sans réponse dans cette partie. Une question sans réponse ne rapporte aucun point, et aucune réponse fausse n\'est pénalisée.', [['Continuer à répondre',null],[libelle,()=>soumettre(false)]]);
+    else dialogue(der?'Terminer le test ?':'Soumettre cette partie ?', 'Une fois soumise, la partie ne peut plus être modifiée. Il reste '+fmtTime(P.reste)+'.', [['Réviser mes réponses',null],[libelle,()=>soumettre(false)]]);
+  }
+  function soumettre(auto){
+    stop(); fermerDialogue();
+    const P = parts[ip];
+    if(P.cle==='verbal') sauverSurlignage();
+    P.fini = true;
+    P.q.forEach(x=>{ const st = PROGRESS[x.cle]; if(st){ st.att++; if(x.ans===x.c) st.cor++; } });
+    saveProgress(); renderStreak();
+    const w = document.getElementById('taoCalc'); if(w) w.remove();
+    const n = document.getElementById('taoNotes'); if(n) n.remove();
+    if(ip < parts.length-1){
+      ip++;
+      if(auto){
+        root().innerHTML = '<div class="tao tao-instr"><div class="card"><span class="eyebrow">Temps écoulé</span><h2>'+P.nom+' : partie soumise automatiquement</h2>'
+          +'<p>Comme sur TAO, la fin du temps soumet la partie. Les questions sans réponse ne rapportent rien.</p><button class="btn wide" id="taoSuite">Passer à la partie suivante</button></div></div>';
+        document.getElementById('taoSuite').addEventListener('click', instructions);
+      } else instructions();
+    } else resultats();
+  }
+  function resultats(){
+    stop(); document.body.classList.remove('tao-on');
+    const sc = P => P.q.filter(x=>x.ans===x.c).length;
+    const par = {}; parts.forEach(P=>par[P.cle] = {s:sc(P), n:P.q.length});
+    let bilan = '';
+    if(par.verbal) bilan += '<li>Verbal : <b>'+par.verbal.s+'/'+par.verbal.n+'</b>'+(par.verbal.n===20?(par.verbal.s>=10?' · seuil 10/20 atteint':' · sous le seuil de 10/20'):'')+'</li>';
+    if(par.numeric && par.abstract){
+      const s = par.numeric.s+par.abstract.s, n = par.numeric.n+par.abstract.n;
+      bilan += '<li>Numérique : <b>'+par.numeric.s+'/'+par.numeric.n+'</b> · abstrait : <b>'+par.abstract.s+'/'+par.abstract.n+'</b> · total <b>'+s+'/'+n+'</b>'+(n===20?(s>=10?' · seuil combiné 10/20 atteint':' · sous le seuil combiné de 10/20'):'')+'</li>';
+    } else {
+      if(par.numeric) bilan += '<li>Numérique : <b>'+par.numeric.s+'/'+par.numeric.n+'</b> (le seuil de 10/20 se calcule avec l\'abstrait)</li>';
+      if(par.abstract) bilan += '<li>Abstrait : <b>'+par.abstract.s+'/'+par.abstract.n+'</b> (le seuil de 10/20 se calcule avec le numérique)</li>';
+    }
+    try{
+      const h = JSON.parse(localStorage.getItem('epso-examens')||'[]');
+      h.push({d:jourLocal(), t:cfg.titre, r:parts.map(P=>[P.cle, sc(P), P.q.length])});
+      localStorage.setItem('epso-examens', JSON.stringify(h.slice(-30)));
+    }catch(e){}
+    const revue = parts.map(P=>'<p class="eyebrow" style="color:var(--accent);margin:22px 0 8px;">'+P.nom.toUpperCase()+' · '+sc(P)+'/'+P.q.length+(P.horsTemps?' · temps écoulé':' · '+fmtTime(P.reste)+' non utilisées')+'</p>'
+      + P.q.map((x,i)=>{
+          const it = x.src, ok = x.ans===x.c;
+          const ennonce = P.cle==='verbal' ? '<div class="passage-box">'+it.passage+'</div>'
+            : P.cle==='numeric' ? (it.table?'<div class="data-wrap">'+it.table+'</div>':'')+'<div class="qcm-question">'+it.q+'</div>'
+            : '<div class="abs-sequence">'+(it.kind==='multi' ? it.seqSvg.map(s=>'<div class="abs-shape-box ax">'+s+'</div>').join('') : it.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join(''))+'</div>';
+          const options = P.cle==='abstract'
+            ? '<div class="abs-options">'+x.opts.map((o,k)=>'<div class="abs-opt'+(it.kind==='multi'?' ax':'')+(k===x.c?' correct':k===x.ans?' incorrect':'')+'"><span class="abs-letter">'+L(k)+'</span>'+fig(o)+'</div>').join('')+'</div>'
+            : x.opts.map((o,k)=>'<div class="qcm-opt'+(k===x.c?' correct':k===x.ans?' incorrect':'')+'"><b>'+L(k)+'.</b> '+o+'</div>').join('');
+          const expl = x.why ? '<ul class="why-list">'+x.why.map((w,k)=>'<li><b>'+L(k)+'.</b> '+w+'</li>').join('')+'</ul>' : (it.ex||'');
+          return '<details class="tao-rev'+(ok?' ok':x.ans===null?' vide':' ko')+'"><summary><span>Q'+(i+1)+'</span> '+(ok?'✓ juste':x.ans===null?'– sans réponse':'✗ '+L(x.ans)+' au lieu de '+L(x.c))+(x.flag?' · marquée':'')+'</summary>'
+            + ennonce + options + '<div class="feedback '+(ok?'ok':'no')+'">Bonne réponse : '+L(x.c)+'. '+expl+'</div></details>';
+        }).join('')).join('');
+    root().innerHTML = '<div class="card session-end tao-res"><span class="eyebrow">'+cfg.titre+' · résultats</span>'
+      +'<ul class="tao-bilan">'+bilan+'</ul>'
+      +'<p style="color:var(--muted);">Barème du concours : aucune pénalité pour une réponse fausse. Statistiques cumulées mises à jour.</p>'
+      +'<button class="btn" id="taoAgain">Refaire un examen</button><button class="btn ghost" id="taoBack" style="margin-top:8px;">Retour</button></div>'
+      +'<div class="card"><h2 style="font-size:17px;">Correction détaillée</h2><p class="lede" style="font-size:14px;">Ouvre une question pour voir l\'énoncé, ta réponse et l\'explication.</p>'+revue+'</div>';
+    document.getElementById('taoAgain').addEventListener('click',()=>runTAO(cfg.refaire()));
+    document.getElementById('taoBack').addEventListener('click',()=>goTo(cfg.retour));
+    scrollTo({top:0});
+  }
+  instructions();
+}
+
+/* Les trois examens blancs proposés : chaque test seul, ou la partie 1 entière. */
+function examenTAO(quoi, retour){
+  const parties = [];
+  if(quoi==='verbal' || quoi==='partie1') parties.push({cle:'verbal', items: verbalDraw(VERBAL_ALL, 20).map(i=>VERBAL_ALL[i])});
+  if(quoi==='numeric' || quoi==='partie1') parties.push({cle:'numeric', items: mkNumericExam(10)});
+  if(quoi==='abstract' || quoi==='partie1') parties.push({cle:'abstract', items: mkAbsExam(10)});
+  const titres = {verbal:'Examen blanc · verbal', numeric:'Examen blanc · numérique', abstract:'Examen blanc · abstrait', partie1:'Examen blanc · partie 1 complète'};
+  return {titre:titres[quoi], parties, retour, refaire:()=>examenTAO(quoi, retour)};
 }
 
 /* ================= PARTIE 2 · VERSION ANGLAISE =================
