@@ -2814,8 +2814,19 @@ function mkNum(q,correct,distractors,ex,unit,table,o){
   const impBon = correct===IMPOSSIBLE_OPT;
   const imp = impBon || !!o.imp;
   const num = typeof correct==='number';
-  const d = num ? decOf(correct) : 0;
-  const round = v => (num && typeof v==='number') ? +(+v).toFixed(d) : v;
+  /* Précision affichée : celle de la réponse, ou celle des distracteurs quand elle
+     est plus fine. Une réponse qui tombe juste (24,0 devient 24) perdait sinon ses
+     décimales : les distracteurs, arrondis plus grossièrement, se confondaient avec
+     elle, et la seule valeur sans décimale trahissait la bonne réponse. */
+  const decD = distractors.filter(x=>typeof x==='number' && isFinite(x)).map(x=>decOf(+(+x).toFixed(3)));
+  const d = Math.max(num ? decOf(correct) : 0, ...decD);
+  const round = v => typeof v==='number' ? +(+v).toFixed(d) : v;
+  /* Deux valeurs qui ne diffèrent que d'un cran d'arrondi ne se départagent pas
+     honnêtement : selon qu'on arrondit ou non en cours de calcul, on tombe sur l'une
+     ou l'autre. Ces voisines sont écartées dès qu'il y a des décimales, et pour les
+     grands entiers (1 228 t contre 1 229 t) ; un petit effectif garde son ±1. */
+  const unCran = d>0 ? Math.pow(10,-d) : 1;
+  const voisine = v => num && (d>0 || Math.abs(correct)>=200) && typeof v==='number' && v!==correct && Math.abs(v-correct) < 1.5*unCran;
   // Le concours propose cinq options. Contrairement a ce que laissait croire une
   // premiere lecture de l'epreuve blanche, la cinquieme n'est PAS toujours
   // « Aucune de ces reponses » : beaucoup de questions alignent cinq valeurs
@@ -2828,20 +2839,21 @@ function mkNum(q,correct,distractors,ex,unit,table,o){
   let useNone = (imp || o.sansAucune) ? false : ri(0,1)===1;
   let nVals = (useNone || imp) ? 4 : 5;
   const vals = impBon ? [] : [correct];
-  distractors.forEach(x=>{ const v=round(x); if(v!==IMPOSSIBLE_OPT && !(typeof v==='number' && !isFinite(v)) && vals.indexOf(v)===-1) vals.push(v); });
+  distractors.forEach(x=>{ const v=round(x); if(v!==IMPOSSIBLE_OPT && !(typeof v==='number' && !isFinite(v)) && !voisine(v) && vals.indexOf(v)===-1) vals.push(v); });
   // Filet de securite quand le generateur fournit trop peu de distracteurs distincts.
   // D'abord des variantes proportionnelles, puis un decalage d'un cran de precision,
   // ce qui garantit des valeurs differentes meme pour une reponse nulle ou negative.
   const base = num ? correct : (impBon ? vals.find(v=>typeof v==='number') : undefined);
-  const db = base===undefined ? 0 : decOf(base);
-  const rb = v => +(+v).toFixed(db);
-  const step = db>0 ? Math.pow(10,-db) : 1;
+  const rb = v => +(+v).toFixed(d);
+  const step = unCran;
+  // Pas de valeur de remplissage nulle ou négative quand la réponse est positive.
+  const admis = v => isFinite(v) && vals.indexOf(v)===-1 && !voisine(v) && !(base>0 && v<=0);
   for(let pad=1; base!==undefined && vals.length<nVals && pad<=40; pad++){
     const v = rb(base*(1 + (pad%2?1:-1)*0.06*Math.ceil(pad/2)));
-    if(isFinite(v) && vals.indexOf(v)===-1) vals.push(v);
+    if(admis(v)) vals.push(v);
   }
   for(let k=1; base!==undefined && vals.length<nVals && k<=500; k++){
-    [rb(base+k*step), rb(base-k*step)].forEach(v=>{ if(vals.length<nVals && vals.indexOf(v)===-1) vals.push(v); });
+    [rb(base+k*step), rb(base-k*step)].forEach(v=>{ if(vals.length<nVals && admis(v)) vals.push(v); });
   }
   /* Une réponse textuelle (un pays, une année) ne se complète pas : fabriquer
      « Hongrie (1) » à côté de « Hongrie » affichait deux fois la même réponse,
@@ -2862,11 +2874,12 @@ function mkNum(q,correct,distractors,ex,unit,table,o){
     if(picked.indexOf(sub)!==-1) noneIsRight = false;   // on renonce plutôt que de mentir
     else picked = picked.map(v=>v===correct ? sub : v);
   }
-  const opts = picked.map(v=>typeof v==='number' ? frNum(v)+u : String(v));
+  // Toutes les valeurs avec le même nombre de décimales, comme au concours.
+  const opts = picked.map(v=>typeof v==='number' ? fmtF(v,d)+u : String(v));
   if(useNone) opts.push(NONE_OPT);
   if(imp) opts.push(IMPOSSIBLE_OPT);
   const item = {q:q, opts:opts, c: impBon ? opts.length-1 : noneIsRight ? 4 : picked.indexOf(correct), ex:ex};
-  if(noneIsRight) item.ex = ex+` Ici la valeur exacte (`+frNum(correct)+u+`) ne figure pas parmi les propositions : la bonne réponse est « `+NONE_OPT+` ».`;
+  if(noneIsRight) item.ex = ex+` Ici la valeur exacte (`+fmtF(correct,d)+u+`) ne figure pas parmi les propositions : la bonne réponse est « `+NONE_OPT+` ».`;
   if(table) item.table = table;
   return item;
 }
@@ -2891,9 +2904,9 @@ const NUMERIC_TEMPLATES = [
       avant,[Math.round(apres*(100-p)/100),apres-p,avant-10],
       `On divise la valeur finale par (1 + taux) : `+apres+` × 100 ÷ `+(100+p)+` = `+avant+`. Retirer `+p+` % du montant final est le piège classique.`,` M€`); },
   ()=>{ const total=ri(2,6)*1000, p1=[40,50,60][ri(0,2)], p2=[10,15,20,25][ri(0,3)]; const g=total*p1/100, res=g*p2/100;
-    return mkNum(`Sur `+total+` candidats à un concours, `+p1+` % sont des femmes. Parmi elles, `+p2+` % sont admises. Combien de femmes sont admises ?`,
+    return mkNum(`Sur `+fmtN(total)+` candidats à un concours, `+p1+` % sont des femmes. Parmi elles, `+p2+` % sont admises. Combien de femmes sont admises ?`,
       res,[total*p2/100, g, res+10],
-      p1+` % de `+total+` = `+g+` femmes, puis `+p2+` % de `+g+` = `+res+`.`); },
+      p1+` % de `+fmtN(total)+` = `+fmtN(g)+` femmes, puis `+p2+` % de `+fmtN(g)+` = `+fmtN(res)+`.`); },
   ()=>{ const x=ri(8,15), d=ri(2,5), y=x-d;
     return mkNum(`Le taux de chômage d'une région passe de `+x+` % à `+y+` %. De combien de points de pourcentage a-t-il diminué ?`,
       d,[y, Math.round(d*100/x), x+y],
@@ -2907,17 +2920,17 @@ const NUMERIC_TEMPLATES = [
       km,[km*10, cm===km?km+3:cm, km+5],
       `1 cm représente `+(demi?`0,5`:`1`)+` km à cette échelle : `+cm+` cm = `+km+` km.`,` km`); },
   ()=>{ const cap=ri(5,20)*1000, r=ri(2,5), n=ri(3,6); const int_=cap*r*n/100, tot=cap+int_;
-    return mkNum(`Un capital de `+cap+` € est placé à `+r+` % d'intérêt annuel SIMPLE. Quel est le montant total après `+n+` ans ?`,
+    return mkNum(`Un capital de `+fmtN(cap)+` € est placé à `+r+` % d'intérêt annuel SIMPLE. Quel est le montant total après `+n+` ans ?`,
       tot,[cap+cap*r/100, Math.round(cap*Math.pow(1+r/100,n)), tot+cap*r/100],
-      `Intérêt simple = `+cap+` × `+r+` % × `+n+` ans = `+int_+` €. Total = `+tot+` €.`,` €`); },
+      `Intérêt simple = `+fmtN(cap)+` × `+r+` % × `+n+` ans = `+fmtN(int_)+` €. Total = `+fmtN(tot)+` €.`,` €`); },
   ()=>{ const total=ri(3,18)*100, p=[5,10,12,20,25,40,60,75][ri(0,7)], part=total*p/100;
-    return mkNum(`Une direction a traité `+total+` dossiers dans l'année, dont `+part+` relevaient de la concurrence. Quelle part du total cela représente-t-il ?`,
+    return mkNum(`Une direction a traité `+fmtN(total)+` dossiers dans l'année, dont `+part+` relevaient de la concurrence. Quelle part du total cela représente-t-il ?`,
       p,[100-p, Math.round(total/part), p+5],
-      `Part = `+part+` ÷ `+total+` × 100 = `+p+` %.`,` %`); },
+      `Part = `+fmtN(part)+` ÷ `+fmtN(total)+` × 100 = `+p+` %.`,` %`); },
   ()=>{ const a=ri(2,9)*100, p=[10,20,25,50,-20,-25,-40][ri(0,6)], b=a*(100+p)/100;
-    return mkNum(`Le budget d'un programme passe de `+a+` M€ à `+b+` M€. Quelle est la variation en pourcentage ?`,
+    return mkNum(`Le budget d'un programme passe de `+fmtN(a)+` M€ à `+fmtN(b)+` M€. Quelle est la variation en pourcentage ?`,
       p,[-p, Math.round((b-a)*100/b), p+10],
-      `Variation = (`+b+` moins `+a+`) ÷ `+a+` × 100 = `+p+` %. Le dénominateur est toujours la valeur de DÉPART.`,` %`); },
+      `Variation = (`+fmtN(b)+` moins `+fmtN(a)+`) ÷ `+fmtN(a)+` × 100 = `+p+` %. Le dénominateur est toujours la valeur de DÉPART.`,` %`); },
   ()=>{ let n1=ri(1,5)*10, n2=ri(1,5)*10; if(n1===n2) n2+=10;
     const m1=ri(8,16), m2=ri(8,16);
     const pond=+(((n1*m1+n2*m2)/(n1+n2)).toFixed(1)), simple=+(((m1+m2)/2).toFixed(1));
@@ -2929,43 +2942,43 @@ const NUMERIC_TEMPLATES = [
       d2,[d1+a2-a1, Math.round(d1*a1/a2), d2+parAgent],
       `Rythme individuel = `+d1+` ÷ `+a1+` = `+parAgent+` dossiers. `+a2+` agents traitent `+a2+` × `+parAgent+` = `+d2+` dossiers.`); },
   ()=>{ const m=ri(2,20)*100, t=[1.1,1.2,1.25,0.8,0.9][ri(0,4)]; const res=Math.round(m*t*100)/100;
-    return mkNum(`Une facture de `+m+` € doit être convertie au taux 1 € = `+String(t).replace('.',',')+` unité de devise. Quel est le montant converti ?`,
-      res,[Math.round(m/t*100)/100, m+t, res+m/10],
-      `On multiplie par le taux : `+m+` × `+String(t).replace('.',',')+` = `+String(res).replace('.',',')+`. Diviser au lieu de multiplier est l'erreur classique.`); },
+    return mkNum(`Une facture de `+fmtN(m)+` € doit être convertie au taux 1 € = `+String(t).replace('.',',')+` unité de devise. Quel est le montant converti ?`,
+      res,[Math.round(m/t), Math.round(m*Math.abs(t-1)), res+m/10],
+      `On multiplie par le taux : `+fmtN(m)+` × `+String(t).replace('.',',')+` = `+fmtN(res)+`. Diviser au lieu de multiplier est l'erreur classique.`); },
   ()=>{ const ht=ri(2,20)*100, t=[10,20][ri(0,1)]; const ttc=ht*(100+t)/100;
-    return mkNum(`Un prestataire facture `+ht+` € hors taxes. Avec une TVA de `+t+` %, quel est le montant toutes taxes comprises ?`,
+    return mkNum(`Un prestataire facture `+fmtN(ht)+` € hors taxes. Avec une TVA de `+t+` %, quel est le montant toutes taxes comprises ?`,
       ttc,[ht+t, ht*(100-t)/100, ttc+ht*t/100],
-      `TTC = `+ht+` × `+(100+t)+` ÷ 100 = `+ttc+` €.`,` €`); },
+      `TTC = `+fmtN(ht)+` × `+(100+t)+` ÷ 100 = `+fmtN(ttc)+` €.`,` €`); },
   ()=>{ const ht=ri(2,20)*100, t=[10,20,25][ri(0,2)]; const ttc=ht*(100+t)/100;
-    return mkNum(`Un montant TTC s'élève à `+ttc+` € avec une TVA de `+t+` %. Quel est le montant hors taxes ?`,
+    return mkNum(`Un montant TTC s'élève à `+fmtN(ttc)+` € avec une TVA de `+t+` %. Quel est le montant hors taxes ?`,
       ht,[Math.round(ttc*(100-t)/100), ttc-t, ht+t],
-      `On divise par (1 + taux) : `+ttc+` × 100 ÷ `+(100+t)+` = `+ht+` €. Retirer `+t+` % du montant TTC donne un résultat faux.`,` €`); },
+      `On divise par (1 + taux) : `+fmtN(ttc)+` × 100 ÷ `+(100+t)+` = `+fmtN(ht)+` €. Retirer `+t+` % du montant TTC donne un résultat faux.`,` €`); },
   ()=>{ const v=ri(6,15)*10, h=ri(2,6); const d=v*h;
     return mkNum(`Un trajet de `+d+` km est parcouru en `+h+` heures. Quelle est la vitesse moyenne ?`,
       v,[Math.round(d/(h+1)), d-h, v+10],
       `Vitesse = distance ÷ temps = `+d+` ÷ `+h+` = `+v+` km/h.`,` km/h`); },
   ()=>{ const parHab=ri(20,90), pop=ri(2,12); const dep=parHab*pop;
-    return mkNum(`Un État consacre `+dep+` millions d'euros à un programme pour une population de `+pop+` millions d'habitants. Quelle est la dépense par habitant ?`,
+    return mkNum(`Un État consacre `+fmtN(dep)+` millions d'euros à un programme pour une population de `+pop+` millions d'habitants. Quelle est la dépense par habitant ?`,
       parHab,[Math.round(dep/(pop*10)), dep-pop, parHab+10],
-      `Dépense par habitant = `+dep+` ÷ `+pop+` = `+parHab+` €. Les deux grandeurs sont en millions, elles se simplifient.`,` €`); },
+      `Dépense par habitant = `+fmtN(dep)+` ÷ `+pop+` = `+parHab+` €. Les deux grandeurs sont en millions, elles se simplifient.`,` €`); },
   ()=>{ const p=ri(2,20)*100, r1=[10,20,25][ri(0,2)], r2=[10,20,50][ri(0,2)];
     const res=Math.round(p*(100-r1)/100*(100-r2)/100), naif=Math.round(p*(100-r1-r2)/100);
-    return mkNum(`Un prix de `+p+` € subit une remise de `+r1+` %, puis une seconde remise de `+r2+` % sur le prix déjà réduit. Quel est le prix final ?`,
+    return mkNum(`Un prix de `+fmtN(p)+` € subit une remise de `+r1+` %, puis une seconde remise de `+r2+` % sur le prix déjà réduit. Quel est le prix final ?`,
       res,[naif, Math.round(p*(100-r1)/100), res+50],
-      `On applique les coefficients l'un après l'autre : `+p+` × `+((100-r1)/100).toString().replace('.',',')+` × `+((100-r2)/100).toString().replace('.',',')+` = `+res+` €. Additionner les deux taux (`+(r1+r2)+` %) donne `+naif+` € et c'est faux.`,` €`); },
+      `On applique les coefficients l'un après l'autre : `+fmtN(p)+` × `+((100-r1)/100).toString().replace('.',',')+` × `+((100-r2)/100).toString().replace('.',',')+` = `+fmtN(res)+` €. Additionner les deux taux (`+(r1+r2)+` %) donne `+fmtN(naif)+` € et c'est faux.`,` €`); },
   ()=>{ const cap=ri(1,9)*1000, r=[5,10,20,25][ri(0,3)]; const c2=Math.round(cap*(100+r)/100*(100+r)/100), simple=cap+2*cap*r/100;
-    return mkNum(`Un capital de `+cap+` € est placé à `+r+` % par an avec intérêts COMPOSÉS. Quel est le montant après 2 ans ?`,
+    return mkNum(`Un capital de `+fmtN(cap)+` € est placé à `+r+` % par an avec intérêts COMPOSÉS. Quel est le montant après 2 ans ?`,
       c2,[simple, cap+cap*r/100, c2+cap*r/100],
-      `Intérêts composés : `+cap+` × (1 + `+r+` %)² = `+c2+` €. L'intérêt simple donnerait `+simple+` €, la différence est l'intérêt sur l'intérêt.`,` €`); },
+      `Intérêts composés : `+fmtN(cap)+` × (1 + `+r+` %)² = `+fmtN(c2)+` €. L'intérêt simple donnerait `+fmtN(simple)+` €, la différence est l'intérêt sur l'intérêt.`,` €`); },
   ()=>{ const v0=ri(2,10)*50, k=[110,120,125,80,90,150][ri(0,5)]; const v1=v0*k/100;
     return mkNum(`Une valeur passe de `+v0+` en année de base à `+v1+`. Quel est l'indice de l'année courante, en base 100 ?`,
-      k,[k-100, Math.round(v0*100/v1), v1-v0],
+      k,[Math.abs(k-100), Math.round(v0*100/v1), Math.abs(v1-v0)],
       `Indice = `+v1+` ÷ `+v0+` × 100 = `+k+`. Un indice de `+k+` correspond à une variation de `+(k-100)+` %, ne pas confondre les deux.`); },
   ()=>{ const eff=ri(2,20)*500, p=[10,20,25,50][ri(0,3)];
     const res=Math.round(eff*(100+p)/100*(100-p)/100);
-    return mkNum(`Un effectif de `+eff+` agents augmente de `+p+` %, puis diminue de `+p+` % l'année suivante. Quel est l'effectif final ?`,
+    return mkNum(`Un effectif de `+fmtN(eff)+` agents augmente de `+p+` %, puis diminue de `+p+` % l'année suivante. Quel est l'effectif final ?`,
       res,[eff, eff*(100+p)/100, res-eff+res],
-      `Hausse puis baisse du même taux ne ramène pas au point de départ : `+eff+` × `+((100+p)/100).toString().replace('.',',')+` × `+((100-p)/100).toString().replace('.',',')+` = `+res+`. La baisse s'applique à une base plus grande.`,` agents`); },
+      `Hausse puis baisse du même taux ne ramène pas au point de départ : `+fmtN(eff)+` × `+((100+p)/100).toString().replace('.',',')+` × `+((100-p)/100).toString().replace('.',',')+` = `+fmtN(res)+`. La baisse s'applique à une base plus grande.`,` agents`); },
   ()=>{ const parts=[[2,3,5],[1,2,7],[3,3,4],[1,4,5]][ri(0,3)]; const u=ri(2,9)*10; const total=10*u; const gros=Math.max(...parts)*u;
     return mkNum(`Un budget de `+total+` M€ est réparti entre trois programmes selon le rapport `+parts.join(':')+`. Quel pourcentage du total revient au programme le mieux doté ?`,
       Math.max(...parts)*10,[Math.max(...parts), Math.round(gros), 100/3|0],
@@ -3195,7 +3208,7 @@ const NUMERIC_TABLE_TEMPLATES = [
       ['Pays','PIB (Md€)','Dépense R&D (% du PIB)','Chercheurs (milliers)'],
       rows.map(z=>[z.x, fmtN(z.pib), fmtN(z.act,2), fmtN(ri(20,400))]));
     return mkNum(`Combien `+r.x+` devrait-il dépenser en plus chaque année pour atteindre une cible de `+String(cible).replace('.',',')+` % du PIB ?`,
-      manque, [+(r.pib*cible/100).toFixed(1), +(cible-r.act).toFixed(2), +(manque*2).toFixed(1)],
+      manque, [+(r.pib*cible/100).toFixed(1), +(cible-r.act).toFixed(1), +(manque*2).toFixed(1)],
       `L'écart de taux vaut `+String(+(cible-r.act).toFixed(2)).replace('.',',')+` point(s) de PIB. Appliqué à un PIB de `+fmtN(r.pib)+` Md€, cela donne `+String(manque).replace('.',',')+` Md€. La dépense cible totale, elle, serait de `+String(+(r.pib*cible/100).toFixed(1)).replace('.',',')+` Md€.`,
       ' Md€', table);
   },
@@ -3599,8 +3612,8 @@ const NUM_SETS = [
        c:q2, d:[nr(tot(2,2018),1), nr(tot(2,2020),1), nr((pc[2][1]+pc[2][2])/2*pop[2][0],1)], u:' Mt',
        ex:`2018 : ${fmtF(pc[2][1],1)} × ${fmtF(pop[2][1],2)} ≈ ${fmtF(nr(tot(2,2018),1),1)} Mt ; 2020 : ${fmtF(pc[2][2],1)} × ${fmtF(pop[2][3],2)} ≈ ${fmtF(nr(tot(2,2020),1),1)} Mt. 2019 est au milieu : ${fmtF(q2,1)} Mt. L'année 2019 ne figure pas sur le graphique : c'est voulu.`},
       {q:`Les émissions totales ${duPays(p[3])} en 2019 étaient inférieures de ${fmtF(delta,1)} millions de tonnes à celles de 2018. Quelles étaient ses émissions par habitant en 2019 (tonnes) ?`,
-       c:q3, d:[nr((tot(3,2018)-delta)/pop[3][1],2), nr(pc[3][1]-delta/pop[3][2],2)===q3?nr(q3+0.21,2):nr(pc[3][1]-delta/pop[3][2],2), nr(pc[3][1]-delta,2)], u:' t',
-       ex:`Total 2018 : ${fmtF(pc[3][1],1)} × ${fmtF(pop[3][1],2)} ≈ ${fmtF(nr(tot(3,2018),2),2)} Mt. Total 2019 : ${fmtF(nr(tot(3,2018)-delta,2),2)} Mt. Divisé par la population 2019 (${fmtF(pop[3][2],2)} M) : ${fmtF(q3,2)} t. Diviser par la population 2018 est le piège.`},
+       c:q3, d:[nr((tot(3,2018)-delta)/pop[3][1],2), nr(pc[3][1]-delta/pop[3][2],2)===q3?nr(q3+0.21,2):nr(pc[3][1]-delta/pop[3][2],2), nr(tot(3,2018)/pop[3][2],2)], u:' t',
+       ex:`Total 2018 : ${fmtF(pc[3][1],1)} × ${fmtF(pop[3][1],2)} ≈ ${fmtF(nr(tot(3,2018),2),2)} Mt. Total 2019 : ${fmtF(nr(tot(3,2018)-delta,2),2)} Mt. Divisé par la population 2019 (${fmtF(pop[3][2],2)} M) : ${fmtF(q3,2)} t. Diviser par la population 2018, ou oublier de retrancher la baisse, sont les pièges.`},
       (()=>{ const t = p.map((_,i)=>tot(i,2021)), m = Math.max(...t); const i = t.indexOf(m);
         return {q:`Quel pays avait les émissions totales les plus élevées en 2021 ?`,
          c:p[i], d:p.filter((_,k)=>k!==i), u:'',
@@ -3741,7 +3754,7 @@ const NUM_SETS = [
     return {html, qs:[
       {q:`Quelle était, en 2018, la différence de quantité de matière grasse contenue dans le lait produit par ${lePays(p[A])} et par ${lePays(p[B])} (tonnes) ?`,
        c:q1, d:[Math.round(q1/1000), Math.round(Math.abs(prod[A][0]-prod[B][0])*fat[A][0]*10), Math.round(Math.abs(prod[A][0]*pro[A][0]-prod[B][0]*pro[B][0])*10)], u:' t',
-       ex:`Matière grasse = production × taux. ${p[A]} : ${fmtF(prod[A][0])} kt × ${fmtF(fat[A][0],2)} % ≈ ${fmtF(Math.round(g(A,0)))} t ; ${p[B]} : ${fmtF(prod[B][0])} kt × ${fmtF(fat[B][0],2)} % ≈ ${fmtF(Math.round(g(B,0)))} t. Attention aux milliers de tonnes : 1 kt = 1 000 t.`},
+       ex:`Matière grasse = production × taux. ${p[A]} : ${fmtF(prod[A][0])} kt × ${fmtF(fat[A][0],2)} % ≈ ${fmtF(Math.round(g(A,0)))} t ; ${p[B]} : ${fmtF(prod[B][0])} kt × ${fmtF(fat[B][0],2)} % ≈ ${fmtF(Math.round(g(B,0)))} t. Écart ≈ ${fmtF(q1)} t. Attention aux milliers de tonnes : 1 kt = 1 000 t.`},
       {q:`Quelle quantité de matière grasse supplémentaire le lait ${duPays(p[C])} a-t-il contenue en 2022 du fait d'un taux différent de celui de 2018 (tonnes, valeur négative en cas de baisse) ?`,
        c:q2, d:[Math.round(prod[C][0]*(fat[C][2]-fat[C][0])*10), Math.round((fat[C][2]-fat[C][0])*1000), Math.round(g(C,2)-g(C,0))], u:' t',
        ex:`Seul l'écart de taux compte, appliqué à la production 2022 : ${fmtF(prod[C][2])} kt × (${fmtF(fat[C][2],2)} − ${fmtF(fat[C][0],2)}) % ≈ ${fmtF(q2)} t. Comparer les tonnages totaux mélangerait l'effet du taux et celui du volume.`},
@@ -3867,7 +3880,8 @@ const NUM_SETS = [
     const [i,j] = [0,1], g=absPick([3,4,5,6]), k=absPick([1,1.5,2]);
     const q1 = Math.round(total*parts[i]/100);
     const q2 = Math.round(total*(1+g/100)*(parts[j]-k)/100 - total*parts[j]/100);
-    const q3 = nr(parts[2]/parts[3],2);
+    const [ga, pe] = parts[2]>=parts[3] ? [2,3] : [3,2];
+    const q3 = nr(parts[ga]/parts[pe],2);
     return {html:chart, qs:[
       {q:`Quel montant revient à la rubrique « ${noms[i]} » (M€) ?`,
        c:q1, d:[Math.round(total/100*parts[i]*10), Math.round(total/6), Math.round(total*parts[i+1]/100)], u:' M€',
@@ -3875,9 +3889,9 @@ const NUM_SETS = [
       {q:`L'enveloppe totale augmente de ${g} % l'année suivante, tandis que la part de « ${noms[j]} » recule de ${fmtF(k,1)} point${k>1?'s':''}. De combien le montant de cette rubrique varie-t-il (M€) ?`,
        c:q2, d:[Math.round(-total*k/100), Math.round(total*parts[j]/100*(g/100)), Math.round(total*(1+g/100)*parts[j]/100*(1-k/100) - total*parts[j]/100)], u:' M€',
        ex:`Avant : ${fmtF(parts[j],1)} % × ${fmtF(total)} ≈ ${fmtF(Math.round(total*parts[j]/100))} M€. Après : ${fmtF(nr(parts[j]-k,1),1)} % × ${fmtF(Math.round(total*(1+g/100)))} ≈ ${fmtF(Math.round(total*(1+g/100)*(parts[j]-k)/100))} M€. Variation : ${fmtF(q2)} M€. Un recul en points se retranche de la part, il ne se multiplie pas.`},
-      {q:`Combien de fois la rubrique « ${noms[2]} » est-elle plus importante que la rubrique « ${noms[3]} » ?`,
-       c:q3, d:[nr(1/q3,2), nr(parts[2]-parts[3],2), nr(q3+0.12,2)], u:'',
-       ex:`${fmtF(parts[2],1)} ÷ ${fmtF(parts[3],1)} ≈ ${fmtF(q3,2)}. Le montant total n'est pas nécessaire : le rapport des parts suffit.`},
+      {q:`Combien de fois la rubrique « ${noms[ga]} » est-elle plus importante que la rubrique « ${noms[pe]} » ?`,
+       c:q3, d:[nr(1/q3,2), nr(parts[ga]-parts[pe],2), nr(q3+0.12,2)], u:'',
+       ex:`${fmtF(parts[ga],1)} ÷ ${fmtF(parts[pe],1)} ≈ ${fmtF(q3,2)}. L'écart en points (${fmtF(nr(parts[ga]-parts[pe],1),1)}) ne dit pas combien de fois l'une contient l'autre. Le montant total n'est pas nécessaire : le rapport des parts suffit.`},
       (()=>{ const tri = parts.slice().sort((a,b)=>a-b), c = nr(tri[0]+tri[1]+tri[2],1);
         return {q:`Quelle part de l'enveloppe représentent ensemble les trois plus petites rubriques (%) ?`,
          c, d:[nr(tri[3]+tri[4]+tri[5],1), nr(tri[0]+tri[1],1), nr(c+1.5,1)], u:' %',
@@ -4146,7 +4160,7 @@ const NUM_SETS = [
     const nouv = X.prix*(1-k/100);
     return {html, qs:[
       {q:`Quel a été le bénéfice de l'${X.n.slice(0,1).toLowerCase()+X.n.slice(1)} en 2024 (k€) ?`,
-       c:ben(X), d:[X.q*X.prix-X.fix, X.q*(X.prix-X.varc), X.q*X.prix - X.q*X.varc*1.1 - X.fix], u:' k€',
+       c:ben(X), d:[X.q*X.prix-X.fix, X.q*(X.prix-X.varc), Math.round(X.q*X.prix - X.q*X.varc*1.1 - X.fix)], u:' k€',
        ex:`Marge par unité : ${X.prix} − ${X.varc} = ${X.prix-X.varc} €. × ${fmtF(X.q)} milliers d'unités = ${fmtF(X.q*(X.prix-X.varc))} k€, moins ${fmtF(X.fix)} k€ de coûts fixes = ${fmtF(ben(X))} k€.`},
       {q:`À partir de combien d'unités vendues l'${Y.n.slice(0,1).toLowerCase()+Y.n.slice(1)} couvre-t-elle ses coûts fixes (milliers d'unités) ?`,
        c:nr(Y.fix/(Y.prix-Y.varc),1), d:[nr(Y.fix/Y.prix,1), nr(Y.fix/Y.varc,1), nr((Y.fix+Y.q*Y.varc)/Y.prix,1)], u:'',
@@ -4180,7 +4194,7 @@ const NUM_SETS = [
        c:nr(dens(A),1), d:[nr(A.pop/A.s,1), nr(A.s/A.pop,1), nr(dens(A)/10,1)], u:'',
        ex:`${fmtF(A.pop)} milliers = ${fmtF(A.pop*1000)} habitants ÷ ${fmtF(A.s)} km² ≈ ${fmtF(nr(dens(A),1),1)}. Oublier les milliers donne un résultat mille fois trop petit.`},
       {q:`Si sa croissance annuelle reste constante, quelle sera la population de la région ${B.n} dans deux ans (milliers) ?`,
-       c:nr(B.pop*Math.pow(1+B.g/100,2),1), d:[nr(B.pop*(1+2*B.g/100),1)===nr(B.pop*Math.pow(1+B.g/100,2),1) ? nr(B.pop*(1+B.g/100),1) : nr(B.pop*(1+2*B.g/100),1), nr(B.pop*(1+B.g/100),1), nr(B.pop+2*B.g,1)], u:'',
+       c:nr(B.pop*Math.pow(1+B.g/100,2),1), d:[Math.abs(B.pop*(1+2*B.g/100)-B.pop*Math.pow(1+B.g/100,2))<0.5 ? nr(B.pop*Math.pow(1+B.g/100,3),1) : nr(B.pop*(1+2*B.g/100),1), nr(B.pop*(1+B.g/100),1), nr(B.pop+2*B.g,1)], u:'',
        ex:`${fmtF(B.pop)} × ${fmtF(1+B.g/100,3)}² ≈ ${fmtF(nr(B.pop*Math.pow(1+B.g/100,2),1),1)} milliers.`},
       {q:`Quelle région a la densité de population la plus élevée ?`,
        c:rows[im].n, d:rows.filter((_,i)=>i!==im).map(r=>r.n), u:'',
@@ -4487,7 +4501,7 @@ const NUM_SETS = [
        c:nr(5000/lx,2), d:[nr(20000/cum[X][3],2), nr(18000/lx,2), nr(5000/sp[X][2],2)], u:' m/s',
        ex:`${hms(cum[X][3])} − ${hms(cum[X][2])} = ${Math.floor(lx/60)} min ${lx%60} s = ${lx} s. 5 000 m ÷ ${lx} s ≈ ${fmtF(nr(5000/lx,2),2)} m/s. <b>Raccourci.</b> ${cum[X][2]>=hr ? `Les deux temps ont la même heure : elle s'annule, seules les minutes et les secondes comptent.` : `Passer par l'heure ronde : ${mns(hr-cum[X][2])} jusqu'à ${hms(hr)}, puis ${mns(cum[X][3]-hr)}.`} <b>Piège.</b> ${fmtF(nr(18000/lx,2),2)} est la même vitesse en km/h.`},
       {q:`Quand ${noms[Y]} franchit la marque des 15 km, à quelle distance derrière se trouve ${noms[Z]} (m) ? On suppose que ${noms[Z]} a marché à vitesse constante entre le 10e et le 15e km.`,
-       c:ec, d:[Math.round((cum[Z][2]-cum[Y][2])*5000/sp[Y][2]), cum[Z][2]-cum[Y][2], Math.round(15000-15000*cum[Y][2]/cum[Z][2])], u:' m',
+       c:ec, d:[Math.round((cum[Z][2]-cum[Y][2])*5000/sp[Y][2]), cum[Z][2]-cum[Y][2], Math.round(15000-15000*cum[Y][2]/cum[Z][2])].filter(x=>Math.abs(x-ec)>2), u:' m',
        ex:`<b>Données.</b> ${noms[Y]} passe aux 15 km à ${hms(cum[Y][2])}. ${noms[Z]} passe aux 10 km à ${hms(cum[Z][1])} et aux 15 km à ${hms(cum[Z][2])}, soit ${sp[Z][2]} s pour 5 000 m. <b>Calcul.</b> À ${hms(cum[Y][2])}, ${noms[Z]} marche depuis ${cum[Y][2]-cum[Z][1]} s : 10 000 + 5 000 × ${cum[Y][2]-cum[Z][1]} ÷ ${sp[Z][2]} ≈ ${fmtF(Math.round(posZ))} m. Écart : ${fmtF(ec)} m. <b>Piège.</b> Utiliser la vitesse de ${noms[Y]} : la distance cherchée dépend de l'allure de ${noms[Z]}.`},
       {q:`Avec une vitesse supérieure de 2 % sur toute la course, de combien de secondes le temps final de ${noms[W]} aurait-il été réduit ?`,
        c:gain, d:[Math.round(cum[W][3]*0.02), Math.round(cum[W][3]*0.04/1.02), Math.round(lx*0.02)], u:' s',
@@ -4541,7 +4555,7 @@ const NUM_SETS = [
     const P = pickN(PAYS,4), K = ['C','I','G','X','M'];
     let rows, cach;
     for(let essai=0; essai<400; essai++){
-      rows = P.map(n=>{ const Y=ri(80,950)*2; const c=ri(48,58), i=ri(18,26), g=ri(17,24), nx=100-c-i-g, xs=ri(35,85);
+      rows = P.map(n=>{ const Y=ri(80,950)*2; const c=ri(480,580)/10, i=ri(180,260)/10, g=ri(170,240)/10, xs=ri(350,850)/10;
         const C=nr(Y*c/100,1), I=nr(Y*i/100,1), G=nr(Y*g/100,1), X=nr(Y*xs/100,1); const M=nr(C+I+G+X-Y,1);
         return {n, Y, C, I, G, X, M, dette:nr(ri(350,1300)/10,1)}; });
       if(rows.some(r=>r.M<=0)) continue;
@@ -4611,7 +4625,7 @@ const NUM_SETS = [
          ex:`Électricité : ${fmtF(D.e3)} GWh × 3,6 = ${fmtF(nr(D.e3*3.6,1),1)} TJ. ÷ ${fmtF(D.g3)} TJ ≈ ${fmtF(nPct(100*D.e3*3.6/D.g3),1)} %. Comparer des GWh à des TJ sans conversion fausse le rapport.`};
     return {html, qs:[
       {q:`Combien de GWh représente la consommation de gaz naturel ${duPays(A.n)} en 2023 ?`,
-       c:Math.round(A.g3/3.6), d:[Math.round(A.g3*3.6), nr(A.g3/3600,1), Math.round(A.g3*1000/3.6)], u:' GWh',
+       c:Math.round(A.g3/3.6), d:[Math.round(A.g3*3.6), Math.round(A.g3/3600), Math.round(A.g3*1000/3.6)], u:' GWh',
        ex:`1 GWh = 3,6 TJ, donc ${fmtF(A.g3)} TJ ÷ 3,6 ≈ ${fmtF(Math.round(A.g3/3.6))} GWh. <b>Vérification.</b> Le GWh est la plus grande des deux unités : le nombre doit DIMINUER.`},
       {q:`Quelle est la consommation totale d'énergie (gaz et électricité) par habitant ${enPays(B.n)} en 2023 (GJ) ?`,
        c:nr(E(B.g3,B.e3)/(B.pop*1e6),2), d:[nr((B.g3+B.e3)*1000/(B.pop*1e6),2), nr(E(B.g3,B.e3)/(B.pop*1e3),2), nr(B.g3*1000/(B.pop*1e6),2)], u:' GJ',
@@ -9229,7 +9243,7 @@ function renderConcours(){
       <tr><td>Épreuves</td><td>5 tests écrits, en deux sessions</td></tr>
       <tr><td>Centre d'évaluation</td><td>supprimé</td></tr>
       <tr><td>Copies EUFTE corrigées</td><td>environ 1,5 fois le nombre de places</td></tr>
-      <tr><td>Taux de réussite</td><td>de l'ordre de 4 % des candidats sur les concours EPSO récents ; beaucoup de lauréats ont tenté plusieurs fois</td></tr>
+      <tr><td>Taux de réussite</td><td>1 490 places pour 174 727 candidatures, soit moins de 1 % (une partie des inscrits ne passe pas les tests) ; beaucoup de lauréats ont tenté plusieurs fois</td></tr>
     </table>
   </div>
 

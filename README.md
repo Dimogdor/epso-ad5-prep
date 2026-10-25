@@ -17,7 +17,7 @@ Fichier HTML unique, JavaScript vanilla, aucune dépendance, aucun build, aucun 
 
 Les tests 3 à 5 se passent en Langue 2 : un sélecteur « English / Français » sur chacun de ces onglets bascule les questions, les explications et les sujets EUFTE. L'anglais est proposé par défaut, et le choix est mémorisé.
 
-Dans les trois moteurs de session, l'ordre des options est permuté à l'affichage : la bonne réponse ne reste jamais à la même place. En numérique, « Aucune de ces réponses » et « Impossible à déterminer avec ces données » restent épinglées en dernière position, comme au concours.
+Dans les trois moteurs de session, l'ordre des options est permuté à l'affichage : la bonne réponse ne reste jamais à la même place. En numérique, « Aucune de ces réponses » et « Impossible à déterminer avec ces données » restent épinglées en dernière position, comme au concours. Toutes les valeurs proposées ont le même nombre de décimales, et aucune ne diffère de la bonne réponse d'un simple arrondi.
 
 ## Sources
 
