@@ -451,7 +451,9 @@ body.tao-on header.top, body.tao-on .player{display:none !important;}
   font-weight:700;font-size:14px;position:relative;padding:0;}
 .tao-n.vu{background:var(--surface);border-color:var(--ink);color:var(--ink);}
 .tao-n.rep{background:var(--ink);border-color:var(--ink);color:var(--surface);}
-.tao-n.cur{outline:3px solid var(--accent);outline-offset:2px;}
+.tao-n.cur{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);}
+/* Comme sur TAO : une petite flèche sous le numéro de la question active. */
+.tao-n.cur::before{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);border:5px solid transparent;border-top:0;border-bottom:6px solid var(--accent);}
 .tao-n.flag::after{content:"";position:absolute;top:-5px;right:-4px;width:10px;height:13px;background:var(--warn);
   clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%);}
 .tao-ov{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;min-height:40px;font-weight:600;color:var(--ink);margin-left:auto;}
@@ -474,7 +476,6 @@ body.tao-on header.top, body.tao-on .player{display:none !important;}
 mark.tao-hl{background:#FFE58A;color:#1B2438;padding:0 1px;border-radius:2px;}
 .tao-win{position:fixed;z-index:70;width:290px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;
   box-shadow:0 10px 30px rgba(0,0,0,.22);resize:both;overflow:auto;min-width:240px;min-height:160px;}
-#taoNotes{width:min(560px,92vw);}
 .tao-win.hidden{display:none;}
 .tao-win-h{display:flex;justify-content:space-between;align-items:center;padding:6px 6px 6px 12px;cursor:move;background:var(--subtle);
   border-bottom:1px solid var(--line);font-weight:700;font-size:14px;touch-action:none;user-select:none;}
@@ -489,12 +490,78 @@ mark.tao-hl{background:#FFE58A;color:#1B2438;padding:0 1px;border-radius:2px;}
 .calc-keys button.eq{background:var(--accent);color:#fff;border-color:var(--accent);}
 :root[data-theme="dark"] .calc-keys button.eq{color:#10221D;}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .calc-keys button.eq{color:#10221D;}}
-.notes-tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
-.notes-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;min-height:40px;font-size:13.5px;color:var(--ink);}
-.notes-tabs button.on{border-color:var(--accent);background:var(--accent-soft);}
-#notesTxt{width:100%;min-height:220px;font-family:var(--mono);font-size:14px;border:1px solid var(--line);border-radius:8px;padding:8px;
-  background:var(--sunken);color:var(--ink);resize:vertical;}
-#notesCv{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:var(--sunken);color:var(--ink);touch-action:none;}
+/* Outils de l'examen blanc, calqués sur les instructions TAO 427-26 (annexe I). */
+#taoNotes{width:min(560px,94vw);height:min(470px,78vh);display:flex;flex-direction:column;}
+#taoNotes .tao-win-b{flex:1;display:flex;flex-direction:column;min-height:0;}
+.sp-outils{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.sp-outils button,.sp-outils select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 9px;min-height:38px;font-size:13.5px;color:var(--ink);}
+.sp-outils button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);}
+.sp-zone{position:relative;flex:1;min-height:220px;border:1px solid var(--line);border-radius:8px;background:var(--sunken);overflow:hidden;touch-action:none;color:var(--ink);}
+.sp-zone[data-outil="pin"],.sp-zone[data-outil="forme"]{cursor:crosshair;}
+.sp-zone[data-outil="txt"]{cursor:text;}
+.sp-zone[data-outil="sel"] .sp-it,.sp-zone[data-outil="sel"] .sp-txt{cursor:move;}
+.sp-zone[data-outil="eff"] .sp-it,.sp-zone[data-outil="eff"] .sp-txt{cursor:pointer;}
+.sp-svg{position:absolute;inset:0;width:100%;height:100%;}
+.sp-vis{stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;}
+.sp-hit{stroke:transparent;stroke-width:16;pointer-events:stroke;}
+.sp-txt{position:absolute;min-width:24px;max-width:calc(100% - 8px);padding:2px 4px;font-family:var(--mono);font-size:14px;line-height:1.4;
+  white-space:pre-wrap;outline:1px dashed var(--line);color:var(--ink);}
+.sp-txt:focus{outline:1px solid var(--accent);}
+.tao-row{display:flex;gap:6px;align-items:stretch;margin-bottom:10px;}
+.tao-row .qcm-opt{margin:0;flex:1;min-width:0;}
+.tao-obs{display:flex;flex-direction:column;gap:4px;justify-content:center;}
+.abs-cell{min-width:0;display:flex;flex-direction:column;gap:4px;}
+.abs-cell .tao-obs{flex-direction:row;justify-content:center;}
+.tao-ob{width:40px;height:40px;min-width:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;padding:0;}
+.tao-ob.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);}
+.qcm-opt.tao-opt.masq,.abs-opt.tao-opt.masq{position:relative;opacity:1;text-decoration:none;}
+.tao-opt.masq > *{visibility:hidden;}
+.qcm-opt.tao-opt.masq::after,.abs-opt.tao-opt.masq::after{content:attr(data-masq);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:4px;background:repeating-linear-gradient(135deg,#9CA1A8 0 10px,#A8ADB4 10px 20px);color:#15181C;font-weight:700;font-size:14px;border-radius:inherit;}
+.abs-opt.tao-opt.masq::after{font-size:12.5px;}
+.tao-hlbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 100%;font-size:13.5px;color:var(--muted);}
+.tao-hlbar button{border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-height:38px;font-weight:600;color:#1B2438;}
+.tao-hlbar button.on{outline:2px solid var(--accent);outline-offset:1px;}
+.tao-hlbar [data-c="gomme"],.tao-hlbar [data-c="tout"]{background:var(--surface);color:var(--ink);}
+mark.tao-hl.hl-jaune,.tao-hlbar .hl-jaune{background:#FFE58A;}
+mark.tao-hl.hl-vert,.tao-hlbar .hl-vert{background:#BDEFB4;}
+mark.tao-hl.hl-bleu,.tao-hlbar .hl-bleu{background:#BCDDFF;}
+mark.tao-hl.hl-rose,.tao-hlbar .hl-rose{background:#FFC4DD;}
+.tao-texte.gomme mark.tao-hl{cursor:pointer;text-decoration:underline dotted;}
+.tao-switch{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-2);font-size:14.5px;line-height:1.45;cursor:pointer;}
+.tao-switch input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--accent);}
+#taoAcc{width:min(330px,94vw);}
+#taoDocs{width:min(380px,94vw);max-height:80vh;}
+.acc-t{font-weight:700;font-size:13.5px;margin:10px 0 6px;}
+.tao-win-b > .acc-t:first-child,#accCorps > .acc-t:first-child{margin-top:0;}
+.acc-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}
+.acc-row button,#accPolice,.acc-reset{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 9px;min-height:36px;font-size:13px;}
+.acc-row button.on{outline:2px solid var(--accent);outline-offset:1px;}
+.acc-th.th-contraste{background:#FFFFFF;color:#000000;border-color:#000000;}
+.acc-th.th-sombre{background:#15171B;color:#F2F3F5;}
+.acc-th.th-jaune{background:#000000;color:#FFE600;}
+.acc-th.th-creme{background:#FBF3DC;color:#1A1A1A;}
+.acc-row .acc-cc{width:32px;height:32px;min-height:32px;padding:0;border-radius:50%;border:2px solid var(--line);}
+.acc-reg span:first-child{flex:1;font-size:13px;}
+.acc-v{min-width:52px;text-align:center;font-family:var(--mono);font-size:13px;}
+.acc-note{font-size:12.5px;color:var(--muted);margin:2px 0 6px;line-height:1.45;}
+#accPolice{width:100%;margin-bottom:8px;}
+.acc-reset{width:100%;margin-top:8px;}
+body.tao-th-contraste{--bg:#FFFFFF;--surface:#FFFFFF;--subtle:#F0F0F0;--sunken:#FFFFFF;--ink:#000000;--ink-2:#000000;--muted:#1A1A1A;--line:#000000;--line-2:#333333;--accent:#0033CC;--accent-soft:#DCE4FF;--accent-ink:#001A66;}
+body.tao-th-sombre{--bg:#0B0C0E;--surface:#15171B;--subtle:#1F2228;--sunken:#101215;--ink:#F2F3F5;--ink-2:#DADDE2;--muted:#B5BAC2;--line:#4A505A;--line-2:#30343B;--accent:#7CC4FF;--accent-soft:#16324A;--accent-ink:#CFE8FF;}
+body.tao-th-jaune{--bg:#000000;--surface:#000000;--subtle:#111111;--sunken:#000000;--ink:#FFE600;--ink-2:#FFE600;--muted:#FFF07A;--line:#FFE600;--line-2:#8C7F00;--accent:#00E5FF;--accent-soft:#00363D;--accent-ink:#A8F7FF;}
+body.tao-th-creme{--bg:#F3E9C8;--surface:#FBF3DC;--subtle:#F1E6C4;--sunken:#F7EDD0;--ink:#1A1A1A;--ink-2:#2B2B2B;--muted:#4A4537;--line:#C9B98A;--line-2:#DDD0A6;--accent:#7A4A00;--accent-soft:#F0DDB0;--accent-ink:#4D2E00;}
+#taoLR{position:fixed;inset:0;z-index:65;pointer-events:none;}
+#taoLR .lr-haut,#taoLR .lr-bas{position:absolute;left:0;right:0;background:rgba(28,31,36,.6);}
+#taoLR .lr-haut{top:0;}
+#taoLR .lr-bas{bottom:0;}
+#taoLR .lr-bande{position:absolute;left:0;right:0;box-shadow:inset 0 2px 0 var(--accent),inset 0 -2px 0 var(--accent);}
+#taoLR button{position:absolute;bottom:-20px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font-size:18px;line-height:1;pointer-events:auto;touch-action:none;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+#taoLR .lr-taille{left:8px;cursor:ns-resize;}
+#taoLR .lr-depl{left:50%;transform:translateX(-50%);cursor:grab;}
+body.tao-lr .tao-top{z-index:66;}
 .tao-dlg-fond{position:fixed;inset:0;z-index:80;background:rgba(10,12,16,.45);display:flex;align-items:center;justify-content:center;padding:16px;}
 .tao-dlg{background:var(--surface);color:var(--ink);border-radius:14px;max-width:520px;width:100%;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:90vh;overflow:auto;}
 .tao-dlg h3{margin:0 0 10px;font-size:18px;}
@@ -516,6 +583,12 @@ mark.tao-hl{background:#FFE58A;color:#1B2438;padding:0 1px;border-radius:2px;}
 .tao-rev[open] summary{margin-bottom:10px;}
 .exam-hist{font-size:13.5px;color:var(--muted);margin-top:10px;}
 @media(max-width:640px){
+  /* Sur téléphone, la barre d'outils tient sur une ligne qui défile : en plusieurs
+     rangées, l'en-tête fixe occupait la moitié de l'écran. */
+  .tao-tools,.tao-hlbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+  .tao-tools::-webkit-scrollbar,.tao-hlbar::-webkit-scrollbar{display:none;}
+  .tao-tools button,.tao-hlbar button{flex:none;}
+  .tao-hlbar span{display:none;}
   .tao-tmr{font-size:19px;}
   .tao-n{width:34px;height:34px;font-size:13px;}
   .tao-q{padding:16px 12px;}
@@ -9062,7 +9135,7 @@ function syncHeaderH(){
   if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
 }
 window.addEventListener('resize', syncHeaderH);
-function goTo(id){ clearInterval(ACTIVE_TIMER); document.querySelectorAll('.tao-win').forEach(w=>w.remove()); document.body.classList.remove('tao-on'); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
+function goTo(id){ clearInterval(ACTIVE_TIMER); taoOutilsFin(); document.body.classList.remove('tao-on'); CURRENT = id; renderTabs(); RENDERERS[id](); ttsSyncCours(); ttsPaint(); window.scrollTo({top:0,behavior:'smooth'}); }
 
 /* ================= ACCUEIL ================= */
 /* Carte « prochaine étape » : la première étape datée du calendrier non encore
@@ -9109,7 +9182,8 @@ function renderDashboard(){
     <h2 style="margin-top:6px;">La partie 1 en conditions réelles</h2>
     <p class="lede" style="font-size:14.5px;">Verbal (20 textes, 35 min), puis numérique (10 questions, 20 min), puis abstrait
     (10 séries, 10 min), dans l'interface décrite par les instructions TAO : minuteur par partie, navigation libre, signets,
-    vue d'ensemble, calculatrice à point décimal, bloc-notes, surligneur, élimination des réponses. Correction à la fin seulement.</p>
+    vue d'ensemble, pièces jointes, guide de lecture, calculatrice à point décimal, accessibilité, surligneur en couleurs, bloc-notes à formes,
+    élimination et masquage des réponses. Correction à la fin seulement.</p>
     <button class="btn wide" id="examP1">Lancer l'examen blanc complet (65 min)</button>
     ${dernierExamen()}
   </div>
@@ -9272,6 +9346,9 @@ function renderConcours(){
       <li>Pièce d'identité avec <b>nom et photo sur la même face</b>. Sinon, téléverser un PDF des deux faces dans le Single Candidate Portal avant 23h59 le lendemain du test.</li>
       <li>Vérification technique préalable faite, une seule tentative : diagnostic, webcam, pièce d'identité, scan de la pièce de 20 à 60 secondes.</li>
       <li>Enregistrer le numéro du support TAO : <b>+351 211 554 559</b>, de 9h à 18h, du lundi au vendredi, en anglais et en français.</li>
+      <li><b>Sessions publiques</b> pour s'exercer à l'interface : sur la page de connexion TAO, « Sessions publiques », puis « Commencer ». Tests anonymes, sans note ; ils ne montrent pas forcément toutes les fonctions du concours.</li>
+      <li><b>Langue de l'interface</b>, à régler avant d'entrer dans une session : bouton rond en haut à droite, « Mon compte », onglet « Mes paramètres d'utilisateur », « Enregistrer les modifications », puis recharger la page.</li>
+      <li>Webcam : pièce bien éclairée, aucune fenêtre ni lumière vive derrière soi, visage centré ; ni chapeau ni casque ; lunettes de lecture retirées ou orientées pour éviter les reflets.</li>
     </ul>
     <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Autorisé</p>
     <ul class="jj">
@@ -9291,13 +9368,33 @@ function renderConcours(){
     </ul>
     <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Pendant le test</p>
     <ul class="jj">
-      <li>Navigation libre entre les questions d'une même partie, marque-page pour y revenir, panneau de synthèse des réponses : répondre à tout avant de valider.</li>
-      <li>Outils à l'écran : calculatrice (décimales avec un <b>point</b>), bloc-notes, surligneur, élimination de réponses, règle de lecture, zoom et contraste. L'examen blanc en mode TAO, sur l'accueil, reproduit cette interface.</li>
-      <li>Les pages d'instructions ont leur propre compte à rebours, puis le test démarre seul.</li>
+      <li>Dernière étape avant le test : accepter le <b>contrat d'examen</b>. Les pages d'instructions ont ensuite leur propre compte à rebours, puis le test démarre seul.</li>
+      <li>Navigation libre entre les questions d'une même partie, par la barre numérotée ou les flèches. Le <b>signet</b> marque une question ; la <b>vue d'ensemble</b> la retrouve dans la section « Marquée ».</li>
+      <li>Vue d'ensemble : cercle gris clair, question pas encore vue ; contour noir, vue sans réponse ; chiffre blanc dans un cercle noir, réponse donnée ; petite flèche dessous, question active.</li>
+      <li>Avant de soumettre : « Réviser mes réponses » ou « Continuer à répondre » ramènent au test ; « Soumettre cette partie », « Soumettre le test » ou « Terminer le test » valident, sans retour possible.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Les outils de la plateforme</p>
+    <ul class="jj">
+      <li><b>Barre fixe, en haut à droite</b> : pièces jointes (les instructions, consultables à tout moment), guide de lecture, calculatrice, accessibilité, surligneur, bloc-notes, suppression et masquage des réponses. Un contour autour de l'icône signale un outil actif ; un second clic le désactive.</li>
+      <li><b>Élimination et masquage des réponses</b> : ouvrir le menu des paramètres de cet outil, activer « Élimination des réponses » (barrer une proposition) ou « Masquage des réponses » (la griser), puis fermer le menu ; un second clic sur la proposition la rétablit.</li>
+      <li><b>Guide de lecture</b> : une bande horizontale, tout le reste grisé. La double flèche à gauche l'agrandit ou la réduit, l'icône du milieu la déplace : de quoi isoler une ligne de tableau ou un passage.</li>
+      <li><b>Surligneur</b> : sélectionner du texte, puis une couleur ; gomme pour un passage, « Tout effacer » pour le reste. Il ne marche pas sur les images.</li>
+      <li><b>Calculatrice</b> : clavier ou touches à l'écran, Entrée ou = pour le résultat, point décimal (pas de virgule), historique des opérations ; elle se déplace et se redimensionne.</li>
+      <li><b>Bloc-notes</b> : sélectionner, texte, pinceau, forme (rectangle, ellipse, ligne) et effacer ; la fenêtre se déplace et se redimensionne.</li>
+      <li><b>Accessibilité</b> : thèmes de contraste (un second clic sur le thème rétablit l'affichage), taille et couleur du curseur, police, taille du texte, interligne, espacement des mots et des lettres.</li>
+      <li><b>Barre flottante, à droite</b> : déplacer la barre, vignette de la webcam (vérifier que le visage reste visible), batterie si l'ordinateur n'est pas branché, zoom avant et arrière, position, réduire.</li>
+      <li>Ces outils ne changent que l'affichage, jamais la note. Le test préalable sert à les essayer ; l'<b>examen blanc en mode TAO</b> de l'app les reproduit tous, sauf la webcam et la batterie.</li>
+    </ul>
+    <p class="eyebrow" style="color:var(--accent);margin:16px 0 4px;">Après le test</p>
+    <ul class="jj">
+      <li>Les réponses sont enregistrées en continu. En se reconnectant, l'onglet « Sessions terminées » donne le <b>certificat de participation</b> en PDF.</li>
+      <li>Une enquête de satisfaction facultative reste ouverte 72 heures à compter du lendemain du test.</li>
     </ul>
     <div class="info-box">Problème technique : appeler le support TAO pendant le créneau, puis déposer une
     réclamation écrite dans le Single Candidate Portal avec une preuve de l'appel. Sans vérification
-    préalable ni appel au support, la réclamation est irrecevable.</div>
+    préalable ni appel au support, la réclamation est irrecevable. Pour l'appel, on peut se lever prendre
+    son téléphone, puis rester assis face à la caméra et le ranger une fois le problème réglé. Un incident
+    sur un test ne dispense pas de se connecter aux tests suivants.</div>
     <div class="warn-box"><b>Le créneau ne se change pas.</b> La FAQ d'EPSO l'écrit en toutes lettres : il n'est pas
     possible de modifier la date ou l'heure des tests, même pour un candidat dans un autre fuseau horaire. La politique
     de force majeure (instructions TAO, point 5.1) ne couvre qu'un événement <b>imprévisible et indépendant de la
@@ -9861,7 +9958,7 @@ function renderNumAbs(){
     <button class="btn wide" id="startAbsExam">Session abstraite niveau examen (${ABS_COUNT} séries · 10 min au total)</button>
     <button class="btn ghost wide" id="startAbs" style="margin-top:8px;">Session abstraite d'échauffement (règles simples)</button>
     <p class="eyebrow" style="color:var(--accent);margin:18px 0 8px;">EXAMEN BLANC EN MODE TAO</p>
-    <p style="font-size:14px;">L'interface du concours : minuteur par partie, navigation libre, signets, vue d'ensemble, calculatrice à l'écran (point décimal), bloc-notes, élimination des réponses. Aucune correction avant la fin.</p>
+    <p style="font-size:14px;">L'interface du concours : minuteur par partie, navigation libre, signets, vue d'ensemble, pièces jointes, guide de lecture, calculatrice à l'écran (point décimal), accessibilité, surligneur, bloc-notes, élimination et masquage des réponses. Aucune correction avant la fin.</p>
     <button class="btn ghost wide" id="examNum" style="margin-bottom:8px;">Examen blanc numérique (10 questions · 20 min)</button>
     <button class="btn ghost wide" id="examAbs">Examen blanc abstrait (10 séries · 10 min)</button>
   </div>`;
@@ -9971,8 +10068,9 @@ function runAbstractSession(mk){
    (427-26 V1, annexe I) : minuteur par partie en haut de l'écran, barre de
    navigation numérotée, signets et panneau « vue d'ensemble », réponses
    modifiables jusqu'à la soumission, calculatrice à l'écran (point décimal
-   uniquement), bloc-notes, surligneur, élimination des réponses, zoom,
-   avertissements avant de soumettre. Aucune correction avant la fin : elle
+   uniquement), pièces jointes, guide de lecture, accessibilité, surligneur,
+   bloc-notes, élimination et masquage des réponses, zoom, avertissements avant
+   de soumettre. Aucune correction avant la fin : elle
    arrive d'un bloc, partie par partie. */
 const TAO_SPEC = {
   verbal:   {nom:'Raisonnement verbal',    n:20, duree:35*60},
@@ -10078,25 +10176,202 @@ function taoCalculatrice(){
   });
   inp.focus();
 }
+/* Bloc-notes de TAO (instructions 427-26, point 6.4.4) : outils Sélectionner,
+   Texte, Pinceau, Forme (rectangle, ellipse, ligne) et Effacer, dans une fenêtre
+   déplaçable et redimensionnable. Chaque tracé porte une zone de clic plus large
+   que le trait, sans quoi une ligne fine serait presque impossible à saisir. */
 function taoBlocNotes(){
   const f = taoFenetre('taoNotes','Bloc-notes',
-    '<div class="notes-tabs"><button data-m="txt" class="on">Texte</button><button data-m="draw">Dessin</button><button data-m="clr">Effacer le dessin</button></div>'
-    +'<textarea id="notesTxt" spellcheck="false" placeholder="Notes et calculs intermédiaires. Effacées à la fin de l\'examen."></textarea>'
-    +'<canvas id="notesCv" width="560" height="360" class="hidden" aria-label="Zone de dessin"></canvas>',
-    10, innerHeight-430);
+    '<div class="sp-outils" role="toolbar" aria-label="Outils du bloc-notes">'
+      +'<button data-o="sel">Sélectionner</button><button data-o="txt">Texte</button><button data-o="pin">Pinceau</button>'
+      +'<button data-o="forme">Forme</button><select id="spForme" aria-label="Forme à dessiner"><option value="rect">Rectangle</option><option value="ell">Ellipse</option><option value="lig">Ligne</option></select>'
+      +'<button data-o="eff">Effacer</button></div>'
+    +'<div class="sp-zone" id="spZone"><svg class="sp-svg" aria-label="Zone de dessin"></svg></div>',
+    10, innerHeight-480);
   if(f.dataset.ok) return; f.dataset.ok = '1';
-  const ta = f.querySelector('#notesTxt'), cv = f.querySelector('#notesCv'), ctx = cv.getContext('2d');
-  f.querySelectorAll('.notes-tabs button').forEach(b=>b.addEventListener('click',()=>{
-    if(b.dataset.m==='clr'){ ctx.clearRect(0,0,cv.width,cv.height); return; }
-    f.querySelectorAll('.notes-tabs button[data-m="txt"],.notes-tabs button[data-m="draw"]').forEach(x=>x.classList.toggle('on', x===b));
-    ta.classList.toggle('hidden', b.dataset.m!=='txt'); cv.classList.toggle('hidden', b.dataset.m!=='draw');
-  }));
-  let trace = false;
-  const pt = e=>{ const r = cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width, (e.clientY-r.top)*cv.height/r.height]; };
-  cv.addEventListener('pointerdown', e=>{ trace = true; cv.setPointerCapture(e.pointerId); const [x,y] = pt(e); ctx.beginPath(); ctx.moveTo(x,y); });
-  cv.addEventListener('pointermove', e=>{ if(!trace) return; const [x,y] = pt(e); ctx.lineTo(x,y); ctx.strokeStyle = getComputedStyle(cv).color; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.stroke(); });
-  cv.addEventListener('pointerup', ()=>{ trace = false; });
-  ta.focus();
+  const z = f.querySelector('#spZone'), svg = z.querySelector('svg'), NS = 'http://www.w3.org/2000/svg';
+  let outil = 'txt', forme = 'rect', cours = null;
+  const pos = e => { const r = z.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  const choisir = o => {
+    outil = o; z.dataset.outil = o;
+    f.querySelectorAll('.sp-outils [data-o]').forEach(b=>{ b.classList.toggle('on', b.dataset.o===o); b.setAttribute('aria-pressed', b.dataset.o===o); });
+    z.querySelectorAll('.sp-txt').forEach(t=>t.contentEditable = o==='txt' ? 'true' : 'false');
+  };
+  const regler = (g, attrs) => g.querySelectorAll('*').forEach(el=>Object.entries(attrs).forEach(([a,v])=>el.setAttribute(a,v)));
+  const element = (tag, attrs) => {
+    const g = document.createElementNS(NS,'g'); g.setAttribute('class','sp-it'); g.dataset.dx = 0; g.dataset.dy = 0;
+    ['sp-vis','sp-hit'].forEach(c=>{ const el = document.createElementNS(NS, tag); el.setAttribute('class', c); el.setAttribute('fill','none'); g.appendChild(el); });
+    regler(g, attrs); svg.appendChild(g); return g;
+  };
+  z.addEventListener('pointerdown', e=>{
+    const cible = e.target.closest('.sp-it, .sp-txt');
+    if(outil==='txt' && cible && cible.classList.contains('sp-txt')) return;
+    const [x,y] = pos(e);
+    if(outil==='eff'){ if(cible) cible.remove(); return; }
+    if(outil==='sel'){
+      if(!cible) return;
+      e.preventDefault(); z.setPointerCapture(e.pointerId);
+      cours = {mode:'dep', el:cible, x0:x, y0:y, dx:+cible.dataset.dx||0, dy:+cible.dataset.dy||0, l:parseFloat(cible.style.left)||0, t:parseFloat(cible.style.top)||0};
+      return;
+    }
+    e.preventDefault();
+    if(outil==='txt'){
+      const t = document.createElement('div');
+      t.className = 'sp-txt'; t.contentEditable = 'true'; t.spellcheck = false;
+      t.style.left = Math.round(x)+'px'; t.style.top = Math.round(y)+'px';
+      t.addEventListener('blur', ()=>{ if(!t.textContent.trim()) t.remove(); });
+      z.appendChild(t); setTimeout(()=>t.focus(), 0);
+      return;
+    }
+    z.setPointerCapture(e.pointerId);
+    if(outil==='pin'){ const d = 'M'+x.toFixed(1)+' '+y.toFixed(1); cours = {mode:'pin', d, g:element('path',{d})}; }
+    else {
+      const tag = forme==='rect' ? 'rect' : forme==='ell' ? 'ellipse' : 'line';
+      cours = {mode:'forme', tag, x0:x, y0:y, g:element(tag, tag==='line' ? {x1:x,y1:y,x2:x,y2:y} : tag==='rect' ? {x,y,width:0,height:0} : {cx:x,cy:y,rx:0,ry:0})};
+    }
+  });
+  z.addEventListener('pointermove', e=>{
+    if(!cours) return;
+    const [x,y] = pos(e);
+    if(cours.mode==='pin'){ cours.d += ' L'+x.toFixed(1)+' '+y.toFixed(1); regler(cours.g, {d:cours.d}); }
+    else if(cours.mode==='forme'){
+      const {x0,y0,tag} = cours;
+      regler(cours.g, tag==='line' ? {x2:x,y2:y} : tag==='rect' ? {x:Math.min(x,x0),y:Math.min(y,y0),width:Math.abs(x-x0),height:Math.abs(y-y0)}
+        : {cx:(x+x0)/2,cy:(y+y0)/2,rx:Math.abs(x-x0)/2,ry:Math.abs(y-y0)/2});
+    } else {
+      const dx = x-cours.x0, dy = y-cours.y0, el = cours.el;
+      if(el.classList.contains('sp-txt')){ el.style.left = (cours.l+dx)+'px'; el.style.top = (cours.t+dy)+'px'; }
+      else { el.dataset.dx = cours.dx+dx; el.dataset.dy = cours.dy+dy; el.setAttribute('transform','translate('+(cours.dx+dx)+' '+(cours.dy+dy)+')'); }
+    }
+  });
+  const fin = ()=>{ cours = null; };
+  z.addEventListener('pointerup', fin); z.addEventListener('pointercancel', fin);
+  f.querySelectorAll('.sp-outils [data-o]').forEach(b=>b.addEventListener('click',()=>choisir(b.dataset.o)));
+  f.querySelector('#spForme').addEventListener('change', e=>{ forme = e.target.value; choisir('forme'); });
+  choisir('txt');
+}
+
+/* Outils d'affichage de TAO. Les instructions le rappellent : ils ne changent que
+   la présentation à l'écran, jamais la note. */
+const TAO_THEMES = [['contraste','Contraste élevé'],['sombre','Fond sombre'],['jaune','Jaune sur noir'],['creme','Noir sur crème']];
+const TAO_POLICES = [['','Police par défaut',''],['arial','Arial','Arial,Helvetica,sans-serif'],['verdana','Verdana','Verdana,Geneva,sans-serif'],
+  ['georgia','Georgia','Georgia,serif'],['times','Times New Roman',"'Times New Roman',Times,serif"],['courier','Courier New',"'Courier New',Courier,monospace"]];
+const TAO_CURSEURS = [['noir','#111111','#FFFFFF'],['blanc','#FFFFFF','#111111'],['rouge','#D62828','#FFFFFF'],['bleu','#1D4ED8','#FFFFFF'],['vert','#0F7B3F','#FFFFFF'],['jaune','#F2C200','#111111']];
+const TAO_REGLAGES = [['fs','Taille de la police',-2,4],['lh','Interligne',0,4],['ws','Espacement entre les mots',0,4],['ls','Espacement entre les lettres',0,4]];
+const HL_COULEURS = [['jaune','Jaune'],['vert','Vert'],['bleu','Bleu'],['rose','Rose']];
+const IC_BARRER = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Arial,sans-serif">abc</text><path d="M2 12.5h20" stroke="currentColor" stroke-width="2"/></svg>';
+const IC_MASQUER = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 20L20 4"/></svg>';
+let TAO_ACC = null;
+const taoAccDefaut = () => ({theme:null, police:'', fs:0, lh:0, ws:0, ls:0, cur:0, curCol:null});
+
+function taoAccAppliquer(){
+  const A = TAO_ACC || taoAccDefaut();
+  TAO_THEMES.forEach(([k])=>document.body.classList.remove('tao-th-'+k));
+  if(A.theme) document.body.classList.add('tao-th-'+A.theme);
+  let st = document.getElementById('taoAccStyle');
+  if(!st){ st = document.createElement('style'); st.id = 'taoAccStyle'; document.head.appendChild(st); }
+  const q = 'body.tao-on .tao-q', pol = (TAO_POLICES.find(p=>p[0]===A.police)||[])[2];
+  let css = '';
+  if(pol) css += q+','+q+' *{font-family:'+pol+' !important;}';
+  if(A.fs) css += q+'{font-size:'+(1+A.fs*0.1).toFixed(2)+'em;}';
+  if(A.lh) css += q+' *{line-height:'+(1.5+A.lh*0.3).toFixed(1)+' !important;}';
+  if(A.ws) css += q+' *{word-spacing:'+(A.ws*0.12).toFixed(2)+'em;}';
+  if(A.ls) css += q+' *{letter-spacing:'+(A.ls*0.03).toFixed(2)+'em;}';
+  if(A.cur || A.curCol){
+    const px = [24,32,44,60,80][A.cur], c = TAO_CURSEURS.find(x=>x[0]===A.curCol) || TAO_CURSEURS[0];
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+px+'" height="'+px+'" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.2 1.7L8.6 21z" fill="'+c[1]+'" stroke="'+c[2]+'" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+    css += 'body.tao-on,body.tao-on *{cursor:url("data:image/svg+xml,'+encodeURIComponent(svg)+'") 2 2,auto !important;}';
+  }
+  st.textContent = css;
+}
+
+function taoAccessibilite(){
+  const f = taoFenetre('taoAcc','Accessibilité','<div id="accCorps"></div>', innerWidth-340, 70);
+  const A = TAO_ACC;
+  const dessiner = ()=>{
+    f.querySelector('#accCorps').innerHTML =
+      '<p class="acc-t">Thèmes de contraste</p><div class="acc-row">'
+        +TAO_THEMES.map(([k,lib])=>'<button data-th="'+k+'" class="acc-th th-'+k+(A.theme===k?' on':'')+'" aria-pressed="'+(A.theme===k)+'">'+lib+'</button>').join('')+'</div>'
+      +'<p class="acc-note">Un second clic sur le thème choisi rétablit l\'affichage d\'origine.</p>'
+      +'<p class="acc-t">Curseur</p><div class="acc-row"><button data-cur="-1" aria-label="Curseur plus petit">−</button><span class="acc-v">'+(A.cur ? 'taille '+(A.cur+1) : 'taille 1')+'</span><button data-cur="1" aria-label="Curseur plus grand">+</button></div>'
+      +'<div class="acc-row">'+TAO_CURSEURS.map(([k,c])=>'<button data-cc="'+k+'" class="acc-cc'+(A.curCol===k?' on':'')+'" style="background:'+c+'" aria-label="Curseur '+k+'" aria-pressed="'+(A.curCol===k)+'"></button>').join('')+'</div>'
+      +'<p class="acc-t">Police et espacement du texte</p>'
+      +'<select id="accPolice" aria-label="Style de police">'+TAO_POLICES.map(([k,lib])=>'<option value="'+k+'"'+(A.police===k?' selected':'')+'>'+lib+'</option>').join('')+'</select>'
+      +TAO_REGLAGES.map(([k,lib])=>'<div class="acc-row acc-reg"><span>'+lib+'</span><button data-r="'+k+'" data-d="-1" aria-label="'+lib+' : moins">−</button><span class="acc-v">'+(A[k]>0?'+':'')+A[k]+'</span><button data-r="'+k+'" data-d="1" aria-label="'+lib+' : plus">+</button></div>').join('')
+      +'<button class="acc-reset" id="accReset">Tout rétablir</button>';
+    const c = f.querySelector('#accCorps'), maj = ()=>{ taoAccAppliquer(); dessiner(); };
+    c.querySelectorAll('[data-th]').forEach(b=>b.addEventListener('click',()=>{ A.theme = A.theme===b.dataset.th ? null : b.dataset.th; maj(); }));
+    c.querySelectorAll('[data-cur]').forEach(b=>b.addEventListener('click',()=>{ A.cur = Math.max(0, Math.min(4, A.cur + +b.dataset.cur)); maj(); }));
+    c.querySelectorAll('[data-cc]').forEach(b=>b.addEventListener('click',()=>{ A.curCol = A.curCol===b.dataset.cc ? null : b.dataset.cc; maj(); }));
+    c.querySelectorAll('[data-r]').forEach(b=>b.addEventListener('click',()=>{ const r = TAO_REGLAGES.find(x=>x[0]===b.dataset.r); A[r[0]] = Math.max(r[2], Math.min(r[3], A[r[0]] + +b.dataset.d)); maj(); }));
+    c.querySelector('#accPolice').addEventListener('change', e=>{ A.police = e.target.value; maj(); });
+    c.querySelector('#accReset').addEventListener('click',()=>{ Object.assign(A, taoAccDefaut()); maj(); });
+  };
+  if(!f.dataset.ok){ f.dataset.ok = '1'; dessiner(); }
+}
+
+/* Guide de lecture (point 6.4.3) : une bande horizontale, le reste de l'écran
+   grisé. La double flèche à gauche agrandit ou réduit la bande, l'icône du milieu
+   la déplace. Les clics traversent le gris : il ne gêne pas pour répondre. */
+function taoGuideLecture(){
+  let lr = document.getElementById('taoLR');
+  if(lr){ lr.remove(); document.body.classList.remove('tao-lr'); return false; }
+  lr = document.createElement('div'); lr.id = 'taoLR';
+  lr.innerHTML = '<div class="lr-haut"></div><div class="lr-bande"><button class="lr-taille" aria-label="Agrandir ou réduire la bande" title="Agrandir ou réduire">⇕</button>'
+    +'<button class="lr-depl" aria-label="Déplacer la bande" title="Déplacer">☰</button></div><div class="lr-bas"></div>';
+  document.body.appendChild(lr); document.body.classList.add('tao-lr');
+  let y = Math.round(innerHeight*0.4), h = 76;
+  const placer = ()=>{
+    h = Math.max(28, Math.min(h, innerHeight-20)); y = Math.max(0, Math.min(y, innerHeight-h));
+    lr.querySelector('.lr-haut').style.height = y+'px';
+    const b = lr.querySelector('.lr-bande'); b.style.top = y+'px'; b.style.height = h+'px';
+    lr.querySelector('.lr-bas').style.top = (y+h)+'px';
+  };
+  const glisser = (el, agir) => el.addEventListener('pointerdown', e=>{
+    e.preventDefault(); el.setPointerCapture(e.pointerId);
+    const y0 = e.clientY, a = {y, h};
+    const mv = ev=>{ agir(a, ev.clientY - y0); placer(); };
+    const up = ()=>{ el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  });
+  glisser(lr.querySelector('.lr-depl'), (a,d)=>{ y = a.y + d; });
+  glisser(lr.querySelector('.lr-taille'), (a,d)=>{ h = a.h + d; });
+  placer();
+  return true;
+}
+
+/* Surligne la sélection nœud de texte par nœud de texte : envelopper la plage
+   d'un seul bloc déplacerait des cellules de tableau dans un <mark>. */
+function surligner(zone, couleur){
+  const sel = getSelection();
+  if(!zone || !sel.rangeCount || sel.isCollapsed) return false;
+  const r = sel.getRangeAt(0);
+  if(!zone.contains(r.commonAncestorContainer)) return false;
+  const base = r.commonAncestorContainer.nodeType===3 ? r.commonAncestorContainer.parentNode : r.commonAncestorContainer;
+  const tw = document.createTreeWalker(base, NodeFilter.SHOW_TEXT), noeuds = [];
+  let n;
+  while((n = tw.nextNode())) if(r.intersectsNode(n) && n.nodeValue.trim() && !n.parentNode.closest('svg')) noeuds.push(n);
+  let fait = 0;
+  noeuds.forEach(t=>{
+    const s = t===r.startContainer ? r.startOffset : 0, e = t===r.endContainer ? r.endOffset : t.nodeValue.length;
+    if(e<=s) return;
+    const mil = t.splitText(s); mil.splitText(e-s);
+    const m = document.createElement('mark'); m.className = 'tao-hl hl-'+couleur;
+    mil.parentNode.insertBefore(m, mil); m.appendChild(mil); fait++;
+  });
+  sel.removeAllRanges();
+  return fait>0;
+}
+function desurligner(m){ const p = m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild, m); m.remove(); p.normalize(); }
+
+/* Fin de l'examen ou changement d'écran : on retire tout ce que les outils ont
+   posé hors de #app (fenêtres, guide de lecture, thème, curseur). */
+function taoOutilsFin(){
+  document.querySelectorAll('.tao-win, #taoLR').forEach(w=>w.remove());
+  document.body.classList.remove('tao-lr');
+  TAO_THEMES.forEach(([k])=>document.body.classList.remove('tao-th-'+k));
+  const st = document.getElementById('taoAccStyle'); if(st) st.remove();
+  TAO_ACC = null;
 }
 
 /* Prépare une partie : options mélangées une fois pour toutes, et verdicts du
@@ -10105,7 +10380,7 @@ function taoPrepare(cle, items){
   return items.map(it=>{
     const v = shuffleOpts(it);
     const why = it.why ? v.opts.map(o=>it.why[it.opts.indexOf(o)]) : null;
-    return {cle, src:it, opts:v.opts, c:v.c, why, ans:null, vu:false, flag:false, elim:new Set(), hl:null};
+    return {cle, src:it, opts:v.opts, c:v.c, why, ans:null, vu:false, flag:false, elim:new Set(), mask:new Set(), hl:null};
   });
 }
 
@@ -10115,11 +10390,20 @@ function runTAO(cfg){
   document.body.classList.add('tao-on');
   const root = () => document.getElementById('taoRoot');
   const parts = cfg.parties.map(p=>({...TAO_SPEC[p.cle], ...p, q:taoPrepare(p.cle, p.items), reste:p.duree||TAO_SPEC[p.cle].duree, fini:false, horsTemps:false}));
-  let ip = 0, iq = 0, timer = null, zoom = 1, elimMode = false;
+  let ip = 0, iq = 0, timer = null, zoom = 1, elimOn = false, maskOn = false, hlOuvert = false, hlCouleur = 'jaune', gomme = false;
+  TAO_ACC = taoAccDefaut(); taoAccAppliquer();
   const fig = o => typeof o==='string' ? o : shapeSVG(o);
   const L = i => String.fromCharCode(65+i);
 
   function stop(){ clearInterval(timer); }
+  /* Les consignes de la partie : page d'instructions, puis « Pièces jointes » pendant l'épreuve. */
+  const regles = P => '<table class="spec-table"><tr><td>Questions</td><td>'+P.q.length+'</td></tr><tr><td>Durée</td><td>'+fmtTime(P.duree)+' pour cette partie, non reportable sur la suivante</td></tr>'
+    +'<tr><td>Options</td><td>'+(P.cle==='verbal'?'quatre affirmations, une seule correcte':'cinq propositions, une seule correcte')+'</td></tr></table>'
+    +'<ul class="tao-rules">'
+    +'<li>Navigation libre : barre numérotée, flèches, réponses modifiables jusqu\'à la soumission de la partie.</li>'
+    +'<li><b>Marquer pour révision</b> (le signet) ajoute la question à la section « Marquées » de la <b>vue d\'ensemble</b>.</li>'
+    +'<li>Barre d\'outils : pièces jointes (ces instructions), guide de lecture, calculatrice (point décimal, pas de virgule), accessibilité (contraste, curseur, police et espacements), surligneur, bloc-notes, élimination et masquage des réponses, zoom. Ni papier ni stylo.</li>'
+    +'<li>Ces outils ne changent que l\'affichage, jamais la note. Aucune correction pendant l\'épreuve ; à la fin du temps, la partie est soumise automatiquement.</li></ul>';
   function instructions(){
     stop();
     const P = parts[ip];
@@ -10127,13 +10411,7 @@ function runTAO(cfg){
     root().innerHTML = '<div class="tao tao-instr"><div class="card">'
       +'<span class="eyebrow">'+cfg.titre+' · partie '+(ip+1)+' sur '+parts.length+'</span>'
       +'<h2 style="margin-top:6px;">'+P.nom+'</h2>'
-      +'<table class="spec-table"><tr><td>Questions</td><td>'+P.q.length+'</td></tr><tr><td>Durée</td><td>'+fmtTime(P.reste)+' pour cette partie, non reportable sur la suivante</td></tr>'
-      +'<tr><td>Options</td><td>'+(P.cle==='verbal'?'quatre affirmations, une seule correcte':'cinq propositions, une seule correcte')+'</td></tr></table>'
-      +'<ul class="tao-rules">'
-      +'<li>Navigation libre : barre numérotée, flèches, réponses modifiables jusqu\'à la soumission de la partie.</li>'
-      +'<li><b>Marquer</b> une question l\'ajoute à la section « Marquées » de la <b>vue d\'ensemble</b>.</li>'
-      +'<li>Outils : '+(P.cle==='verbal'?'surligneur, ':'')+'calculatrice (point décimal, pas de virgule), bloc-notes, élimination des réponses, zoom. Ni papier ni stylo.</li>'
-      +'<li>Aucune correction pendant l\'épreuve. À la fin du temps, la partie est soumise automatiquement.</li></ul>'
+      +regles(P)
       +'<div class="tao-count">La partie commence dans <b id="taoCd">'+t+'</b> s, comme sur TAO après la page d\'instructions.</div>'
       +'<button class="btn wide" id="taoGo">Commencer maintenant</button>'
       +'<div class="quit-row"><button id="taoQuit">Quitter l\'examen</button></div>'
@@ -10143,7 +10421,7 @@ function runTAO(cfg){
     timer = ACTIVE_TIMER = setInterval(()=>{ t--; const c = document.getElementById('taoCd'); if(c) c.textContent = t; if(t<=0) demarrer(); },1000);
   }
   function demarrer(){
-    stop(); iq = 0; elimMode = false;
+    stop(); iq = 0;
     rendre();
     timer = ACTIVE_TIMER = setInterval(()=>{
       const P = parts[ip]; P.reste--;
@@ -10153,15 +10431,31 @@ function runTAO(cfg){
     },1000);
   }
   function sauverSurlignage(){
-    const P = parts[ip], Q = P.q[iq], box = document.getElementById('taoPassage');
-    if(Q && box) Q.hl = box.innerHTML;
+    const P = parts[ip], Q = P && P.q[iq], z = document.getElementById('taoTexte');
+    if(Q && z) Q.hl = z.querySelector('mark.tao-hl') ? z.innerHTML : null;
+  }
+  const barreSurligneur = () => '<div class="tao-hlbar" role="toolbar" aria-label="Surligneur"><span>Sélectionne du texte, puis une couleur :</span>'
+    +HL_COULEURS.map(([c,t])=>'<button data-c="'+c+'" class="hl-'+c+(hlCouleur===c && !gomme?' on':'')+'">'+t+'</button>').join('')
+    +'<button data-c="gomme" class="'+(gomme?'on':'')+'" aria-pressed="'+gomme+'">Gomme</button><button data-c="tout">Tout effacer</button></div>';
+  function lierSurligneur(zone){
+    app.querySelectorAll('.tao-hlbar button').forEach(b=>{
+      // Le bouton ne doit pas prendre le focus : la sélection de texte serait perdue.
+      b.addEventListener('pointerdown', e=>e.preventDefault()); b.addEventListener('mousedown', e=>e.preventDefault());
+      b.addEventListener('click',()=>{
+        const c = b.dataset.c;
+        if(c==='tout'){ zone.querySelectorAll('mark.tao-hl').forEach(desurligner); gomme = false; }
+        else if(c==='gomme') gomme = !gomme;
+        else { hlCouleur = c; gomme = false; surligner(zone, c); }
+        aller(iq);
+      });
+    });
   }
   function rendre(){
     const P = parts[ip], Q = P.q[iq]; Q.vu = true;
     const it = Q.src;
     let corps = '';
     if(P.cle==='verbal'){
-      corps = '<div class="passage-box" id="taoPassage">'+(Q.hl || it.passage)+'</div>'
+      corps = '<div class="passage-box" id="taoPassage">'+it.passage+'</div>'
         +'<p class="tao-consigne">Parmi les propositions suivantes, laquelle est correcte ?</p>';
     } else if(P.cle==='numeric'){
       corps = (it.table?'<div class="data-wrap">'+it.table+'</div>':'')+'<div class="qcm-question">'+it.q+'</div>';
@@ -10174,24 +10468,34 @@ function runTAO(cfg){
           : it.seq.map(s=>'<div class="abs-shape-box">'+shapeSVG(s)+'</div>').join('<span class="abs-arrow">→</span>')+'<span class="abs-arrow">→</span><div class="abs-q">?</div>')
         +'</div>';
     }
+    /* Élimination et masquage (point 6.4.6) : activés dans le menu de la barre
+       d'outils, ils ajoutent à chaque proposition un bouton qui la barre ou la grise.
+       Ni l'un ni l'autre ne choisit la réponse ; masquer garde la réponse choisie. */
+    const outils = i => (elimOn || maskOn) ? '<span class="tao-obs">'
+        +(elimOn ? '<button class="tao-ob'+(Q.elim.has(i)?' on':'')+'" data-e="'+i+'" aria-pressed="'+Q.elim.has(i)+'" title="Barrer ou rétablir" aria-label="Barrer la proposition '+L(i)+'">'+IC_BARRER+'</button>' : '')
+        +(maskOn ? '<button class="tao-ob'+(Q.mask.has(i)?' on':'')+'" data-m="'+i+'" aria-pressed="'+Q.mask.has(i)+'" title="Masquer ou réafficher" aria-label="Masquer la proposition '+L(i)+'">'+IC_MASQUER+'</button>' : '')
+        +'</span>' : '';
+    const etat = i => (Q.ans===i?' sel':'')+(Q.elim.has(i)?' elim':'')+(Q.mask.has(i)?' masq':'');
+    const lib = i => Q.mask.has(i) ? ' data-masq="'+L(i)+' · masquée'+(Q.ans===i?' · réponse choisie':'')+'"' : '';
     const opts = P.cle==='abstract'
-      ? '<p class="abs-caption">Propositions</p><div class="abs-options">'+Q.opts.map((o,i)=>'<button class="abs-opt tao-opt'+(it.kind==='multi'?' ax':'')+(Q.ans===i?' sel':'')+(Q.elim.has(i)?' elim':'')+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"><span class="abs-letter">'+L(i)+'</span>'+fig(o)+'</button>').join('')+'</div>'
-      : '<div>'+Q.opts.map((o,i)=>'<button class="qcm-opt tao-opt'+(Q.ans===i?' sel':'')+(Q.elim.has(i)?' elim':'')+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"><span class="tao-radio"></span><b>'+L(i)+'.</b> '+o+'</button>').join('')+'</div>';
+      ? '<p class="abs-caption">Propositions</p><div class="abs-options">'+Q.opts.map((o,i)=>'<div class="abs-cell"><button class="abs-opt tao-opt'+(it.kind==='multi'?' ax':'')+etat(i)+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"'+lib(i)+'><span class="abs-letter">'+L(i)+'</span>'+fig(o)+'</button>'+outils(i)+'</div>').join('')+'</div>'
+      : '<div>'+Q.opts.map((o,i)=>'<div class="tao-row"><button class="qcm-opt tao-opt'+etat(i)+'" data-i="'+i+'" aria-pressed="'+(Q.ans===i)+'"'+lib(i)+'><span class="tao-radio"></span><b>'+L(i)+'.</b> '+o+'</button>'+outils(i)+'</div>').join('')+'</div>';
     const nav = P.q.map((x,i)=>'<button class="tao-n'+(x.ans!==null?' rep':x.vu?' vu':'')+(x.flag?' flag':'')+(i===iq?' cur':'')+'" data-q="'+i+'" aria-label="Question '+(i+1)+'">'+(i+1)+'</button>').join('');
+    const outil = (t, texte, on) => '<button data-t="'+t+'"'+(on===undefined ? '' : ' class="'+(on?'on':'')+'" aria-pressed="'+!!on+'"')+'>'+texte+'</button>';
     root().innerHTML = '<div class="tao">'
       +'<div class="tao-top">'
         +'<div class="tao-id"><b>'+P.nom+'</b><span>Partie '+(ip+1)+'/'+parts.length+' · question '+(iq+1)+' sur '+P.q.length+'</span></div>'
         +'<div class="tao-tmr" id="taoTmr" aria-live="off">'+fmtTime(P.reste)+'</div>'
-        +'<div class="tao-tools">'
-          +(P.cle==='verbal'?'<button data-t="hl" title="Surligner la sélection">Surligner</button><button data-t="hlx" title="Effacer les surlignages">Effacer</button>':'')
-          +'<button data-t="calc">Calculatrice</button><button data-t="notes">Bloc-notes</button>'
-          +'<button data-t="elim" class="'+(elimMode?'on':'')+'" aria-pressed="'+elimMode+'">Élimination</button>'
-          +'<button data-t="zm" aria-label="Zoom arrière">A−</button><button data-t="zp" aria-label="Zoom avant">A+</button>'
+        +'<div class="tao-tools" role="toolbar" aria-label="Barre d\'outils">'
+          +outil('docs','Pièces jointes')+outil('lr','Guide de lecture', !!document.getElementById('taoLR'))
+          +outil('calc','Calculatrice')+outil('acc','Accessibilité')+outil('hl','Surligneur', hlOuvert)
+          +outil('notes','Bloc-notes')+outil('rep','Élimination / masquage', elimOn||maskOn)
+          +'<button data-t="zm" aria-label="Zoom arrière">Zoom −</button><button data-t="zp" aria-label="Zoom avant">Zoom +</button>'
         +'</div>'
+        +(hlOuvert ? barreSurligneur() : '')
       +'</div>'
       +'<div class="tao-nav">'+nav+'<button class="tao-ov" id="taoOv">Vue d\'ensemble</button></div>'
-      +(elimMode?'<div class="tao-elim-note">Élimination active : un clic barre ou débarre une proposition sans la choisir.</div>':'')
-      +'<div class="tao-q" id="taoQ" style="font-size:'+zoom+'em">'+corps+opts+'</div>'
+      +'<div class="tao-q" id="taoQ" style="zoom:'+zoom+'"><div class="tao-texte'+(gomme?' gomme':'')+'" id="taoTexte">'+(Q.hl || corps)+'</div>'+opts+'</div>'
       +'<div class="tao-foot">'
         +'<button class="tao-flag'+(Q.flag?' on':'')+'" id="taoFlag" aria-pressed="'+Q.flag+'">'+(Q.flag?'Marquée pour révision':'Marquer pour révision')+'</button>'
         +'<span class="tao-sp"></span>'
@@ -10203,8 +10507,13 @@ function runTAO(cfg){
       +'</div>';
     app.querySelectorAll('.tao-opt').forEach(b=>b.addEventListener('click',()=>{
       const i = +b.dataset.i;
-      if(elimMode){ Q.elim.has(i) ? Q.elim.delete(i) : Q.elim.add(i); if(Q.ans===i) Q.ans = null; }
-      else { Q.ans = Q.ans===i ? null : i; Q.elim.delete(i); }
+      if(Q.mask.has(i)){ Q.mask.delete(i); aller(iq); return; }   // cliquer sur une proposition masquée la réaffiche
+      Q.ans = Q.ans===i ? null : i; Q.elim.delete(i);
+      aller(iq);
+    }));
+    app.querySelectorAll('.tao-ob').forEach(b=>b.addEventListener('click',()=>{
+      if(b.dataset.e!==undefined){ const i = +b.dataset.e; if(Q.elim.has(i)) Q.elim.delete(i); else { Q.elim.add(i); if(Q.ans===i) Q.ans = null; } }
+      else { const i = +b.dataset.m; Q.mask.has(i) ? Q.mask.delete(i) : Q.mask.add(i); }
       aller(iq);
     }));
     app.querySelectorAll('.tao-n').forEach(b=>b.addEventListener('click',()=>aller(+b.dataset.q)));
@@ -10214,25 +10523,49 @@ function runTAO(cfg){
     const nx = document.getElementById('taoNext'); if(nx) nx.addEventListener('click',()=>aller(iq+1));
     document.getElementById('taoSub').addEventListener('click',()=>confirmer());
     document.getElementById('taoQuit').addEventListener('click',()=>dialogue('Quitter l\'examen ?','Les réponses de cette simulation seront perdues.',[['Continuer l\'examen',null],['Quitter',()=>{ stop(); goTo(cfg.retour); }]]));
+    const zone = document.getElementById('taoTexte');
+    zone.addEventListener('click', e=>{
+      if(!gomme) return;
+      const m = e.target.closest('mark.tao-hl'); if(!m) return;
+      desurligner(m); sauverSurlignage();
+    });
+    lierSurligneur(zone);
+    // Ouvrir le surligneur ne doit pas faire perdre une sélection déjà faite.
+    const bHl = app.querySelector('.tao-tools [data-t="hl"]');
+    bHl.addEventListener('pointerdown', e=>e.preventDefault()); bHl.addEventListener('mousedown', e=>e.preventDefault());
     app.querySelectorAll('.tao-tools button').forEach(b=>b.addEventListener('click',()=>{
       const t = b.dataset.t;
       if(t==='calc') taoCalculatrice();
       else if(t==='notes') taoBlocNotes();
-      else if(t==='elim'){ elimMode = !elimMode; aller(iq); }
-      else if(t==='zp'){ zoom = Math.min(1.6, +(zoom+0.1).toFixed(1)); document.getElementById('taoQ').style.fontSize = zoom+'em'; }
-      else if(t==='zm'){ zoom = Math.max(0.8, +(zoom-0.1).toFixed(1)); document.getElementById('taoQ').style.fontSize = zoom+'em'; }
+      else if(t==='acc') taoAccessibilite();
+      else if(t==='lr'){ taoGuideLecture(); aller(iq); }
+      else if(t==='docs') taoFenetre('taoDocs','Pièces jointes','<p class="acc-t">Instructions · '+P.nom+'</p>'+regles(P), innerWidth-380, 70);
       else if(t==='hl'){
-        const sel = getSelection(), box = document.getElementById('taoPassage');
-        if(!sel.rangeCount || sel.isCollapsed || !box.contains(sel.anchorNode) || !box.contains(sel.focusNode)) return;
-        const r = sel.getRangeAt(0), m = document.createElement('mark'); m.className = 'tao-hl';
-        try{ m.appendChild(r.extractContents()); r.insertNode(m); sel.removeAllRanges(); sauverSurlignage(); }catch(e){}
+        hlOuvert = !hlOuvert; b.classList.toggle('on', hlOuvert); b.setAttribute('aria-pressed', hlOuvert);
+        const barre = app.querySelector('.tao-hlbar');
+        if(hlOuvert && !barre){ app.querySelector('.tao-tools').insertAdjacentHTML('afterend', barreSurligneur()); lierSurligneur(document.getElementById('taoTexte')); }
+        else if(!hlOuvert){ if(barre) barre.remove(); if(gomme){ gomme = false; document.getElementById('taoTexte').classList.remove('gomme'); } }
       }
-      else if(t==='hlx'){ Q.hl = null; document.getElementById('taoPassage').innerHTML = it.passage; }
+      else if(t==='rep') reglagesReponses();
+      else if(t==='zp'){ zoom = Math.min(1.6, +(zoom+0.1).toFixed(1)); document.getElementById('taoQ').style.zoom = zoom; }
+      else if(t==='zm'){ zoom = Math.max(0.8, +(zoom-0.1).toFixed(1)); document.getElementById('taoQ').style.zoom = zoom; }
     }));
+  }
+  /* Le menu des réglages de réponse : deux interrupteurs, enregistrés aussitôt. */
+  function reglagesReponses(){
+    const inter = (id, on, titre, texte) => '<label class="tao-switch"><input type="checkbox" id="'+id+'"'+(on?' checked':'')+'><span><b>'+titre+'</b><br>'+texte+'</span></label>';
+    dialogue('Élimination et masquage des réponses',
+      inter('optElim', elimOn, 'Élimination des réponses', 'Un bouton barré à côté de chaque proposition la barre ; un second clic la rétablit.')
+      +inter('optMasq', maskOn, 'Masquage des réponses', 'Un bouton en forme d\'œil grise la proposition ; un second clic, ou un clic sur la zone grise, la réaffiche.')
+      +'<p class="acc-note">Ces outils ne changent que l\'affichage, jamais la note. Barrer la proposition choisie retire la réponse ; la masquer la garde.</p>',
+      [['Fermer',null]]);
+    const lier = (id, f) => document.getElementById(id).addEventListener('change', e=>{ f(e.target.checked); aller(iq); });
+    lier('optElim', v=>{ elimOn = v; });
+    lier('optMasq', v=>{ maskOn = v; });
   }
   function aller(i){
     const P = parts[ip];
-    if(P.cle==='verbal') sauverSurlignage();
+    sauverSurlignage();
     iq = Math.max(0, Math.min(P.q.length-1, i));
     const y = scrollY; rendre(); if(Math.abs(scrollY-y)>2) scrollTo(0,y);
   }
@@ -10260,17 +10593,18 @@ function runTAO(cfg){
     const P = parts[ip], manque = P.q.filter(x=>x.ans===null).length, der = ip===parts.length-1;
     const libelle = der ? 'Terminer le test' : 'Soumettre cette partie';
     if(manque) dialogue('Questions sans réponse', 'Il reste <b>'+manque+'</b> question'+(manque>1?'s':'')+' sans réponse dans cette partie. Une question sans réponse ne rapporte aucun point, et aucune réponse fausse n\'est pénalisée.', [['Continuer à répondre',null],[libelle,()=>soumettre(false)]]);
-    else dialogue(der?'Terminer le test ?':'Soumettre cette partie ?', 'Une fois soumise, la partie ne peut plus être modifiée. Il reste '+fmtTime(P.reste)+'.', [['Réviser mes réponses',null],[libelle,()=>soumettre(false)]]);
+    else dialogue(der?'Soumettre le test ?':'Soumettre cette partie ?', 'Une fois soumise, la partie ne peut plus être modifiée. Il reste '+fmtTime(P.reste)+'.', [['Réviser mes réponses',null],[der?'Soumettre le test':libelle,()=>soumettre(false)]]);
   }
   function soumettre(auto){
     stop(); fermerDialogue();
     const P = parts[ip];
-    if(P.cle==='verbal') sauverSurlignage();
+    sauverSurlignage();
     P.fini = true;
     P.q.forEach(x=>{ const st = PROGRESS[x.cle]; if(st){ st.att++; if(x.ans===x.c) st.cor++; } });
     saveProgress(); renderStreak();
     const w = document.getElementById('taoCalc'); if(w) w.remove();
     const n = document.getElementById('taoNotes'); if(n) n.remove();
+    const dj = document.getElementById('taoDocs'); if(dj) dj.remove();
     if(ip < parts.length-1){
       ip++;
       if(auto){
@@ -10281,7 +10615,7 @@ function runTAO(cfg){
     } else resultats();
   }
   function resultats(){
-    stop(); document.body.classList.remove('tao-on');
+    stop(); document.body.classList.remove('tao-on'); taoOutilsFin();
     const sc = P => P.q.filter(x=>x.ans===x.c).length;
     const par = {}; parts.forEach(P=>par[P.cle] = {s:sc(P), n:P.q.length});
     let bilan = '';
