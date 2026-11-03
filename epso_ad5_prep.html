@@ -203,7 +203,7 @@ main{padding-top:28px;}
 .data-note{font-size:14px;line-height:1.5;color:var(--ink-2);margin:0;padding:8px 10px 10px;border-bottom:1px solid var(--line-2);}
 .set-tag{display:block;font-size:12.5px;font-weight:650;color:var(--accent);letter-spacing:.02em;margin-bottom:6px;}
 .data-table caption{caption-side:top;text-align:left;padding:13px 15px 10px;font-size:14.5px;color:var(--muted);}
-.data-table th,.data-table td{border-top:1px solid var(--line-2);padding:10px 13px;text-align:right;white-space:nowrap;}
+.data-table th,.data-table td{border-top:1px solid var(--line-2);padding:10px 12px;text-align:right;white-space:nowrap;}
 /* Les intitulés longs passent à la ligne : sinon la dernière colonne sort du cadre, même sur ordinateur. */
 .data-table th{background:var(--subtle);font-weight:650;font-size:14px;color:var(--ink-2);white-space:normal;vertical-align:bottom;}
 .data-table th:first-child,.data-table td:first-child{text-align:left;}
@@ -9073,7 +9073,11 @@ function prochaineEtape(){
   if(!e) return '';
   const debut = e.debut || e.fin;
   const j = Math.round((new Date(debut) - new Date(auj)) / 86400000);
-  const quand = j<=0 ? (e.debut ? 'en cours' : `aujourd'hui`) : (j===1 ? 'demain' : 'dans '+j+' jours');
+  /* Une étape en cours affiche le temps qui reste : la vérification technique ne se
+     tente qu'une fois et ferme à date fixe. */
+  const reste = Math.round((new Date(e.fin) - new Date(auj)) / 86400000);
+  const fin = reste<=0 ? 'dernier jour' : reste===1 ? 'se termine demain' : 'se termine dans '+reste+' jours';
+  const quand = j<=0 ? (e.debut ? 'en cours · '+fin : `aujourd'hui`) : (j===1 ? 'demain' : 'dans '+j+' jours');
   return '<div class="card"><span class="eyebrow">Prochaine étape · '+quand+'</span>'
     +'<h2 style="margin-top:6px;">'+e.t+'</h2><p class="lede" style="font-size:14.5px;">'+e.d+'</p></div>';
 }
@@ -9145,7 +9149,7 @@ function renderDashboard(){
     aucun point : c'est un filtre. Son échec élimine quel que soit le reste, et aucun seuil manqué
     ne se compense ailleurs.</div>
     <p style="font-size:14px;margin-top:14px;">Ordre de correction prévu par l'avis : le test de
-    connaissances UE d'abord, puis le test numérique pour les seuls candidats ayant atteint 15/30 en UE.
+    connaissances UE d'abord, puis le test de compétences numériques pour les seuls candidats ayant atteint 15/30 en UE.
     Le classement préliminaire désigne ensuite les candidats dont l'EUFTE est corrigé et
     l'admissibilité vérifiée, en principe 1,5 fois le nombre de places ; en cas d'égalité à la dernière
     place, tous les candidats ex æquo passent.</p>
