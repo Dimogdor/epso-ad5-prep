@@ -581,6 +581,17 @@ body.tao-lr .tao-top{z-index:66;}
 .tao-rev.ko summary{color:var(--bad);}
 .tao-rev.vide summary{color:var(--muted);}
 .tao-rev[open] summary{margin-bottom:10px;}
+/* Méga-révision numérique */
+.mega-carte{border-color:var(--accent);}
+.mega-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px;}
+.mega-chip{font-size:12.5px;line-height:1.4;padding:4px 9px;border-radius:999px;background:var(--subtle);border:1px solid var(--line);color:var(--ink-2);}
+.mega-dernier{font-size:14px;color:var(--ink-2);}
+.mega-rappel{font-size:15.5px;line-height:1.6;margin:8px 0 14px;}
+.mega-rappel ul{padding-left:20px;margin:0;}
+.mega-rappel li{margin-bottom:6px;}
+.mega-bilan td{text-align:left;}
+.mega-bilan tr.ko td:last-child{color:var(--bad);font-weight:600;}
+.mega-bilan tr.ok td:last-child{color:var(--good);}
 .exam-hist{font-size:13.5px;color:var(--muted);margin-top:10px;}
 @media(max-width:640px){
   /* Sur téléphone, la barre d'outils tient sur une ligne qui défile : en plusieurs
@@ -2943,8 +2954,9 @@ function mkNum(q,correct,distractors,ex,unit,table,o){
        pourtant qu'elle ne figurait pas parmi les propositions. */
     const pas = Math.max(Math.abs(correct)*0.11, step);
     let sub = correct, k = 1;
-    while(picked.indexOf(sub)!==-1 && k<=40){ sub = round(correct + k*pas); k++; }
-    if(picked.indexOf(sub)!==-1) noneIsRight = false;   // on renonce plutôt que de mentir
+    const proche = v => picked.some(w=>typeof w==='number' && Math.abs(w-v) < 1.5*unCran);
+    while(proche(sub) && k<=40){ sub = round(correct + k*pas); k++; }
+    if(proche(sub)) noneIsRight = false;   // on renonce plutôt que de mentir
     else picked = picked.map(v=>v===correct ? sub : v);
   }
   // Toutes les valeurs avec le même nombre de décimales, comme au concours.
@@ -9300,7 +9312,7 @@ function renderConcours(){
     {w:`19-25 oct.`,d:`Lire la lettre d'invitation en entier. Installer l'extension Proctorio dans Chrome ou Edge, puis passer la vérification technique préalable dès le 20 octobre, une seule tentative, sur l'ordinateur, la connexion et dans la pièce du jour J ; noter le créneau affiché. Essayer les sessions publiques de TAO pour se familiariser avec les outils. Diagnostic : une session complète de verbal et une de num/abstrait. Verbal chronométré chaque jour, dans la Langue 1 déclarée.`},
     {w:`26 oct.-1er nov.`,d:`Verbal quotidien, 20 textes en 35 minutes, en ciblant le piège « faux » contre « ne peut pas dire ». Num + abstrait trois fois dans la semaine, jusqu'à 13/20 cumulés de façon régulière : au-delà, aucun point de classement.`},
     {w:`2-6 nov.`,d:`Conditions réelles : les trois tests à la suite, à l'heure du créneau, sans papier ni stylo, calculs sur une calculatrice à l'écran. La vérification technique ferme le 6 novembre : si elle n'est pas faite, c'est la priorité absolue.`},
-    {w:`Semaine du test`,d:`Une session courte de verbal par jour pour garder le rythme, rien de nouveau. Réduire l'intensité la veille. Le jour J : suivre la liste de la carte « Le jour J », chargeur branché <b>avant</b> le début.`},
+    {w:`Semaine du test`,d:`Une session courte de verbal par jour pour garder le rythme, et la méga-révision numérique (onglet Num + Abstrait) pour repasser toutes les méthodes, rien de nouveau. Réduire l'intensité la veille. Le jour J : suivre la liste de la carte « Le jour J », chargeur branché <b>avant</b> le début.`},
   ];
   const planPart2 = [
     {w:`Dès les résultats`,d:`Si les seuils de la partie 1 sont franchis : bascule sur les connaissances UE et le cadre DigComp. Une section de cours par jour, quiz à la fin de chaque section, vocabulaire de la Langue 2 en parallèle.`},
@@ -9780,9 +9792,416 @@ function runVerbalSession(BANK){
 }
 
 /* ================= NUM + ABSTRAIT ================= */
+/* ================= MÉGA-RÉVISION NUMÉRIQUE =================
+   Quinze compétences qui couvrent tout le test numérique : pour chacune un rappel
+   de méthode, puis des questions générées dont chaque mauvaise option correspond
+   à une erreur type. Correction immédiate et bilan par compétence à la fin. */
+const pgcd = (a,b) => b ? pgcd(b, a%b) : Math.abs(a);
+const fracTxt = (n,d) => { const g = pgcd(n,d); return (n/g)+'/'+(d/g); };
+const F1 = v => fmtF(v,1), F2 = v => fmtF(v,2);
+const MEGA = [
+{id:'pct', nom:'Pourcentages de base', rappel:`<ul>
+  <li><b>Partie = total × taux</b> : 35 % de 2 400 = 2 400 × 0,35 = 840.</li>
+  <li><b>Taux = partie ÷ total × 100</b> : la base est le tout, jamais l'autre morceau.</li>
+  <li><b>Total = partie ÷ taux</b> : 84 projets = 12 % du total, donc total = 84 ÷ 0,12 = 700.</li>
+  <li>Piège : diviser dans le mauvais sens, ou ajouter la partie au tout pour former la base.</li></ul>`,
+ v:[
+  ()=>{ const tot = ri(12,48)*100, p = absPick([12,15,18,24,35,45,64,72]), c = tot*p/100;
+    return mkNum(`Sur ${fmtN(tot)} dossiers traités par une direction, ${p} % concernent les marchés publics. Combien de dossiers cela représente-t-il ?`,
+      c, [tot-c, Math.round(tot*p/1000), Math.round(tot*100/p)],
+      `${p} % de ${fmtN(tot)} = ${fmtN(tot)} × ${p} ÷ 100 = ${fmtN(c)}. <b>Piège.</b> ${fmtN(tot-c)} est la part complémentaire (${100-p} %).`, ' dossiers'); },
+  ()=>{ const B = ri(16,60)*25, A = ri(Math.round(B*0.12), Math.round(B*0.7)), c = nr(100*A/B,1);
+    return mkNum(`Une agence compte ${fmtN(B)} agents, dont ${fmtN(A)} en télétravail le lundi. Quelle part de l'effectif cela représente-t-il ?`,
+      c, [nr(100*B/A,1), nr(100*(B-A)/B,1), nr(100*A/(A+B),1)],
+      `${fmtN(A)} ÷ ${fmtN(B)} × 100 ≈ ${F1(c)} %. <b>Pièges.</b> Diviser dans l'autre sens donne ${F1(100*B/A)} % ; rapporter à ${fmtN(A+B)}, en ajoutant la partie au tout, donne ${F1(100*A/(A+B))} %.`, ' %'); },
+  ()=>{ const p = absPick([8,12,15,16,20,24,25,32,40]), tot = ri(6,40)*100, A = tot*p/100;
+    return mkNum(`${fmtN(A)} projets ont été retenus, soit ${p} % des projets déposés. Combien de projets avaient été déposés ?`,
+      tot, [Math.round(A*p/100), Math.round(A*(1+p/100)), Math.round(A*100/(100-p))],
+      `Total = partie ÷ taux : ${fmtN(A)} × 100 ÷ ${p} = ${fmtN(tot)}. <b>Piège.</b> Diviser par ${100-p} %, la part des projets refusés, donne ${fmtN(Math.round(A*100/(100-p)))}.`, ' projets'); },
+ ]},
+{id:'var', nom:'Variation en pourcentage', rappel:`<ul>
+  <li><b>Variation = (arrivée − départ) ÷ départ × 100.</b> La base est toujours la valeur de <b>départ</b>.</li>
+  <li><b>Valeur avant une hausse de p %</b> = valeur après ÷ (1 + p/100). On ne retire pas p % de la valeur finale.</li>
+  <li>Après une baisse de p %, il faut une hausse de <b>plus</b> de p % pour revenir : −20 % puis +25 %.</li></ul>`,
+ v:[
+  ()=>{ const V0 = ri(40,180)*10, k = absPick([-1,1])*ri(6,45), V1 = Math.round(V0*(1+k/100)), c = nr(100*(V1/V0-1),1);
+    return mkNum(`Le nombre de demandes traitées par un service passe de ${fmtN(V0)} à ${fmtN(V1)}. Quelle est la variation en pourcentage ?`,
+      c, [nr(100*(V1-V0)/V1,1), nr(100*V1/V0,1), nr(-c,1)],
+      `(${fmtN(V1)} − ${fmtN(V0)}) ÷ ${fmtN(V0)} × 100 ≈ ${F1(c)} %. <b>Piège.</b> Diviser par la valeur d'arrivée donne ${F1(100*(V1-V0)/V1)} %.`, ' %'); },
+  ()=>{ const p = absPick([5,8,10,12,15,20,25,30,40]), V0 = ri(4,40)*100, V1 = V0*(100+p)/100;
+    return mkNum(`Après une hausse de ${p} %, un budget atteint ${fmtN(V1)} k€. Quel était-il avant la hausse ?`,
+      V0, [Math.round(V1*(1-p/100)), V1-p, Math.round(V1*(1+p/100))],
+      `On divise par le coefficient : ${fmtN(V1)} ÷ ${F2(1+p/100)} = ${fmtN(V0)} k€. <b>Piège.</b> Retirer ${p} % de ${fmtN(V1)} donne ${fmtN(Math.round(V1*(1-p/100)))} : la baisse porterait sur une base plus grande.`, ' k€'); },
+  ()=>{ const p = absPick([10,20,25,30,40,50]), c = nr(100*(1/(1-p/100)-1),1);
+    return mkNum(`Une recette baisse de ${p} % une année. De combien de pour cent doit-elle augmenter l'année suivante pour revenir à son niveau initial ?`,
+      c, [p, nr(p/2,1), nr(100*p/(100+p),1)],
+      `Après la baisse, il reste ${100-p} % : il faut multiplier par 100 ÷ ${100-p} ≈ ${fmtF(1/(1-p/100),3)}, soit +${F1(c)} %. <b>Piège.</b> Une hausse de ${p} % ne suffit pas : elle porte sur une base plus petite.`, ' %'); },
+ ]},
+{id:'pts', nom:'Points de pourcentage', rappel:`<ul>
+  <li>Un taux qui passe de 8 % à 10 % gagne <b>2 points</b>, mais augmente de <b>25 %</b> (2 ÷ 8).</li>
+  <li>« Baisse <b>de</b> 10 % » s'applique au taux lui-même : 20 % devient 18 %. « Baisse de 10 <b>points</b> » : 20 % devient 10 %.</li>
+  <li>Prolonger une tendance « au même rythme » en points : on ajoute des points, on ne multiplie pas.</li></ul>`,
+ v:[
+  ()=>{ const a = ri(40,180)/10, b = nr(a + absPick([-1,1])*ri(5,35)/10, 1), pc = ri(0,1)===1;
+    const pts = nr(b-a,1), rel = nr(100*(b/a-1),1);
+    return mkNum(`Le taux de chômage d'une région passe de ${F1(a)} % à ${F1(b)} %. De combien a-t-il varié, ${pc ? 'en pourcentage' : 'en points de pourcentage'} ?`,
+      pc ? rel : pts, pc ? [pts, nr(100*(b-a)/b,1), nr(100*b/a,1)] : [rel, nr(-pts,1), nr(100*(b-a)/b,1)],
+      pc ? `(${F1(b)} − ${F1(a)}) ÷ ${F1(a)} × 100 ≈ ${F1(rel)} %. L'écart de ${F1(pts)} est en <b>points</b>, pas en pourcentage.`
+         : `${F1(b)} − ${F1(a)} = ${F1(pts)} points. En pourcentage, la variation serait de ${F1(rel)} % : deux grandeurs différentes.`,
+      pc ? ' %' : ' points'); },
+  ()=>{ const a = ri(150,350)/10, k = absPick([5,8,10,12]), c = nr(a*(1-k/100),2);
+    return mkNum(`Un taux d'abandon de ${F1(a)} % baisse de ${k} %. Quel est le nouveau taux ?`,
+      c, [nr(a-k,2), nr(a*(1+k/100),2), nr(a-k/10,2)],
+      `Une baisse « de ${k} % » s'applique au taux lui-même : ${F1(a)} × ${F2(1-k/100)} = ${F2(c)} %. <b>Piège.</b> Retirer ${k} points donnerait ${F1(a-k)} %.`, ' %'); },
+  ()=>{ const a = ri(120,300)/10, b = nr(a + ri(16,60)/10, 1), c = nr(b + (b-a)/2, 2);
+    return mkNum(`La part des énergies renouvelables passe de ${F1(a)} % en 2020 à ${F1(b)} % en 2024. Si elle continue de gagner autant de points par an, quelle sera-t-elle en 2026 ?`,
+      c, [nr(b + (b-a), 2), nr(b*Math.sqrt(b/a), 2), nr(b + (b-a)/4, 2)],
+      `${F1(b)} − ${F1(a)} = ${F1(b-a)} points en 4 ans, soit ${F2((b-a)/4)} point par an. En 2 ans de plus : ${F1(b)} + 2 × ${F2((b-a)/4)} = ${F2(c)} %. <b>Piège.</b> Ajouter tout l'écart de 4 ans donne ${F2(b+(b-a))} %.`, ' %'); },
+ ]},
+{id:'comp', nom:'Variations successives et taux composés', rappel:`<ul>
+  <li>Les variations successives se <b>multiplient</b> : +20 % puis −20 %, c'est 1,2 × 0,8 = 0,96, soit −4 %.</li>
+  <li>Croissance de g % par an pendant n ans : valeur × (1 + g/100)<sup>n</sup>. L'intérêt simple (1 + n × g/100) sous-estime.</li>
+  <li>Taux annuel moyen : il vérifie (1 + t)<sup>n</sup> = arrivée ÷ départ. Le plus rapide : tester les options.</li></ul>`,
+ v:[
+  ()=>{ const p = absPick([10,15,20,25,30,40]), q = absPick([10,15,20,25,30]), k = (1+p/100)*(1-q/100), c = nr(100*(k-1),1);
+    return mkNum(`Les ventes augmentent de ${p} % la première année, puis baissent de ${q} % la seconde. Quelle est la variation sur les deux ans ?`,
+      c, [p-q, nr(100*((1+p/100)/(1-q/100)-1),1), nr((p-q)/2,1)],
+      `On multiplie les coefficients : ${F2(1+p/100)} × ${F2(1-q/100)} = ${fmtF(k,4)}, soit ${c>=0?'+':''}${F1(c)} %. <b>Piège.</b> Additionner les taux (${p-q} %) oublie que la baisse porte sur une base déjà augmentée.`, ' %'); },
+  ()=>{ const V = ri(20,90)*100, g = absPick([2,3,4,5,6,8]), n = absPick([2,3]), c = Math.round(V*Math.pow(1+g/100,n));
+    return mkNum(`Une population de ${fmtN(V)} habitants croît de ${g} % par an. Combien d'habitants compte-t-elle au bout de ${n} ans ?`,
+      c, [Math.round(V*(1+n*g/100)), Math.round(V*Math.pow(1+g/100,n-1)), Math.round(V*Math.pow(1+g/100,n+1))],
+      `${fmtN(V)} × ${F2(1+g/100)}<sup>${n}</sup> ≈ ${fmtN(c)}. <b>Piège.</b> La croissance simple (${fmtN(V)} × ${F2(1+n*g/100)}) donne ${fmtN(Math.round(V*(1+n*g/100)))} : elle oublie la croissance sur la croissance.`, ' habitants'); },
+  ()=>{ const t = absPick([4,5,6,8,10,12,15,20]), V0 = ri(20,80)*100, V1 = Math.round(V0*Math.pow(1+t/100,2)), tot = 100*(V1/V0-1);
+    return mkNum(`Un budget passe de ${fmtN(V0)} k€ à ${fmtN(V1)} k€ en deux ans. Quel est son taux de croissance annuel moyen ?`,
+      t, [nr(tot/2,1), nr(tot,1), t+2],
+      `Le taux moyen t vérifie (1 + t)² = ${fmtN(V1)} ÷ ${fmtN(V0)} ≈ ${fmtF(V1/V0,4)}. On teste l'option : ${F2(1+t/100)}² = ${fmtF(Math.pow(1+t/100,2),4)}. <b>Piège.</b> Diviser la hausse totale (${F1(tot)} %) par deux donne ${F1(tot/2)} % : ce serait vrai sans effet composé.`, ' %'); },
+ ]},
+{id:'idx', nom:'Indices et pouvoir d\'achat', rappel:`<ul>
+  <li>Un indice (base 100) mesure une évolution par rapport à l'année de base. Entre deux années : indice B ÷ indice A − 1.</li>
+  <li>L'écart d'indice (115,2 − 108,0 = 7,2) se compte en <b>points d'indice</b>, pas en pour cent.</li>
+  <li>Pouvoir d'achat = salaire ÷ prix : 1,03 ÷ 1,05 − 1 ≈ −1,9 %. La soustraction 3 − 5 = −2 % n'est qu'une approximation.</li></ul>`,
+ v:[
+  ()=>{ const I0 = ri(1050,1300)/10, I1 = nr(I0*(1+ri(3,18)/100),1), c = nr(100*(I1/I0-1),1);
+    return mkNum(`L'indice des prix à la consommation (base 100 en 2015) passe de ${F1(I0)} en 2022 à ${F1(I1)} en 2025. Quelle est l'inflation cumulée entre 2022 et 2025 ?`,
+      c, [nr(I1-I0,1), nr(I1-100,1), nr(100*(I1-I0)/I1,1)],
+      `${F1(I1)} ÷ ${F1(I0)} − 1 ≈ ${F1(c)} %. <b>Pièges.</b> ${F1(I1-I0)} est un écart en points d'indice ; ${F1(I1-100)} % mesure la hausse depuis 2015.`, ' %'); },
+  ()=>{ const P0 = ri(400,2500)/10, I0 = ri(1050,1250)/10, I1 = nr(I0*(1+ri(4,16)/100),1), c = nr(P0*I1/I0,2);
+    return mkNum(`Un panier coûtait ${F2(P0)} € en 2022, quand l'indice des prix valait ${F1(I0)}. L'indice vaut ${F1(I1)} en 2025. Si son prix a suivi l'indice, combien coûte le panier en 2025 ?`,
+      c, [nr(P0*I1/100,2), nr(P0+(I1-I0),2), nr(P0*I0/I1,2)],
+      `${F2(P0)} × ${F1(I1)} ÷ ${F1(I0)} ≈ ${F2(c)} €. <b>Piège.</b> Multiplier par ${F1(I1)} ÷ 100 supposerait que 2022 est l'année de base.`, ' €'); },
+  ()=>{ const s = absPick([2,3,4,5,6]), i = absPick([3,4,5,6,8].filter(x=>x!==s)), c = nr(100*((1+s/100)/(1+i/100)-1),2);
+    return mkNum(`Les salaires augmentent de ${s} % et les prix de ${i} %. Comment varie le pouvoir d'achat ?`,
+      c, [s-i, nr(100*((1+i/100)/(1+s/100)-1),2), nr(100*((1+s/100)*(1-i/100)-1),2)],
+      `${F2(1+s/100)} ÷ ${F2(1+i/100)} ≈ ${fmtF((1+s/100)/(1+i/100),4)}, soit ${c>=0?'+':''}${F2(c)} %. <b>Piège.</b> ${s} − ${i} = ${s-i} % n'est qu'une approximation.`, ' %'); },
+ ]},
+{id:'prop', nom:'Rapports et proportions', rappel:`<ul>
+  <li><b>Partage proportionnel</b> : rapport 2:3:5, soit 10 parts ; une part = total ÷ 10.</li>
+  <li><b>Rapport a:b connu, une partie connue</b> : total = partie × (a + b) ÷ sa part du rapport.</li>
+  <li><b>Proportion inverse</b> : deux fois plus d'agents, deux fois moins de jours. On calcule le travail total (agents × jours).</li></ul>`,
+ v:[
+  ()=>{ const parts = absPick([[2,3,5],[1,3,4],[3,4,5],[2,5,7],[1,2,5]]), u = ri(3,30)*10, s = parts[0]+parts[1]+parts[2], T = s*u, w = ri(0,2), c = parts[w]*u;
+    return mkNum(`Un budget de ${fmtN(T)} k€ est réparti entre trois programmes dans le rapport ${parts.join(':')}. Combien reçoit le ${['premier','deuxième','troisième'][w]} ?`,
+      c, [Math.round(T/3), Math.round(T*parts[w]/(s-parts[w])), Math.round(T/parts[w])],
+      `Le rapport compte ${s} parts ; une part vaut ${fmtN(T)} ÷ ${s} = ${fmtN(u)} k€, donc ${parts[w]} × ${fmtN(u)} = ${fmtN(c)} k€.`, ' k€'); },
+  ()=>{ const [a,b] = absPick([[2,3],[3,2],[3,5],[5,3],[4,5],[5,4],[2,5],[7,3]]), k = ri(4,25), F = b*k, c = (a+b)*k;
+    return mkNum(`Dans une délégation, le rapport entre hommes et femmes est de ${a}:${b}. Elle compte ${F} femmes. Combien de personnes compte-t-elle ?`,
+      c, [a*k, Math.round(F*(a+b)/a), F+a+b],
+      `${b} parts = ${F} femmes, donc une part = ${k} personnes ; total = (${a} + ${b}) × ${k} = ${c}. <b>Piège.</b> ${a*k} est le nombre d'hommes seulement.`, ' personnes'); },
+  ()=>{ const A = ri(4,9), D = ri(8,20), A2 = A + ri(2,8), c = nr(A*D/A2,1);
+    return mkNum(`${A} agents mettent ${D} jours à traiter un lot de dossiers. Au même rythme individuel, combien de jours faudrait-il à ${A2} agents ?`,
+      c, [nr(D*A2/A,1), D-(A2-A), nr(D*A/(A+A2),1)],
+      `Travail total : ${A} × ${D} = ${A*D} jours-agent ; ${A*D} ÷ ${A2} ≈ ${F1(c)} jours. <b>Piège.</b> Plus d'agents, moins de jours : la proportion est inverse, pas directe (${F1(D*A2/A)}).`, ' jours'); },
+ ]},
+{id:'moy', nom:'Moyennes et médiane', rappel:`<ul>
+  <li><b>Moyenne pondérée</b> de groupes de tailles différentes : Σ (effectif × moyenne) ÷ effectif total. Jamais la moyenne des moyennes.</li>
+  <li><b>Valeur manquante</b> : total visé = moyenne × nombre de valeurs ; on retranche ce qu'on a déjà.</li>
+  <li><b>Médiane</b> : on classe d'abord. Nombre impair, la valeur du milieu ; pair, la moyenne des deux du milieu.</li></ul>`,
+ v:[
+  ()=>{ const n1 = ri(2,9)*10, n2 = ri(2,9)*10 + (ri(0,1)?5:0), m1 = ri(80,200)/10, m2 = ri(80,200)/10, c = nr((n1*m1+n2*m2)/(n1+n2),2);
+    return mkNum(`Une unité de ${n1} agents traite un dossier en ${F1(m1)} jours en moyenne, une autre de ${n2} agents en ${F1(m2)} jours. Quel est le délai moyen sur l'ensemble des ${n1+n2} agents ?`,
+      c, [nr((m1+m2)/2,2), m1, m2],
+      `(${n1} × ${F1(m1)} + ${n2} × ${F1(m2)}) ÷ ${n1+n2} ≈ ${F2(c)} jours. <b>Piège.</b> La moyenne des deux moyennes (${F2((m1+m2)/2)}) ignore que les unités n'ont pas la même taille.`, ' jours'); },
+  ()=>{ const v = [ri(110,150),ri(110,150),ri(110,150),ri(110,150)], s4 = v[0]+v[1]+v[2]+v[3], x = ri(105,175), M = (s4+x)/5;
+    return mkNum(`Les quatre premiers mois, un service a traité ${v.join(', ')} demandes. Combien doit-il en traiter le cinquième mois pour atteindre une moyenne de ${fmtF(M,1)} demandes par mois ?`,
+      x, [Math.round(M), Math.round(s4/4), Math.round(2*M - s4/4)],
+      `Total visé : 5 × ${fmtF(M,1)} = ${fmtN(s4+x)} ; les quatre premiers mois font ${fmtN(s4)} ; il reste ${fmtN(x)}.`, ' demandes'); },
+  ()=>{ const n = ri(8,20), M = ri(120,180)/10, X = ri(250,400)/10, c = nr((n*M+X)/(n+1),2);
+    return mkNum(`Les ${n} agents d'une unité ont en moyenne ${F1(M)} ans d'ancienneté. Un agent de ${F1(X)} ans d'ancienneté les rejoint. Quelle est la nouvelle moyenne ?`,
+      c, [nr((M+X)/2,2), nr((n*M+X)/n,2), nr(M+X/(n+1),2)],
+      `Total : ${n} × ${F1(M)} + ${F1(X)} = ${F1(n*M+X)} ans pour ${n+1} agents, soit ${F2(c)}. <b>Piège.</b> Faire la moyenne de ${F1(M)} et ${F1(X)} donne au nouvel agent le poids des ${n} autres.`, ' ans'); },
+  ()=>{ const n = absPick([7,8]); let vals; do { vals = Array.from({length:n}, ()=>ri(12,96)); } while(new Set(vals).size<n);
+    const tri = vals.slice().sort((a,b)=>a-b), med = n%2 ? tri[(n-1)/2] : (tri[n/2-1]+tri[n/2])/2, moy = vals.reduce((a,b)=>a+b,0)/n;
+    const brut = n%2 ? vals[(n-1)/2] : (vals[n/2-1]+vals[n/2])/2;
+    return mkNum(`Voici le nombre de réclamations reçues par ${n===7?'sept':'huit'} délégations : ${vals.join(' ; ')}. Quelle est la médiane ?`,
+      med, [nr(moy,1), brut].concat(n%2 ? [tri[2], tri[4]] : [tri[3], tri[4]]),
+      `On classe : ${tri.join(' ; ')}. ${n%2 ? 'Avec sept valeurs, la médiane est la 4e' : 'Avec huit valeurs, la médiane est la moyenne de la 4e et de la 5e'} : ${fmtF(med,1)}. <b>Pièges.</b> La moyenne (${fmtF(moy,1)}) est une autre mesure ; prendre le milieu de la liste sans la classer donne ${fmtF(brut,1)}.`, ''); },
+ ]},
+{id:'hab', nom:'Par habitant, densité et taux', rappel:`<ul>
+  <li><b>« Par » = diviser par ce qui suit</b> : dépense par habitant = dépense ÷ population.</li>
+  <li>Unités : milliards ÷ millions = milliers ; 4,2 Md€ ÷ 3,5 M d'habitants = 1,2 k€ = 1 200 € par habitant.</li>
+  <li>Si le total et la population varient tous deux : nouveau ratio = (1 + variation du total) ÷ (1 + variation de la population).</li></ul>`,
+ v:[
+  ()=>{ const D = ri(12,96)/10, P = ri(15,120)/10, c = Math.round(1000*D/P);
+    return mkNum(`Un État consacre ${F1(D)} milliards d'euros à la formation professionnelle pour ${F1(P)} millions d'habitants. Quelle est la dépense par habitant ?`,
+      c, [Math.round(100*D/P), Math.round(10000*D/P), Math.round(1000*P/D)],
+      `${F1(D)} × 10⁹ ÷ (${F1(P)} × 10⁶) = ${F1(D)} ÷ ${F1(P)} × 1 000 ≈ ${fmtN(c)} €. Milliards divisés par millions donnent des milliers.`, ' €'); },
+  ()=>{ const P = ri(5,90)/10, S = ri(8,90)*1000, c = Math.round(P*1e6/S);
+    return mkNum(`Une région de ${fmtN(S)} km² compte ${F1(P)} millions d'habitants. Quelle est sa densité ?`,
+      c, [Math.round(P*1e5/S), Math.round(P*1e7/S), Math.round(S/(P*1000))],
+      `${F1(P)} × 1 000 000 ÷ ${fmtN(S)} ≈ ${fmtN(c)} habitants par km².`, ' hab./km²'); },
+  ()=>{ const p = absPick([1,2,3,4,5]), q = absPick([3,6,8,10,12].filter(x=>x!==p)), c = nr(100*((1+q/100)/(1+p/100)-1),2);
+    return mkNum(`La population d'un pays augmente de ${p} % et sa dépense de santé de ${q} %. Comment varie la dépense de santé par habitant ?`,
+      c, [q-p, q+p, nr(100*((1+p/100)/(1+q/100)-1),2)],
+      `${F2(1+q/100)} ÷ ${F2(1+p/100)} ≈ ${fmtF((1+q/100)/(1+p/100),4)}, soit ${c>=0?'+':''}${F2(c)} %. <b>Piège.</b> ${q} − ${p} = ${q-p} % n'est qu'une approximation.`, ' %'); },
+ ]},
+{id:'unit', nom:'Unités et ordres de grandeur', rappel:`<ul>
+  <li>k = mille, M = million, Md = milliard : 1 Md€ = 1 000 M€ = 1 000 000 k€.</li>
+  <li>Énergie : 1 GWh = 3,6 TJ = 3 600 GJ. On divise par 3,6 pour passer des TJ aux GWh : le nombre diminue, l'unité étant plus grande.</li>
+  <li>Vitesse : km/h ÷ 3,6 = m/s ; m/s × 3,6 = km/h.</li></ul>`,
+ v:[
+  ()=>{ const T = ri(120,980)*10, c = Math.round(T/3.6);
+    return mkNum(`Une centrale produit ${fmtN(T)} TJ d'électricité par an. Sachant que 1 GWh = 3,6 TJ, combien de GWh cela représente-t-il ?`,
+      c, [Math.round(T*3.6), Math.round(T/3600), Math.round(T*1000/3.6)],
+      `${fmtN(T)} ÷ 3,6 ≈ ${fmtN(c)} GWh. <b>Vérification.</b> Le GWh est la plus grande unité : le nombre doit diminuer.`, ' GWh'); },
+  ()=>{ const B = ri(12,96)/100, n = absPick([400,600,800,1200,1500,2400]), c = nr(B*1e6/n,1);
+    return mkNum(`Une enveloppe de ${F2(B)} milliard d'euros finance ${fmtN(n)} projets de même montant. Combien reçoit chaque projet (k€) ?`,
+      c, [nr(c/10,1), nr(c*10,1), nr(c*100,1)],
+      `${F2(B)} Md€ = ${fmtN(B*1e6)} k€ ; ÷ ${fmtN(n)} ≈ ${F1(c)} k€ par projet. Un milliard = un million de milliers.`, ' k€'); },
+  ()=>{ const v = absPick([36,54,72,90,108,126,144]), c = v/3.6;
+    return mkNum(`Un train roule à ${v} km/h. Quelle est sa vitesse en mètres par seconde ?`,
+      c, [nr(v*3.6,1), nr(v/60,1), nr(v*1000/60,1)],
+      `${v} km/h = ${fmtN(v*1000)} m ÷ 3 600 s = ${v} ÷ 3,6 = ${c} m/s.`, ' m/s'); },
+ ]},
+{id:'vit', nom:'Vitesse, temps et distance', rappel:`<ul>
+  <li>Vitesse = distance ÷ temps, avec le temps en heures décimales : 2 h 15 = 2,25 h, pas 2,15 h.</li>
+  <li>Deux mobiles qui vont l'un vers l'autre se rapprochent à la <b>somme</b> de leurs vitesses.</li>
+  <li>À distance égale, le temps varie à l'inverse de la vitesse : +25 % de vitesse, temps ÷ 1,25, soit −20 %.</li></ul>`,
+ v:[
+  ()=>{ const h = ri(1,3), m = absPick([15,20,40,45,50]), v = ri(60,120), d = Math.round(v*(h+m/60)), c = nr(d/(h+m/60),1);
+    return mkNum(`Un car parcourt ${d} km en ${h} h ${m} min. Quelle est sa vitesse moyenne ?`,
+      c, [nr(d/(h+m/100),1), nr(d/h,1), nr(d/(h+1),1)],
+      `${h} h ${m} min = ${fmtN(nr(h+m/60,4))} h, et non ${h},${m} h ; ${d} ÷ ${fmtN(nr(h+m/60,4))} ≈ ${F1(c)} km/h.`, ' km/h'); },
+  ()=>{ const D = ri(18,60)*10, v1 = ri(60,85), v2 = v1 + ri(10,35), c = Math.round(60*D/(v1+v2));
+    return mkNum(`Deux trains partent au même moment de deux villes distantes de ${D} km et roulent l'un vers l'autre, à ${v1} km/h et ${v2} km/h. Au bout de combien de minutes se croisent-ils ?`,
+      c, [Math.round(60*D/(v2-v1)), Math.round(60*D/v1), Math.round(30*D/(v1+v2))],
+      `Ils se rapprochent à ${v1} + ${v2} = ${v1+v2} km/h : ${D} ÷ ${v1+v2} ≈ ${fmtF(D/(v1+v2),3)} h, soit environ ${c} min.`, ' min'); },
+  ()=>{ const T = ri(4,16)*30, p = absPick([20,25,50]), c = Math.round(T - T/(1+p/100));
+    return mkNum(`Un trajet dure ${T} min. Si la vitesse moyenne augmente de ${p} %, combien de minutes gagne-t-on ?`,
+      c, [Math.round(T*p/100), Math.round(T/(1+p/100)), Math.round(T*p/(100-p))],
+      `Le temps varie à l'inverse de la vitesse : ${T} ÷ ${F2(1+p/100)} = ${fmtN(nr(T/(1+p/100),1))} min, soit ${c} min gagnées. <b>Piège.</b> Retirer ${p} % du temps (${Math.round(T*p/100)} min) surestime le gain.`, ' min'); },
+ ]},
+{id:'chg', nom:'Change et devises', rappel:`<ul>
+  <li>Les taux sont en <b>unités pour 1 €</b> : on <b>divise</b> pour revenir à l'euro, on <b>multiplie</b> pour en sortir.</li>
+  <li>Entre deux devises hors euro, on passe par l'euro : livres ÷ taux de la livre × taux du franc.</li>
+  <li>Une devise s'apprécie quand il en faut <b>moins</b> pour 1 € ; sa valeur en euros = 1 ÷ taux.</li></ul>`,
+ v:[
+  ()=>{ const r1 = absPick([0.84,0.85,0.86,0.87]), r2 = absPick([0.93,0.94,0.95,0.96]), X = ri(2,40)*50, c = nr(X/r1*r2,2);
+    return mkNum(`1 € vaut ${F2(r1)} £ et ${F2(r2)} franc suisse. Combien de francs suisses obtient-on pour ${fmtN(X)} £, sans frais ?`,
+      c, [nr(X*r1*r2,2), nr(X*r1/r2,2), nr(X/r1/r2,2)],
+      `On revient à l'euro en divisant : ${fmtN(X)} ÷ ${F2(r1)} ≈ ${F2(X/r1)} € ; puis on multiplie : × ${F2(r2)} ≈ ${F2(c)} CHF.`, ' CHF'); },
+  ()=>{ const r0 = ri(410,450)/100, r1 = nr(r0*(1+absPick([-1,1])*ri(3,8)/100),2), c = nr(100*(r0/r1-1),1);
+    return mkNum(`Un euro valait ${F2(r0)} zlotys en 2024 et ${F2(r1)} en 2025. De combien de pour cent la valeur du zloty, exprimée en euros, a-t-elle varié ?`,
+      c, [nr(100*(r1/r0-1),1), nr(100*(r0-r1)/r0,1), nr(-c,1)],
+      `Valeur d'un zloty = 1 ÷ taux : ${fmtF(1/r0,4)} € puis ${fmtF(1/r1,4)} €, soit ${F2(r0)} ÷ ${F2(r1)} − 1 ≈ ${F1(c)} %. ${r1<r0 ? 'Il faut moins de zlotys pour un euro : le zloty s\'est apprécié.' : 'Il faut plus de zlotys pour un euro : le zloty s\'est déprécié.'}`, ' %'); },
+  ()=>{ const X = ri(4,40)*50, f = absPick([1.5,2,2.5,3]), c = nr(X*(1-Math.pow(1-f/100,2)),2);
+    return mkNum(`Un voyageur change ${fmtN(X)} € en dollars, puis reconvertit aussitôt le tout en euros, au même taux. La banque prélève ${F1(f)} % à chaque conversion. Combien d'euros a-t-il perdus ?`,
+      c, [nr(X*2*f/100,2), nr(X*f/100,2), nr(X*Math.pow(1-f/100,2),2)],
+      `Il lui reste ${fmtN(X)} × ${fmtF(1-f/100,3)}² ≈ ${F2(X*Math.pow(1-f/100,2))} €, soit une perte de ${F2(c)} €. Le taux s'annule ; seules les commissions coûtent, et la seconde porte sur un montant déjà réduit.`, ' €'); },
+ ]},
+{id:'tab', nom:'Tableaux et graphiques : parts, cellules, tendances', rappel:`<ul>
+  <li><b>Part d'une part</b> : on multiplie les parts. Services 70 % du total, transport 12 % des services : 0,70 × 0,12 = 8,4 % du total.</li>
+  <li><b>Cellule manquante</b> : un total ou une identité donnée sous le tableau suffit souvent à la reconstituer.</li>
+  <li><b>Évolution linéaire</b> : même écart chaque année. Sur 4 ans, l'écart annuel vaut (fin − début) ÷ 4.</li></ul>`,
+ v:[
+  ()=>{ const a = ri(60,80), b = ri(6,15), c = nr(a*b/100,2);
+    return mkNum(`Les services représentent ${a} % de la valeur ajoutée d'un pays, et le transport ${b} % de celle des services. Quelle part de la valeur ajoutée totale le transport représente-t-il ?`,
+      c, [b, nr(100*b/a,2), nr(a*b/1000,2)],
+      `On multiplie les parts : ${a} % × ${b} % = ${F2(a/100)} × ${F2(b/100)} = ${F2(c)} % du total. <b>Piège.</b> ${b} % porte sur les seuls services.`, ' %'); },
+  ()=>{ const R = pickN(['Nord','Sud','Est','Ouest','Centre','Littoral'],5), v = R.map(()=>ri(120,980)), m = ri(0,4), tot = v.reduce((a,b)=>a+b,0), c = v[m];
+    const table = nTab('Demandes reçues en 2025, par région', ['Région','Demandes'], R.map((r,i)=>[r, i===m ? '?' : fmtN(v[i])]).concat([['Total', fmtN(tot)]]));
+    return mkNum(`Combien de demandes la région ${R[m]} a-t-elle reçues ?`,
+      c, [tot - c - v[(m+1)%5], Math.round(tot/5), tot - c], `Total moins les quatre autres régions : ${fmtN(tot)} − ${fmtN(tot-c)} = ${fmtN(c)}.`, ' demandes', table, {imp:true}); },
+  ()=>{ const A = ri(300,700)/10, B = nr(A*(1+ri(10,40)/100),1), k = absPick([1,3]), c = nr(A+(B-A)*k/4,2);
+    return mkNum(`La production atteignait ${F1(A)} Mt en 2020 et ${F1(B)} Mt en 2024. En supposant une évolution linéaire, quelle était-elle en ${2020+k} ?`,
+      c, [nr((A+B)/2,2), nr(A+(B-A)*(4-k)/4,2), nr(A*Math.pow(B/A,k/4),2)],
+      `Écart annuel : (${F1(B)} − ${F1(A)}) ÷ 4 = ${fmtF((B-A)/4,3)} Mt ; ${2020+k} = 2020 + ${k} an${k>1?'s':''} : ${F1(A)} + ${k} × ${fmtF((B-A)/4,3)} ≈ ${F2(c)} Mt. <b>Piège.</b> Le milieu (${F2((A+B)/2)}) vaut pour 2022 seulement.`, ' Mt'); },
+ ]},
+{id:'est', nom:'Estimation', rappel:`<ul>
+  <li>Quand les options sont très écartées, un ordre de grandeur suffit : arrondir chaque nombre à un chiffre simple.</li>
+  <li>0,198 ≈ 1/5 ; 0,249 ≈ 1/4 ; 0,502 ≈ 1/2 ; 9,9 ≈ 10.</li>
+  <li>Règle de 70 : à g % par an, une valeur double en 70 ÷ g ans environ.</li></ul>`,
+ v:[
+  ()=>{ const x = ri(30,90)*100 + ri(-60,60), [y,fy,fv] = absPick([[0.198,'1/5',0.2],[0.249,'1/4',0.25],[0.502,'1/2',0.5],[0.751,'3/4',0.75]]), z = absPick([4.9,9.9,19.8,24.9]), ex = x*y/z, c = Math.round(ex);
+    return mkNum(`Sans calculatrice, quelle est la valeur la plus proche de ${fmtN(x)} × ${fmtF(y,3)} ÷ ${F1(z)} ?`,
+      c, ecartes(c, [Math.round(ex*10), Math.round(ex/10), Math.round(ex*2), Math.round(ex/2)], 0.3),
+      `On arrondit : ${fmtF(y,3)} ≈ ${fy} et ${F1(z)} ≈ ${Math.round(z)} ; ${fmtN(x)} × ${fy} ÷ ${Math.round(z)} ≈ ${fmtN(Math.round(x*fv/Math.round(z)))}. Valeur exacte : ${F1(ex)}, d'où l'option ${fmtN(c)}.`, '', null, {sansAucune:true}); },
+  ()=>{ const s = ri(12,60), total = ri(40,250)*1000 + ri(1,999), part = Math.round(total*s/100 + ri(-300,300)), c = Math.round(100*part/total);
+    return mkNum(`Environ quelle part de ${fmtN(total)} représentent ${fmtN(part)} ?`,
+      c, ecartes(c, [Math.round(c/2), c*2, c+15, c-15], 0.3),
+      `${fmtN(part)} ÷ ${fmtN(total)} ≈ ${fmtF(part/total,3)}, soit environ ${c} %.`, ' %', null, {sansAucune:true}); },
+  ()=>{ const g = absPick([2,3.5,5,7,10,14]), c = Math.round(70/g);
+    return mkNum(`Une dépense augmente de ${fmtN(g)} % par an. En combien d'années environ double-t-elle ?`,
+      c, ecartes(c, [Math.round(100/g), Math.round(200/g), Math.round(35/g)], 0.3),
+      `Règle de 70 : 70 ÷ ${fmtN(g)} ≈ ${c} ans (calcul exact : ${F1(Math.log(2)/Math.log(1+g/100))} ans).`, ' ans', null, {sansAucune:true}); },
+ ]},
+{id:'imp', nom:'Données suffisantes ou « Impossible à déterminer »', rappel:`<ul>
+  <li><b>Impossible</b> quand il faut une hypothèse que l'énoncé ne donne pas : deux pourcentages sans leur recoupement, un mois tiré d'un total annuel, une sous-catégorie non détaillée.</li>
+  <li><b>Possible</b> quand un total, une identité ou une définition suffit, ou quand la question demande un <b>minimum</b> ou un <b>maximum</b>.</li>
+  <li>Recoupement de deux groupes de a % et b % : au moins a + b − 100 %, au plus le plus petit des deux.</li></ul>`,
+ v:[
+  ()=>{ const a = ri(55,75), b = ri(Math.max(40,106-a),60);
+    return mkNum(`Dans une direction, ${a} % des agents parlent l'anglais et ${b} % l'allemand. Quelle part des agents parle les deux langues ?`,
+      IMPOSSIBLE_OPT, [a+b-100, nr(a*b/100,1), nr((a+b)/2,1), Math.min(a,b)],
+      `Les deux pourcentages ne disent pas combien d'agents sont dans les deux groupes : tout recoupement entre ${a+b-100} % et ${Math.min(a,b)} % est possible. Multiplier les parts (${F1(a*b/100)} %) suppose une indépendance que rien n'indique.`, ' %'); },
+  ()=>{ const a = ri(55,75), b = ri(Math.max(40,106-a),60), c = a+b-100;
+    return mkNum(`Dans une direction, ${a} % des agents parlent l'anglais et ${b} % l'allemand. Au minimum, quelle part des agents parle les deux langues ?`,
+      c, [nr(a*b/100,1), Math.min(a,b), 100-a],
+      `Si les deux groupes se recouvraient le moins possible, ils occuperaient ${a} + ${b} = ${a+b} % des agents : il y a donc au moins ${c} % qui parlent les deux. La question demande un minimum : il est déterminé.`, ' %', null, {imp:true}); },
+  ()=>{ const N = ri(24,96)*50, N1 = Math.round(N*ri(40,60)/100);
+    return mkNum(`Un service a reçu ${fmtN(N)} demandes en 2025, dont ${fmtN(N1)} au premier semestre. Combien en a-t-il reçu en mars ?`,
+      IMPOSSIBLE_OPT, [Math.round(N1/6), Math.round(N/12), Math.round((N-N1)/6)],
+      `Rien ne dit comment les demandes se répartissent entre les mois du semestre : ${fmtN(Math.round(N1/6))} supposerait une répartition égale, que l'énoncé ne pose pas.`, ' demandes'); },
+  ()=>{ const T = ri(30,90)*100, a = ri(Math.round(T*0.2), Math.round(T*0.4)), b = ri(Math.round(T*0.15), Math.round(T*0.35)), c = T-a-b;
+    return mkNum(`Un budget de ${fmtN(T)} k€ se répartit entre le personnel, l'informatique et les bâtiments. Le personnel reçoit ${fmtN(a)} k€ et l'informatique ${fmtN(b)} k€. Combien reçoivent les bâtiments ?`,
+      c, [a+b, Math.round(T/3), T-a],
+      `Le total et deux postes suffisent : ${fmtN(T)} − ${fmtN(a)} − ${fmtN(b)} = ${fmtN(c)} k€. Cocher « Impossible » serait une erreur.`, ' k€', null, {imp:true}); },
+ ]},
+{id:'frac', nom:'Fractions et calcul mental', rappel:`<ul>
+  <li>Une fraction d'une fraction se <b>multiplie</b> : les 2/3 des 3/4, c'est 1/2.</li>
+  <li>Comparer deux fractions sans les calculer : produits en croix. 37/91 contre 41/88 : 37 × 88 = 3 256 et 41 × 91 = 3 731, donc 41/88 est plus grande.</li>
+  <li>a % de b = b % de a : 16 % de 75 = 75 % de 16 = 12.</li></ul>`,
+ v:[
+  ()=>{ const [n1,d1] = absPick([[3,8],[2,3],[3,4],[5,6],[3,5]]), [n2,d2] = absPick([[1,4],[2,3],[1,3],[3,8],[1,2]]), N = ri(10,80)*24, c = nr(N*n1/d1*n2/d2,1);
+    return mkNum(`Les ${n1}/${d1} d'un budget de ${fmtN(N)} k€ vont à la recherche, dont les ${n2}/${d2} à l'intelligence artificielle. Combien reçoit l'intelligence artificielle ?`,
+      c, [nr(N*n1/d1,1), nr(N*n2/d2,1), nr(N*n1/d1*(1-n2/d2),1)],
+      `On multiplie les fractions : ${n1}/${d1} × ${n2}/${d2} = ${fracTxt(n1*n2,d1*d2)} ; ${fmtN(N)} × ${fracTxt(n1*n2,d1*d2)} = ${F1(c)} k€.`, ' k€'); },
+  ()=>{ let fr; do { fr = Array.from({length:5}, ()=>{ const d = ri(30,95); return [ri(Math.round(d*0.3), Math.round(d*0.6)), d]; }); }
+      while(new Set(fr.map(([n,d])=>Math.round(1000*n/d))).size<5 || (()=>{ const v = fr.map(([n,d])=>n/d).sort((a,b)=>b-a); return v[0]-v[1] < 0.008; })() || new Set(fr.map(([n,d])=>n+'/'+d)).size<5);
+    const v = fr.map(([n,d])=>n/d), i = v.indexOf(Math.max(...v)), txt = fr.map(([n,d])=>n+'/'+d);
+    return mkNum(`Laquelle de ces fractions est la plus grande ?`,
+      txt[i], txt.filter((_,k)=>k!==i),
+      `Valeurs : ${fr.map(([n,d])=>n+'/'+d+' ≈ '+fmtF(n/d,3)).join(' ; ')}. Pour deux fractions proches, les produits en croix tranchent sans calculatrice.`, '', null, {sansAucune:true}); },
+  ()=>{ const a = absPick([4,8,12,16,20,24,32,40,48]), b = absPick([25,50,75,125,150]), c = a*b/100;
+    return mkNum(`Combien font ${a} % de ${b} ?`,
+      c, [a*b/10, Math.round(b*100/a), a+b],
+      `${a} % de ${b} = ${b} % de ${a} = ${c}. Le calcul mental devient simple quand on inverse : ${b} % de ${a}, c'est ${a} × ${fmtF(b/100,2)}.`, ''); },
+ ]},
+];
+
+/* Tire n questions par compétence, chacune d'une variante différente tant qu'il
+   en reste. Un générateur qui échouerait est retenté, puis remplacé. */
+function megaTirer(blocs, n){
+  const plan = [];
+  blocs.forEach(b=>{
+    const ordre = shuffle(b.v.map((_,i)=>i));
+    for(let k=0; k<n; k++){
+      let it = null;
+      for(let essai=0; essai<8 && !it; essai++){ try{ it = b.v[ordre[(k+essai)%ordre.length]](); }catch(e){ it = null; } }
+      if(it) plan.push({b, it});
+    }
+  });
+  return plan;
+}
+function megaDernier(){
+  try{ const r = JSON.parse(localStorage.getItem('epso-mega')||'null'); return r && typeof r==='object' ? r : null; }catch(e){ return null; }
+}
+function megaCarte(){
+  const d = megaDernier();
+  const faibles = d && Array.isArray(d.faibles) ? d.faibles.map(id=>(MEGA.find(b=>b.id===id)||{}).nom).filter(Boolean) : [];
+  return `<div class="card mega-carte">
+    <span class="eyebrow">Révision complète · numérique</span>
+    <h2>Méga-révision : tout le numérique en une session</h2>
+    <p class="lede" style="font-size:15px;">${MEGA.length} compétences, du pourcentage de base à « Impossible à déterminer ». Pour chacune, un rappel de la méthode,
+    puis trois questions corrigées une par une, avec l'erreur que vise chaque mauvaise option. Bilan par compétence à la fin.</p>
+    <div class="mega-chips">${MEGA.map((b,i)=>'<span class="mega-chip">'+(i+1)+'. '+b.nom+'</span>').join('')}</div>
+    ${d ? '<p class="mega-dernier">Dernier passage, le '+d.date+' : <b>'+d.score+'/'+d.n+'</b>'+(faibles.length ? ' · à revoir : '+faibles.join(', ') : ' · toutes les compétences maîtrisées')+'.</p>' : ''}
+    <button class="btn wide" id="megaFull" style="margin-bottom:8px;">Méga-révision complète (${MEGA.length*3} questions, environ 1 h 15)</button>
+    <button class="btn ghost wide" id="megaExpress">Version express (${MEGA.length} questions, une par compétence, environ 30 min)</button>
+    ${faibles.length ? '<button class="btn ghost wide" id="megaFaibles" style="margin-top:8px;">Refaire seulement les compétences à revoir ('+faibles.length+')</button>' : ''}
+  </div>`;
+}
+function megaLier(){
+  const b = id => document.getElementById(id);
+  if(b('megaFull')) b('megaFull').addEventListener('click', ()=>runMega(MEGA, 'complet'));
+  if(b('megaExpress')) b('megaExpress').addEventListener('click', ()=>runMega(MEGA, 'express'));
+  if(b('megaFaibles')) b('megaFaibles').addEventListener('click', ()=>{ const d = megaDernier(); runMega(MEGA.filter(x=>d.faibles.indexOf(x.id)>=0), 'complet'); });
+}
+function runMega(blocs, mode){
+  const app = document.getElementById('app');
+  const n = mode==='express' ? 1 : 3;
+  const plan = megaTirer(blocs, n);
+  const res = plan.map(()=>null);
+  const debut = Date.now();
+  let i = 0, view = null;
+  const kBloc = x => blocs.indexOf(x.b);
+  const outils = '<div class="tao-tools inline"><button data-t="calc">Calculatrice</button><button data-t="notes">Bloc-notes</button></div>';
+  const lierOutils = () => app.querySelectorAll('.tao-tools [data-t]').forEach(t=>t.addEventListener('click',()=>t.dataset.t==='calc'?taoCalculatrice():taoBlocNotes()));
+  const quitter = () => '<div class="quit-row"><button id="megaQuit">Quitter la révision</button></div>';
+  const lierQuitter = () => document.getElementById('megaQuit').addEventListener('click', ()=>goTo('numabs'));
+  function intro(){
+    const x = plan[i], k = kBloc(x);
+    app.innerHTML = '<div class="card"><div class="section-title"><span class="eyebrow">Méga-révision · compétence '+(k+1)+' sur '+blocs.length+'</span><span class="q-count">'+i+' / '+plan.length+'</span></div>'
+      +'<div class="session-prog"><i style="width:'+Math.round(100*i/plan.length)+'%"></i></div>'
+      +'<h2 style="margin-top:10px;">'+x.b.nom+'</h2><div class="mega-rappel">'+x.b.rappel+'</div>'
+      +'<button class="btn wide" id="megaGo">'+(n>1 ? 'Les trois questions' : 'La question')+' →</button></div>'+quitter();
+    document.getElementById('megaGo').addEventListener('click', question);
+    lierQuitter(); scrollTo({top:0});
+  }
+  function question(){
+    const x = plan[i], k = kBloc(x), it = x.it;
+    const rang = plan.slice(0,i).filter(y=>y.b===x.b).length;
+    view = shuffleOpts(it);
+    app.innerHTML = '<div class="card"><div class="section-title"><span class="eyebrow">'+x.b.nom+(n>1 ? ' · question '+(rang+1)+' sur '+n : '')+'</span><span class="q-count">'+(i+1)+' / '+plan.length+'</span></div>'
+      +'<div class="session-prog"><i style="width:'+Math.round(100*i/plan.length)+'%"></i></div>'
+      +(mode==='express' || rang>0 ? '<details class="mth"><summary>Rappel de la méthode</summary>'+x.b.rappel+'</details>' : '')
+      +outils+(it.table ? '<div class="data-wrap">'+it.table+'</div>' : '')
+      +'<div class="qcm-question">'+it.q+'</div>'
+      +'<div id="opts">'+view.opts.map((o,j)=>'<button class="qcm-opt" data-i="'+j+'">'+o+'</button>').join('')+'</div>'
+      +'<div id="fb"></div><button class="btn wide hidden" id="nextBtn" style="margin-top:12px;">'+(i<plan.length-1 ? 'Suivant →' : 'Voir le bilan →')+'</button></div>'+quitter();
+    app.querySelectorAll('.qcm-opt').forEach(btn=>btn.addEventListener('click', ()=>repondre(+btn.dataset.i)));
+    document.getElementById('nextBtn').addEventListener('click', ()=>{
+      i++;
+      if(i>=plan.length) bilan();
+      else if(mode!=='express' && plan[i].b!==plan[i-1].b) intro();
+      else question();
+    });
+    lierOutils(); lierQuitter(); scrollTo({top:0});
+  }
+  function repondre(choix){
+    if(res[i]!==null) return;
+    const ok = choix===view.c; res[i] = ok;
+    PROGRESS.numeric.att++; if(ok) PROGRESS.numeric.cor++;
+    saveProgress(); renderStreak();
+    app.querySelectorAll('.qcm-opt').forEach((b,j)=>{ b.disabled = true; if(j===view.c) b.classList.add('correct'); else if(j===choix) b.classList.add('incorrect'); });
+    document.getElementById('fb').innerHTML = '<div class="feedback '+(ok?'ok':'no')+'">'+(ok?'✓ Correct. ':'✗ Incorrect. La bonne réponse est '+view.opts[view.c]+'. ')+plan[i].it.ex+'</div>';
+    document.getElementById('nextBtn').classList.remove('hidden');
+  }
+  function bilan(){
+    const score = res.filter(Boolean).length, duree = Math.round((Date.now()-debut)/1000);
+    const parBloc = blocs.map(b=>{ const r = plan.map((x,j)=>x.b===b ? res[j] : null).filter(v=>v!==null); return {b, ok:r.filter(Boolean).length, n:r.length}; }).filter(x=>x.n);
+    const faible = x => x.ok < Math.ceil(x.n*2/3);
+    const faibles = parBloc.filter(faible);
+    try{ localStorage.setItem('epso-mega', JSON.stringify({date:new Date().toLocaleDateString('fr-FR'), score, n:plan.length, faibles:faibles.map(x=>x.b.id)})); }catch(e){}
+    app.innerHTML = '<div class="card session-end"><span class="eyebrow">Méga-révision · bilan</span><div class="n">'+score+'/'+plan.length+'</div>'
+      +'<p style="color:var(--muted);">Durée : '+fmtTime(duree)+' · environ '+fmtTime(Math.round(duree/plan.length))+' par question (au concours : 2:00).</p>'
+      +'<table class="spec-table mega-bilan"><tr><td><b>Compétence</b></td><td><b>Résultat</b></td></tr>'
+      +parBloc.map(x=>'<tr class="'+(faible(x)?'ko':'ok')+'"><td>'+x.b.nom+'</td><td>'+x.ok+'/'+x.n+(faible(x)?' · à revoir':' · maîtrisée')+'</td></tr>').join('')+'</table>'
+      +(faibles.length ? '<p class="eyebrow" style="color:var(--accent);margin:16px 0 6px;">À RETRAVAILLER</p>'+faibles.map(x=>'<details class="mth"><summary>'+x.b.nom+'</summary>'+x.b.rappel+'</details>').join('')
+        : '<p>Toutes les compétences sont maîtrisées : passe aux sessions niveau examen et à l\'examen blanc chronométré.</p>')
+      +(faibles.length ? '<button class="btn wide" id="megaRe" style="margin-top:12px;">Refaire les compétences à revoir ('+faibles.length+' × 3 questions)</button>' : '')
+      +'<button class="btn ghost wide" id="megaAgain" style="margin-top:8px;">Nouvelle méga-révision complète</button>'
+      +'<button class="btn ghost wide" id="megaBack" style="margin-top:8px;">Retour</button></div>';
+    if(faibles.length) document.getElementById('megaRe').addEventListener('click', ()=>runMega(faibles.map(x=>x.b), 'complet'));
+    document.getElementById('megaAgain').addEventListener('click', ()=>runMega(MEGA, 'complet'));
+    document.getElementById('megaBack').addEventListener('click', ()=>goTo('numabs'));
+    scrollTo({top:0});
+  }
+  if(mode==='express') question(); else intro();
+}
+
 function renderNumAbs(){
   const app = document.getElementById('app');
-  app.innerHTML = `
+  app.innerHTML = `${megaCarte()}
   <div class="card">
     <span class="eyebrow">Test 2 · Numérique + abstrait combinés · en Langue 1 (français)</span>
     <h2>Le filtre pass/fail</h2>
@@ -9968,6 +10387,7 @@ function renderNumAbs(){
   document.getElementById('startNumWarm').addEventListener('click',()=>runQCMSession(mkNumericPool(),'numeric',NUM_SEC,'Numérique','Test 2','numabs',NUM_COUNT));
   document.getElementById('startAbsExam').addEventListener('click', ()=>runAbstractSession(mkAbsExam));
   document.getElementById('startAbs').addEventListener('click', ()=>runAbstractSession(mkAbsSeries));
+  megaLier();
 }
 function runAbstractSession(mk){
   const app = document.getElementById('app');
